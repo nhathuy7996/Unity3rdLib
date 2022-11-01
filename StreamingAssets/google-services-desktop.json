@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "713944790770",
+    "project_id": "giant-lift-heroes-idle-workout",
+    "storage_bucket": "giant-lift-heroes-idle-workout.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:713944790770:android:3f1b065925be9d8c31426b",
+        "android_client_info": {
+          "package_name": "com.apero.idleworkout.giantlifthero.musclegame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "713944790770-84otki19t65hl7b077hcbu5qqm8hnjoj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCW-1gV7qYjOunvcdq2WeD7rqOICiU33v8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "713944790770-84otki19t65hl7b077hcbu5qqm8hnjoj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
