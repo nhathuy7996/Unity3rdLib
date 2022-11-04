@@ -1,5 +1,6 @@
 using com.adjust.sdk;
 using GoogleMobileAds.Api;
+using GoogleMobileAds.Common;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -75,6 +76,7 @@ namespace HuynnLib
 
             InitMAX();
             LoadAdOpen();
+            AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
 
             _onInitDone?.Invoke();
         }
@@ -517,13 +519,22 @@ namespace HuynnLib
             Firebase.Analytics.FirebaseAnalytics.LogEvent("paid_ad_impression_value", impressionParameters);
         }
 
-        //public void OnApplicationFocus(bool focus)
-        //{
-        //    if (!focus)
-        //    {
-        //        ShowAdIfAvailable();
-        //    }
-        //}
+        private void OnAppStateChanged(AppState state)
+        {
+
+            // Display the app open ad when the app is foregrounded.
+            UnityEngine.Debug.Log("App State is " + state);
+            if (state == AppState.Foreground)
+            {
+                this.ShowAdIfAvailable();
+            }
+            else if (state == AppState.Background)
+            {
+                ad.Destroy();
+
+            }
+
+        }
     }
 }
 
