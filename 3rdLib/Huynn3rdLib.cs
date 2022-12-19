@@ -6,12 +6,13 @@ namespace HuynnLib
 {
     public class Huynn3rdLib : MonoBehaviour
     {
-        [SerializeField] bool _isShowDebug = false;
+        [SerializeField] bool _isShowDebug = false, _isDontDestroyOnLoad = false;
         [SerializeField] GameObject _notiDebug;
         // Start is called before the first frame update
         void Start()
         {
-
+            if(_isDontDestroyOnLoad)
+                DontDestroyOnLoad(this.gameObject);
         }
 
         // Update is called once per frame

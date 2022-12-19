@@ -12,7 +12,7 @@ namespace HuynnLib
 {
     public class FireBaseManager : Singleton<FireBaseManager>, IChildLib
     {
-        
+
         private bool _isFetchDone = false;
 
         public bool isFetchDOne => _isFetchDone;
@@ -25,7 +25,7 @@ namespace HuynnLib
 
         public void Init(Action _onActionDone)
         {
-            Debug.LogError("==========> Firebase start Init!");
+            Debug.Log("==========> Firebase start Init!");
 #if UNITY_EDITOR
             _onActionDone?.Invoke();
 #endif
@@ -77,7 +77,7 @@ namespace HuynnLib
             return true;
         }
 
-     
+
 
         // Start a fetch request.
         public Task FetchDataAsync()
@@ -137,12 +137,19 @@ namespace HuynnLib
         #region Firebase Logevent
         public void LogEventWithOneParam(string eventName)
         {
-            FirebaseAnalytics.LogEvent(eventName);
-            Debug.Log("LogEvent " + eventName);
+            Debug.LogError("LogEvent " + eventName);
+            this.LogEventWithParameter(eventName, new Hashtable() { { "value", 1 } });
+
         }
 
         public void LogEventWithParameter(string event_name, Hashtable hash)
         {
+            StartCoroutine(waitInitDone(event_name, hash));
+        }
+
+        IEnumerator waitInitDone(string event_name, Hashtable hash)
+        {
+            yield return new WaitUntil(() => _isFetchDone);
             Firebase.Analytics.Parameter[] parameter = new Firebase.Analytics.Parameter[hash.Count];
             //List<Firebase.Analytics.Parameter> parameters = new List<Firebase.Analytics.Parameter>();
             if (hash != null && hash.Count > 0)
@@ -152,7 +159,7 @@ namespace HuynnLib
                 {
                     if (item.Equals((DictionaryEntry)default)) continue;
                     parameter[i] = (new Firebase.Analytics.Parameter(item.Key.ToString(), item.Value.ToString()));
-                    Debug.LogError("LogEvent " + event_name.ToString() + "- Key = " + item.Key + " -  Value =" + item.Value);
+                    Debug.Log("LogEvent " + event_name.ToString() + "- Key = " + item.Key + " -  Value =" + item.Value);
                     i++;
                 }
 
@@ -161,12 +168,6 @@ namespace HuynnLib
                            parameter);
             }
         }
-        public void LogStartLevel(int level)
-        {
-            FirebaseAnalytics.LogEvent("start_level_" + level.ToString());
-            Debug.Log(" LogEvent start_level_ " + level.ToString());
-        }
-
 
 
         #endregion

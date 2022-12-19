@@ -79,32 +79,32 @@ public class RateController : MonoBehaviour
    
     public void ShowInAppRate(UnityAction afterRateAction)
     {
-        Debug.LogError("ShowInAppRate");
+        Debug.Log("ShowInAppRate");
         StartCoroutine(RequestReviews(afterRateAction));
     }
 
     IEnumerator RequestReviews(UnityAction afterRateAction)
     {
-        Debug.LogError("RequestReviews-----1");
+        Debug.Log("RequestReviews-----1");
         _reviewManager = new ReviewManager();
 
         var requestFlowOperation = _reviewManager.RequestReviewFlow();
-        Debug.LogError("RequestReviews-----2");
+        Debug.Log("RequestReviews-----2");
         yield return requestFlowOperation;
-        Debug.LogError("RequestReviews-----3");
+        Debug.Log("RequestReviews-----3");
         if (requestFlowOperation.Error != ReviewErrorCode.NoError)
         {
             // Log error. For example, using requestFlowOperation.Error.ToString().
             Debug.LogError("requestFlowOperation-----4" + requestFlowOperation.Error.ToString());
             yield break;
         }
-        Debug.LogError("RequestReviews-----5");
+        Debug.Log("RequestReviews-----5");
         _playReviewInfo = requestFlowOperation.GetResult();
 
         var launchFlowOperation = _reviewManager.LaunchReviewFlow(_playReviewInfo);
-        Debug.LogError("RequestReviews-----6");
+        Debug.Log("RequestReviews-----6");
         yield return launchFlowOperation;
-        Debug.LogError("RequestReviews-----7");
+        Debug.Log("RequestReviews-----7");
         _playReviewInfo = null; // Reset the object
         if (launchFlowOperation.Error != ReviewErrorCode.NoError)
         {
@@ -112,7 +112,7 @@ public class RateController : MonoBehaviour
             Debug.LogError("launchFlowOperation-----8" + launchFlowOperation.Error.ToString());
             yield break;
         }
-        Debug.LogError("RequestReviews-----9");
+        Debug.Log("RequestReviews-----9");
         // The flow has finished. The API does not indicate whether the user
         // reviewed or not, or even whether the review dialog was shown. Thus, no
         // matter the result, we continue our app flow.

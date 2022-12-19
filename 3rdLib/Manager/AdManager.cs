@@ -45,37 +45,30 @@ namespace HuynnLib
         [SerializeField]
         private string MaxSdkKey = "3N4Mt8SNhOzkQnGb9oHsRRG1ItybcZDpJWN1fVAHLdRagxP-_k_ZXVaMAdMe5Otsmp6qJSXskfsrtakfRmPAGW";
         [SerializeField]
-        private string BannerAdUnitId = "df980c4d809fc01e",
-            InterstitialAdUnitId = "3a70c7be99dade7d",
-            RewardedAdUnitId = "6b7094c5d21fcfe5";
+        private string BannerAdUnitID = "df980c4d809fc01e",
+            InterstitialAdUnitID = "3a70c7be99dade7d",
+            RewardedAdUnitID = "6b7094c5d21fcfe5",
+            OpenAdUnitID = "";
 
 
-        private int interstitialRetryAttempt;
-        private int rewardedRetryAttempt;
+        private int interstitialRetryAttempt,
+            rewardedRetryAttempt,
+            AdOpenRetryAttemp = 1;
         InterVideoState _currentStateInter = InterVideoState.None;
         RewardVideoState _currentStateReward = RewardVideoState.None;
         private Action<InterVideoState> _callbackInter = null;
         private Action<RewardVideoState> _callbackReward = null;
         #endregion
 
-        //app open
-#if UNITY_ANDROID
-        [SerializeField]
-        private const string AD_UNIT_ID = "ca-app-pub-4584260126367940/6122342291";
-#else
-        private const string AD_UNIT_ID = "unexpected_platform";
-#endif
-        AppOpenAd ad;
-        private DateTime loadTime;
         private bool isShowingAd = false;
 
 
         public void Init(Action _onInitDone = null)
         {
-            Debug.LogError("==========> Ad start Init!");
+            Debug.Log("==========> Ad start Init!");
 
             InitMAX();
-            LoadAdOpen();
+
             AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
 
             _onInitDone?.Invoke();
@@ -93,6 +86,8 @@ namespace HuynnLib
                 InitializeBannerAds();
                 InitializeInterstitialAds();
                 InitializeRewardedAds();
+                InitAdOpen();
+
             };
             MaxSdk.SetSdkKey(MaxSdkKey);
             MaxSdk.InitializeSdk();
@@ -101,21 +96,25 @@ namespace HuynnLib
 
         private void InitializeBannerAds()
         {
-            Debug.LogError("Init banner");
+            Debug.Log("Init banner");
             // Attach Callbacks
             MaxSdkCallbacks.Banner.OnAdLoadedEvent += OnBannerAdLoadedEvent;
             MaxSdkCallbacks.Banner.OnAdLoadFailedEvent += OnBannerAdFailedEvent;
             MaxSdkCallbacks.Banner.OnAdClickedEvent += OnBannerAdClickedEvent;
             MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
 
-            MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent += OnBannerAdRevenuePaidEvent;
+            MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent += (adUnit, adInfo) =>
+            {
+                Debug.Log("Banner ad revenue paid");
+                TrackAdRevenue(adInfo);
+            };
 
             // Banners are automatically sized to 320x50 on phones and 728x90 on tablets.
             // You may use the utility method `MaxSdkUtils.isTablet()` to help with view sizing adjustments.
-            MaxSdk.CreateBanner(BannerAdUnitId, _bannerPosition);
-            MaxSdk.SetBannerExtraParameter(BannerAdUnitId, "adaptive_banner", "false");
+            MaxSdk.CreateBanner(BannerAdUnitID, _bannerPosition);
+            MaxSdk.SetBannerExtraParameter(BannerAdUnitID, "adaptive_banner", "false");
             // Set background or background color for banners to be fully functional.
-            MaxSdk.SetBannerBackgroundColor(BannerAdUnitId, new Color(1, 1, 1, 0));
+            MaxSdk.SetBannerBackgroundColor(BannerAdUnitID, new Color(1, 1, 1, 0));
             this.ShowBanner();
         }
 
@@ -124,10 +123,11 @@ namespace HuynnLib
             Debug.Log("showbanner");
             if (_isAdsBanner)
             {
-                MaxSdk.ShowBanner(BannerAdUnitId);
+                MaxSdk.ShowBanner(BannerAdUnitID);
 
             }
         }
+
         private void OnBannerAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
 
@@ -145,22 +145,7 @@ namespace HuynnLib
             Debug.Log("Banner ad clicked");
         }
 
-        private void OnBannerAdRevenuePaidEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
-        {
-            // Banner ad revenue paid. Use this callback to track user revenue.
-            Debug.LogError("Banner ad revenue paid");
-
-            // Ad revenue
-            double revenue = adInfo.Revenue;
-
-            // Miscellaneous data
-            string countryCode = MaxSdk.GetSdkConfiguration().CountryCode; // "US" for the United States, etc - Note: Do not confuse this with currency code which is "USD" in most cases!
-            string networkName = adInfo.NetworkName; // Display name of the network that showed the ad (e.g. "AdColony")
-            string adUnitIdentifier = adInfo.AdUnitIdentifier; // The MAX Ad Unit ID
-            string placement = adInfo.Placement; // The placement this ad's postbacks are tied to
-
-            TrackAdRevenue(adInfo);
-        }
+       
         #endregion
 
         #region Interstitial Ad Methods
@@ -172,14 +157,18 @@ namespace HuynnLib
             MaxSdkCallbacks.Interstitial.OnAdDisplayFailedEvent += InterstitialFailedToDisplayEvent;
             MaxSdkCallbacks.Interstitial.OnAdHiddenEvent += OnInterstitialDismissedEvent;
             MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
-            MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += OnInterstitialRevenuePaidEvent;
+            MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += (adUnit, adInfo) =>
+            {
+                Debug.Log("Interstitial revenue paid");
+                TrackAdRevenue(adInfo);
+            };
 
             // Load the first interstitial
             LoadInterstitial();
         }
         void LoadInterstitial()
         {
-            MaxSdk.LoadInterstitial(InterstitialAdUnitId);
+            MaxSdk.LoadInterstitial(InterstitialAdUnitID);
         }
 
         private void OnInterstitialLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -197,7 +186,7 @@ namespace HuynnLib
             interstitialRetryAttempt++;
             double retryDelay = Math.Pow(2, Math.Min(6, interstitialRetryAttempt));
 
-            Debug.Log("Interstitial failed to load with error code: " + errorInfo.Code);
+            Debug.LogError("Interstitial failed to load with error code: " + errorInfo.Code);
 
             Invoke("LoadInterstitial", (float)retryDelay);
         }
@@ -205,7 +194,7 @@ namespace HuynnLib
         private void InterstitialFailedToDisplayEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo, MaxSdkBase.AdInfo adInfo)
         {
             // Interstitial ad failed to display. We recommend loading the next ad
-            Debug.Log("Interstitial failed to display with error code: " + errorInfo.Code);
+            Debug.LogError("Interstitial failed to display with error code: " + errorInfo.Code);
             _currentStateInter = InterVideoState.None;
             LoadInterstitial();
         }
@@ -220,22 +209,7 @@ namespace HuynnLib
             isShowingAd = false;
         }
 
-        private void OnInterstitialRevenuePaidEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
-        {
-            // Interstitial ad revenue paid. Use this callback to track user revenue.
-            Debug.Log("Interstitial revenue paid");
-
-            // Ad revenue
-            double revenue = adInfo.Revenue;
-
-            // Miscellaneous data
-            string countryCode = MaxSdk.GetSdkConfiguration().CountryCode; // "US" for the United States, etc - Note: Do not confuse this with currency code which is "USD" in most cases!
-            string networkName = adInfo.NetworkName; // Display name of the network that showed the ad (e.g. "AdColony")
-            string adUnitIdentifier = adInfo.AdUnitIdentifier; // The MAX Ad Unit ID
-            string placement = adInfo.Placement; // The placement this ad's postbacks are tied to
-
-            TrackAdRevenue(adInfo);
-        }
+       
         #endregion
 
         #region Reward Ad Methods
@@ -251,7 +225,11 @@ namespace HuynnLib
             MaxSdkCallbacks.Rewarded.OnAdReceivedRewardEvent += OnRewardedAdReceivedRewardEvent;
             MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
 
-            MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent += OnRewardedAdRevenuePaidEvent;
+            MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent += ( adUnitId,adInfo) =>
+            {
+                Debug.Log("Reward paid event!");
+                TrackAdRevenue(adInfo);
+            };
 
 
             // Load the first RewardedAd
@@ -260,7 +238,7 @@ namespace HuynnLib
 
         private void LoadRewardedAd()
         {
-            MaxSdk.LoadRewardedAd(RewardedAdUnitId);
+            MaxSdk.LoadRewardedAd(RewardedAdUnitID);
         }
 
         private void OnRewardedAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -278,7 +256,7 @@ namespace HuynnLib
             rewardedRetryAttempt++;
             double retryDelay = Math.Pow(2, Math.Min(6, rewardedRetryAttempt));
 
-            Debug.Log("Rewarded ad failed to load with error code: " + errorInfo.Code);
+            Debug.LogError("Rewarded ad failed to load with error code: " + errorInfo.Code);
 
             Invoke("LoadRewardedAd", (float)retryDelay);
         }
@@ -287,23 +265,25 @@ namespace HuynnLib
         {
             // Rewarded ad failed to display. We recommend loading the next ad
             _currentStateReward = RewardVideoState.None;
-            Debug.Log("Rewarded ad failed to display with error code: " + errorInfo.Code);
+            Debug.LogError("Rewarded ad failed to display with error code: " + errorInfo.Code);
             LoadRewardedAd();
         }
 
         private void OnRewardedAdDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-
+            Debug.Log("Reward display success!");
         }
 
         private void OnRewardedAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
+            Debug.Log("Reward clicked!");
         }
 
         private void OnRewardedAdDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             LoadRewardedAd();
             isShowingAd = false;
+            Debug.Log("Reward closed!");
         }
 
         private void OnRewardedAdReceivedRewardEvent(string adUnitId, MaxSdk.Reward reward, MaxSdkBase.AdInfo adInfo)
@@ -311,61 +291,122 @@ namespace HuynnLib
             _currentStateReward = RewardVideoState.Watched;
             _callbackReward?.Invoke(_currentStateReward);
             _callbackReward = null;
-        }
-
-        private void OnRewardedAdRevenuePaidEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
-        {
-            // Rewarded ad revenue paid. Use this callback to track user revenue.
-
-            // Ad revenue
-            double revenue = adInfo.Revenue;
-
-            // Miscellaneous data
-            string countryCode = MaxSdk.GetSdkConfiguration().CountryCode; // "US" for the United States, etc - Note: Do not confuse this with currency code which is "USD" in most cases!
-            string networkName = adInfo.NetworkName; // Display name of the network that showed the ad (e.g. "AdColony")
-            string adUnitIdentifier = adInfo.AdUnitIdentifier; // The MAX Ad Unit ID
-            string placement = adInfo.Placement; // The placement this ad's postbacks are tied to
-
-
-            TrackAdRevenue(adInfo);
+            Debug.Log("Reward recived!!");
         }
         #endregion
-        private void TrackAdRevenue(MaxSdkBase.AdInfo adInfo)
+
+
+        #region AdOpen Methods
+        void InitAdOpen()
         {
-            AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AdjustAdRevenueSourceAppLovinMAX);
+            Debug.Log("Ad open/resume init!");
+            LoadAdOpen();
 
-            adjustAdRevenue.setRevenue(adInfo.Revenue, "USD");
-            adjustAdRevenue.setAdRevenueNetwork(adInfo.NetworkName);
-            adjustAdRevenue.setAdRevenueUnit(adInfo.AdUnitIdentifier);
-            adjustAdRevenue.setAdRevenuePlacement(adInfo.Placement);
-
-            Adjust.trackAdRevenue(adjustAdRevenue);
+            MaxSdkCallbacks.AppOpen.OnAdLoadedEvent += AppOpen_OnAdLoadedEvent;
+            MaxSdkCallbacks.AppOpen.OnAdLoadFailedEvent += AppOpenOnAdLoadFailedEvent;
+            MaxSdkCallbacks.AppOpen.OnAdDisplayFailedEvent += AppOpen_OnAdDisplayFailedEvent;
+            MaxSdkCallbacks.AppOpen.OnAdDisplayedEvent += AppOpen_OnAdDisplayedEvent;
+            MaxSdkCallbacks.AppOpen.OnAdHiddenEvent += OnAppOpenDismissedEvent;
+            MaxSdkCallbacks.AppOpen.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
+            MaxSdkCallbacks.AppOpen.OnAdRevenuePaidEvent += (adUnit, adInfo) =>
+            {
+                Debug.Log("Ad open/resume paid event!");
+                TrackAdRevenue(adInfo);
+            };
         }
+
+        private void AppOpen_OnAdLoadedEvent(string arg1, AdInfo arg2)
+        {
+            Debug.Log("Load ad open/resume success!");
+            if (_isAdsOpen)
+            {
+                ShowAdIfReady();
+                _isAdsOpen = false;
+            }
+        }
+
+        private void AppOpen_OnAdDisplayedEvent(string arg1, AdInfo arg2)
+        {
+            Debug.Log("Show ad open/resume success!");
+            isShowingAd = true;
+        }
+
+        private void AppOpen_OnAdDisplayFailedEvent(string arg1, ErrorInfo arg2, AdInfo arg3)
+        {
+            Debug.LogError("Show ad open/resume failed, code: "+ arg2.Code);
+            Invoke("LoadAdOpen", AdOpenRetryAttemp);
+            AdOpenRetryAttemp++;
+        }
+
+        private void AppOpenOnAdLoadFailedEvent(string arg1, ErrorInfo arg2)
+        {
+            Debug.LogError("Load ad open/resume failed, code: "+ arg2.Code);
+            Invoke("LoadAdOpen",AdOpenRetryAttemp);
+            AdOpenRetryAttemp++;
+        }
+
+        void LoadAdOpen()
+        {
+            Debug.Log("Start load ad open/resume!");
+            if (!MaxSdk.IsAppOpenAdReady(OpenAdUnitID))
+            {
+                MaxSdk.LoadAppOpenAd(OpenAdUnitID);
+            }
+        }
+        public void OnAppOpenDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
+        {
+            Debug.Log("Ad open/resume close!");
+            isShowingAd = false;
+            LoadAdOpen();
+        }
+
+        public void ShowAdIfReady()
+        {
+            if (isShowingAd)
+                return;
+            if (MaxSdk.IsAppOpenAdReady(OpenAdUnitID))
+            {
+                MaxSdk.ShowAppOpenAd(OpenAdUnitID);
+            }
+            else
+            {
+                MaxSdk.LoadAppOpenAd(OpenAdUnitID);
+            }
+        }
+
+
+        #endregion
+
+        #endregion
+
+
+        #region Method
 
         public bool InterstitialIsLoaded()
         {
-            return MaxSdk.IsInterstitialReady(InterstitialAdUnitId);
+            return MaxSdk.IsInterstitialReady(InterstitialAdUnitID);
         }
 
         public bool VideoRewardIsLoaded()
         {
-            return MaxSdk.IsRewardedAdReady(RewardedAdUnitId);
+            return MaxSdk.IsRewardedAdReady(RewardedAdUnitID);
+        }
+
+        public bool AdsOpenIsLoaded()
+        {
+            return MaxSdk.IsAppOpenAdReady(OpenAdUnitID);
         }
 
         public void ShowInterstitial(Action<InterVideoState> callback = null)
         {
-            if (CheckInternetConnection())
+            if (CheckInternetConnection() && InterstitialIsLoaded())
             {
-                if (InterstitialIsLoaded())
-                {
-                    isShowingAd = true;
-                    //Debug.LogError("loaded");
-                    _callbackInter = callback;
-                    //Debug.LogError("show");
-                    MaxSdk.ShowInterstitial(InterstitialAdUnitId);
-                    //FirebaseManager.Instance.Lo(UserDatas.Instance.Level);
-                }
+                isShowingAd = true; 
+                _callbackInter = callback; 
+                MaxSdk.ShowInterstitial(InterstitialAdUnitID); 
             }
+            else
+                callback?.Invoke(InterVideoState.None);
         }
 
         public void ShowRewardVideo(Action<RewardVideoState> callback = null)
@@ -374,12 +415,13 @@ namespace HuynnLib
             {
                 isShowingAd = true;
                 _callbackReward = callback;
-                MaxSdk.ShowRewardedAd(RewardedAdUnitId);
+                MaxSdk.ShowRewardedAd(RewardedAdUnitID);
             }
-
+            else
+                callback?.Invoke(RewardVideoState.None);
         }
-        #endregion
-        #region Method
+
+
         public bool CheckInternetConnection()
         {
             var internet = false;
@@ -396,21 +438,39 @@ namespace HuynnLib
 
         #endregion
 
+
+        #region Track Revenue
+
+        private void TrackAdRevenue(MaxSdkBase.AdInfo adInfo)
+        {
+            AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AdjustAdRevenueSourceAppLovinMAX);
+
+            adjustAdRevenue.setRevenue(adInfo.Revenue, "USD");
+            adjustAdRevenue.setAdRevenueNetwork(adInfo.NetworkName);
+            adjustAdRevenue.setAdRevenueUnit(adInfo.AdUnitIdentifier);
+            adjustAdRevenue.setAdRevenuePlacement(adInfo.Placement);
+
+            Adjust.trackAdRevenue(adjustAdRevenue);
+        }
+
         private void OnAdRevenuePaidEvent(string adUnitId, MaxSdkBase.AdInfo impressionData)
         {
             double revenue = impressionData.Revenue;
             var impressionParameters = new[] {
-  new Firebase.Analytics.Parameter("ad_platform", "AppLovin"),
-  new Firebase.Analytics.Parameter("ad_source", impressionData.NetworkName),
-  new Firebase.Analytics.Parameter("ad_unit_name", impressionData.AdUnitIdentifier),
-  new Firebase.Analytics.Parameter("ad_format", impressionData.AdFormat),
-  new Firebase.Analytics.Parameter("value", revenue),
-  new Firebase.Analytics.Parameter("currency", "USD"), // All AppLovin revenue is sent in USD
-};
+              new Firebase.Analytics.Parameter("ad_platform", "AppLovin"),
+              new Firebase.Analytics.Parameter("ad_source", impressionData.NetworkName),
+              new Firebase.Analytics.Parameter("ad_unit_name", impressionData.AdUnitIdentifier),
+              new Firebase.Analytics.Parameter("ad_format", impressionData.AdFormat),
+              new Firebase.Analytics.Parameter("value", revenue),
+              new Firebase.Analytics.Parameter("currency", "USD"), // All AppLovin revenue is sent in USD
+            };
             Firebase.Analytics.FirebaseAnalytics.LogEvent("paid_ad_impression_value", impressionParameters);
         }
 
+        #endregion
 
+
+#if ADMOB
         //app open
         public void LoadAdOpen()
         {
@@ -469,6 +529,8 @@ namespace HuynnLib
 
         }
 
+
+
         private void HandleAdDidDismissFullScreenContent(object sender, EventArgs args)
         {
             // Set the ad to null to indicate that AppOpenAdManager no longer has another ad to show.
@@ -493,6 +555,7 @@ namespace HuynnLib
         private void HandleAdDidRecordImpression(object sender, EventArgs args)
         {
         }
+
 
         private void HandlePaidEvent(object sender, AdValueEventArgs args)
         {
@@ -519,6 +582,8 @@ namespace HuynnLib
             Firebase.Analytics.FirebaseAnalytics.LogEvent("paid_ad_impression_value", impressionParameters);
         }
 
+#endif
+
         private void OnAppStateChanged(AppState state)
         {
 
@@ -526,13 +591,9 @@ namespace HuynnLib
             UnityEngine.Debug.Log("App State is " + state);
             if (state == AppState.Foreground)
             {
-                this.ShowAdIfAvailable();
+                this.ShowAdIfReady();
             }
-            else if (state == AppState.Background)
-            {
-                ad.Destroy();
-
-            }
+             
 
         }
     }

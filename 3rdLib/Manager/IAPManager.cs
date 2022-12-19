@@ -29,7 +29,7 @@ namespace HuynnLib
 
         public void Init(Action onInitDone)
         {
-            Debug.LogError("==========> IAP start Init!");
+            Debug.Log("==========> IAP start Init!");
             _onInitDone = onInitDone;
             InitializePurchasing();
         }
@@ -125,7 +125,7 @@ namespace HuynnLib
 
                 _isBuying = false;
                 // ... report the product look-up failure situation  
-                Debug.Log("BuyProductID: FAIL. Not purchasing product, either is not found or is not available for purchase");
+                Debug.LogError("BuyProductID: FAIL. Not purchasing product, either is not found or is not available for purchase");
 
                 return;
             }
@@ -133,7 +133,7 @@ namespace HuynnLib
             // ... report the fact Purchasing has not succeeded initializing yet. Consider waiting longer or 
             // retrying initiailization.
             _isBuying = false;
-            Debug.Log("BuyProductID FAIL. Not initialized.");
+            Debug.LogError("BuyProductID FAIL. Not initialized.");
             //NoticeManager.Instance.LogNotice("BuyProductID FAIL. Not initialized.");
 
         }
@@ -147,7 +147,7 @@ namespace HuynnLib
             if (!IsInitialized())
             {
                 // ... report the situation and stop restoring. Consider either waiting longer, or retrying initialization.
-                Debug.Log("RestorePurchases FAIL. Not initialized.");
+                Debug.LogError("RestorePurchases FAIL. Not initialized.");
                 //NoticeManager.Instance.LogNotice("RestorePurchases FAIL. Not initialized.");
                 return;
             }
@@ -174,7 +174,7 @@ namespace HuynnLib
             else
             {
                 // We are not running on an Apple device. No work is necessary to restore purchases.
-                Debug.Log("RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform);
+                Debug.LogError("RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform);
             }
         }
 
@@ -206,7 +206,7 @@ namespace HuynnLib
         public void OnInitializeFailed(InitializationFailureReason error)
         {
             // Purchasing set-up has not succeeded. Check error for reason. Consider sharing this reason with the user.
-            Debug.Log("OnInitializeFailed InitializationFailureReason:" + error);
+            Debug.LogError("OnInitializeFailed InitializationFailureReason:" + error);
             _onInitDone?.Invoke();
         }
 
@@ -261,7 +261,7 @@ namespace HuynnLib
                 _onBuyFail = null;
             }
 
-            Debug.Log(string.Format("OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1}", product.definition.storeSpecificId, failureReason));
+            Debug.LogError(string.Format("OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1}", product.definition.storeSpecificId, failureReason));
 
         }
     }

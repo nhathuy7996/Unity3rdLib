@@ -22,7 +22,9 @@ namespace HuynnLib
             if (!_isAutoInit)
                 return;
 
-            InitChildLib(() => { Debug.LogError("=====> Init done all!"); });
+            InitChildLib(() => { Debug.Log("=====> Init done all!"); });
+
+            
         }
 
         public void InitChildLib(Action onAllInitDone = null)

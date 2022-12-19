@@ -31,7 +31,7 @@ public class test : MonoBehaviour
         UnityEngine.Debug.Log("App State is " + state.ToString());
         if (state == AppState.Foreground)
         {
-            AdManager.Instant.ShowAdIfAvailable();
+            AdManager.Instant.ShowAdIfReady();
         }
     }
 
