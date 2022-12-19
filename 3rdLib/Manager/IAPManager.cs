@@ -9,6 +9,7 @@ using System.Collections;
 
 namespace HuynnLib
 {
+
     public class IAPManager : Singleton<IAPManager>, IStoreListener, IChildLib
     {
 
@@ -16,7 +17,7 @@ namespace HuynnLib
         private static IExtensionProvider m_StoreExtensionProvider; // The store-specific Purchasing subsystems.
 
 
-        public Dictionary<string, Action> RestoreItemEvent = new Dictionary<string, Action>();
+        private Dictionary<string, Action> RestoreItemEvent = new Dictionary<string, Action>();
         [SerializeField]
         List<string> _restoreItemCheck = new List<string>();
 
@@ -24,6 +25,8 @@ namespace HuynnLib
 
         public bool IsInitDone => IsInitialized();
         private bool _isBuying = false;
+
+        private bool _isRestoreDone = false;
 
         Action _onInitDone;
 
@@ -35,10 +38,23 @@ namespace HuynnLib
         }
 
 
-        void Start()
+        public bool TryAddRestoreEvent(string productID, Action eventRestore = null )
         {
+            if (RestoreItemEvent.ContainsKey(productID))
+            {
+                Debug.LogErrorFormat("Product {0} already has event restore", productID);
+                return false;
+             
+            }
 
-            
+            if (!_isRestoreDone)
+            {
+                _restoreItemCheck.Add(productID);
+                eventRestore?.Invoke();
+            }
+
+            RestoreItemEvent.Add(productID, eventRestore);
+            return true;
         }
 
         public void InitializePurchasing()
@@ -178,14 +194,7 @@ namespace HuynnLib
             }
         }
 
-        public void RestorePurchasesAndroid(string productID)
-        {
-            if (RestoreItemEvent.ContainsKey(productID))
-                RestoreItemEvent[productID]?.Invoke();
-
-            if (!_restoreItemCheck.Contains(productID))
-                _restoreItemCheck.Add(productID);
-        }
+     
         //  
         // --- IStoreListener
         //
@@ -225,10 +234,12 @@ namespace HuynnLib
                     //#if  UNITY_EDITOR
                     if (!_isBuying)
                     {
-#if UNITY_ANDROID
-                    this.RestorePurchasesAndroid(product.id);
-#endif
-                        continue;
+                        if (RestoreItemEvent.ContainsKey(product.id))
+                        {
+                            RestoreItemEvent[product.id]?.Invoke();
+                            _restoreItemCheck.Add(product.id);
+                            continue;
+                        }
                     }
 
                     if (_onBuyDone != null)
@@ -240,6 +251,11 @@ namespace HuynnLib
 
                     return PurchaseProcessingResult.Complete;
                 }
+            }
+
+            if (!_isBuying)
+            {
+                _isRestoreDone = true;
             }
             _isBuying = false;
             // Return a flag indicating whether this product has completely been received, or if the application needs 
@@ -265,5 +281,6 @@ namespace HuynnLib
 
         }
     }
+
 }
 

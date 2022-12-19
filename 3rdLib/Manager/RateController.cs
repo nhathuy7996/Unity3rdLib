@@ -71,17 +71,12 @@ public class RateController : MonoBehaviour
                 this.gameObject.SetActive(false);
 
             }));
-#elif UNITY_IOS
+#elif UNITY_EDITOR
+            this.gameObject.SetActive(false);
 #endif
         }
     }
 
-   
-    public void ShowInAppRate(UnityAction afterRateAction)
-    {
-        Debug.Log("ShowInAppRate");
-        StartCoroutine(RequestReviews(afterRateAction));
-    }
 
     IEnumerator RequestReviews(UnityAction afterRateAction)
     {

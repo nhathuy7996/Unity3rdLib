@@ -11,28 +11,59 @@ public class test : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // Listen to application foreground and background events.
-        AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
+     
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log(IAPManager.Instant.gameObject.name);
-            Debug.LogError(IAPManager.Instant.gameObject.name);
-        }
-    }
+        //-----Buy product-----
+        //IAPManager.Instant.BuyProductID("IDProduct", () =>
+        //{
+        //    Debug.Log("Buy DOne!");
+        //}, () =>
+        //{
+        //    Debug.Log("Buy Fail!");
+        //});
 
-    private void OnAppStateChanged(AppState state)
-    {
-        // Display the app open ad when the app is foregrounded.
-        UnityEngine.Debug.Log("App State is " + state.ToString());
-        if (state == AppState.Foreground)
-        {
-            AdManager.Instant.ShowAdIfReady();
-        }
+        //------ restore product, call ASAP -----
+        //IAPManager.Instant.TryAddRestoreEvent("productID", () =>
+        //{
+        //    Debug.Log("Restore Done!");
+        //});
+        // Doesn't matter IAP init done or not
+        // On IOS must add : IAPManager.Instant.RestorePurchases();
+
+        //Check is product restored or not:
+        //IAPManager.Instant.CheckRestoredProduct("ProductID");
+
+
+        //-----Log event Firebase ----
+        //FireBaseManager.Instant.LogEventWithParameter("Event_name_do_not_using_space", new Hashtable() {
+        //{
+        //    "parameter",1
+        //}});
+
+        //or
+
+        //FireBaseManager.Instant.LogEventWithOneParam("Event_name_do_not_using_space" );
+
+        //----- get value from remote config-----
+        //FireBaseManager.Instant.GetValueRemote("key", (value) =>
+        //{
+        //    int true_value = (int)value;
+        //});
+
+
+        //----- ShowPopUprate------
+        //[SerializeField] GameObject popUpRate;
+        //popUpRate.SetActive(true);
+
+
+        //----- ShowPopUpInternet------
+        //[SerializeField] GameObject noInternet;
+        //noInternet.SetActive(true);
+
     }
 
 

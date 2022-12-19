@@ -273,9 +273,10 @@ MonoBehaviour:
   _isAdsOpen: 1
   _bannerPosition: 7
   MaxSdkKey: 3N4Mt8SNhOzkQnGb9oHsRRG1ItybcZDpJWN1fVAHLdRagxP-_k_ZXVaMAdMe5Otsmp6qJSXskfsrtakfRmPAGW
-  BannerAdUnitId: df980c4d809fc01e
-  InterstitialAdUnitId: 3a70c7be99dade7d
-  RewardedAdUnitId: 6b7094c5d21fcfe5
+  BannerAdUnitID: df980c4d809fc01e
+  InterstitialAdUnitID: 3a70c7be99dade7d
+  RewardedAdUnitID: 6b7094c5d21fcfe5
+  OpenAdUnitID: 
 --- !u!1 &719295161209291269
 GameObject:
   m_ObjectHideFlags: 0
@@ -531,7 +532,7 @@ GameObject:
   - component: {fileID: 7840570762973479108}
   - component: {fileID: 7868774336140481512}
   m_Layer: 0
-  m_Name: 3rdLibManager--> DONOT instant empty object here!
+  m_Name: 3rdLibManager--> DONOT add empty object here!
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1642,9 +1643,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: QuitGame
+      - m_Target: {fileID: 2062035711624979696}
+        m_TargetAssemblyTypeName: HuynnLib.Huynn3rdLib, Assembly-CSharp
+        m_MethodName: CloseApplication
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1954,7 +1955,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47fa4ef55b02d4139861a2afc5e63fbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _starManTrans: {fileID: 0}
+  _starManTrans: {fileID: 7791242755145096329}
   _starManager: []
 --- !u!1 &5803544318867555570
 GameObject:
@@ -2338,6 +2339,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isShowDebug: 0
+  _isDontDestroyOnLoad: 0
   _notiDebug: {fileID: 5856749516180663948}
 --- !u!1 &6670913793342389741
 GameObject:

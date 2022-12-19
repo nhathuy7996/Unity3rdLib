@@ -67,17 +67,29 @@ namespace HuynnLib
         }
 
 
-        public bool GetValueRemote(string key, out object valueConfig)
+        public void GetValueRemote(string key, Action<object> waitOnDone = null)
         {
-            valueConfig = null;
-            if (!_keyConfigs.ContainsKey(key))
-                return false;
+           
+            if (!_isFetchDone)
+            {
+                StartCoroutine(GetValueOnDone(key,waitOnDone));
+                return;
+            }
 
-            valueConfig = _keyConfigs[key];
-            return true;
+            if (_keyConfigs.ContainsKey(key))
+                waitOnDone?.Invoke(_keyConfigs[key]);
+            else
+                Debug.LogError("Remote firebase doesnt containt key " + key);
         }
 
-
+        IEnumerator GetValueOnDone(string key, Action<object> onDone)
+        {
+            yield return new WaitUntil(()=> _isFetchDone);
+            if (_keyConfigs.ContainsKey(key))
+                onDone?.Invoke(_keyConfigs[key]);
+            else
+                Debug.LogError("Remote firebase doesnt containt key "+key);
+        }
 
         // Start a fetch request.
         public Task FetchDataAsync()
