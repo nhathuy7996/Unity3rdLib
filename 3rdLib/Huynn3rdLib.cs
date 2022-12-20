@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+using System.Linq;
 
 namespace HuynnLib
 {
@@ -16,6 +18,10 @@ namespace HuynnLib
         {
             if(_isDontDestroyOnLoad)
                 DontDestroyOnLoad(this.gameObject);
+
+#if UNITY_EDITOR
+            this.CheckFirebaseJS();
+#endif
         }
 
         // Update is called once per frame
@@ -62,6 +68,18 @@ namespace HuynnLib
                 _notiDebug = this.transform.GetChild(0).gameObject;
             }
             _notiDebug.SetActive(_isShowDebug);
+        }
+
+        public void CheckFirebaseJS()
+        {
+    
+            string[] files = Directory.GetFiles(Application.dataPath, "*.json*", SearchOption.AllDirectories)
+                                .Where(f => f.Equals("google-services")).ToArray();
+            if (files.Length == 0)
+                Debug.LogError("==>Project doesnt contain google-services.json. Firebase may not work!!!!!<==");
+
+            if (files.Length > 1)
+                Debug.LogError("==>Project contain more than one file google-services.json. Firebase may not work wrong!!!!!<==");
         }
     }
 }

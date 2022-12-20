@@ -55,14 +55,11 @@ public class test : MonoBehaviour
         //});
 
 
-        //----- ShowPopUprate------
-        //[SerializeField] GameObject popUpRate;
-        //popUpRate.SetActive(true);
+        //----- ShowPopUprate------ 
+        //MasterLib.Instant.ShowPopUpRate() ==> Show
+        //MasterLib.Instant.ShowPopUpRate(false) ==> Hide
 
-
-        //----- ShowPopUpInternet------
-        //[SerializeField] GameObject noInternet;
-        //noInternet.SetActive(true);
+ 
 
     }
 

@@ -25,7 +25,7 @@ namespace HuynnLib
 
         public void Init(Action _onActionDone)
         {
-            Debug.Log("==========> Firebase start Init!");
+            Debug.Log("==========> Firebase start Init! <==========");
 #if UNITY_EDITOR
             _onActionDone?.Invoke();
 #endif
@@ -45,7 +45,7 @@ namespace HuynnLib
                 else
                 {
                     UnityEngine.Debug.LogError(System.String.Format(
-                      "Could not resolve all Firebase dependencies: {0}", dependencyStatus));
+                      "==> Could not resolve all Firebase dependencies: {0} <==", dependencyStatus));
                     // Firebase Unity SDK is not safe to use here.
 
                     _onActionDone?.Invoke();
@@ -79,7 +79,7 @@ namespace HuynnLib
             if (_keyConfigs.ContainsKey(key))
                 waitOnDone?.Invoke(_keyConfigs[key]);
             else
-                Debug.LogError("Remote firebase doesnt containt key " + key);
+                Debug.LogError("==> Remote firebase doesnt containt key " + key +" <==");
         }
 
         IEnumerator GetValueOnDone(string key, Action<object> onDone)
@@ -88,7 +88,7 @@ namespace HuynnLib
             if (_keyConfigs.ContainsKey(key))
                 onDone?.Invoke(_keyConfigs[key]);
             else
-                Debug.LogError("Remote firebase doesnt containt key "+key);
+                Debug.LogError("==> Remote firebase doesnt containt key "+key+" <==");
         }
 
         // Start a fetch request.
@@ -109,15 +109,15 @@ namespace HuynnLib
         {
             if (fetchTask.IsCanceled)
             {
-                Debug.Log("Fetch canceled.");
+                Debug.Log("==> Fetch canceled. <==");
             }
             else if (fetchTask.IsFaulted)
             {
-                Debug.Log("Fetch encountered an error.");
+                Debug.Log("==> Fetch encountered an error <==");
             }
             else if (fetchTask.IsCompleted)
             {
-                Debug.Log("Fetch completed successfully!");
+                Debug.Log("==> Fetch completed successfully! <==");
             }
 
             var info = Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance.Info;
@@ -126,7 +126,7 @@ namespace HuynnLib
                 case Firebase.RemoteConfig.LastFetchStatus.Success:
                     Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance.ActivateAsync();
                     _isFetchDone = true;
-                    Debug.Log(String.Format("Remote data loaded and ready (last fetch time {0}).",
+                    Debug.Log(String.Format("==> Remote data loaded and ready (last fetch time {0}).<==",
                         info.FetchTime));
 
                     break;
@@ -134,22 +134,22 @@ namespace HuynnLib
                     switch (info.LastFetchFailureReason)
                     {
                         case Firebase.RemoteConfig.FetchFailureReason.Error:
-                            Debug.Log("Fetch failed for unknown reason");
+                            Debug.Log("==> Fetch failed for unknown reason <==");
                             break;
                         case Firebase.RemoteConfig.FetchFailureReason.Throttled:
-                            Debug.Log("Fetch throttled until " + info.ThrottledEndTime);
+                            Debug.Log("==> Fetch throttled until " + info.ThrottledEndTime+" <==");
                             break;
                     }
                     break;
                 case Firebase.RemoteConfig.LastFetchStatus.Pending:
-                    Debug.Log("Latest Fetch call still pending.");
+                    Debug.Log("==> Latest Fetch call still pending. <==");
                     break;
             }
         }
         #region Firebase Logevent
         public void LogEventWithOneParam(string eventName)
         {
-            Debug.LogError("LogEvent " + eventName);
+            Debug.LogError("==> LogEvent " + eventName+" <==");
             this.LogEventWithParameter(eventName, new Hashtable() { { "value", 1 } });
 
         }
@@ -171,7 +171,7 @@ namespace HuynnLib
                 {
                     if (item.Equals((DictionaryEntry)default)) continue;
                     parameter[i] = (new Firebase.Analytics.Parameter(item.Key.ToString(), item.Value.ToString()));
-                    Debug.Log("LogEvent " + event_name.ToString() + "- Key = " + item.Key + " -  Value =" + item.Value);
+                    Debug.Log("==> LogEvent " + event_name.ToString() + "- Key = " + item.Key + " -  Value =" + item.Value+" <==");
                     i++;
                 }
 

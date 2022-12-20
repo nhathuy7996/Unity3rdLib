@@ -17,12 +17,14 @@ namespace HuynnLib
         [SerializeField]
         List<GameObject> _childLibs = new List<GameObject>();
 
+        [SerializeField] GameObject _popUpRate;
+
         private void Awake()
         {
             if (!_isAutoInit)
                 return;
 
-            InitChildLib(() => { Debug.Log("=====> Init done all!"); });
+            InitChildLib(() => { Debug.Log("=====> Init done all! <====="); });
 
             
         }
@@ -97,6 +99,11 @@ namespace HuynnLib
             }
 
             _isAutoAssign = false;
+        }
+
+        public void ShowPopUpRate(bool isShow = true)
+        {
+            _popUpRate.SetActive(isShow);
         }
     }
 

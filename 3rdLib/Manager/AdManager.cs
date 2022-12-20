@@ -67,7 +67,7 @@ namespace HuynnLib
 
         public void Init(Action _onInitDone = null)
         {
-            Debug.Log("==========> Ad start Init!");
+            Debug.Log("==========> Ad start Init! <==========");
 
             InitMAX();
 
@@ -83,7 +83,7 @@ namespace HuynnLib
             MaxSdkCallbacks.OnSdkInitializedEvent += sdkConfiguration =>
             {
                 // AppLovin SDK is initialized, configure and start loading ads.
-                Debug.Log("MAX SDK Initialized");
+                Debug.Log("==> MAX SDK Initialized <==");
 
                 InitializeBannerAds();
                 InitializeInterstitialAds();
@@ -98,7 +98,7 @@ namespace HuynnLib
 
         private void InitializeBannerAds()
         {
-            Debug.Log("Init banner");
+            Debug.Log("==> Init banner <==");
             // Attach Callbacks
             MaxSdkCallbacks.Banner.OnAdLoadedEvent += OnBannerAdLoadedEvent;
             MaxSdkCallbacks.Banner.OnAdLoadFailedEvent += OnBannerAdFailedEvent;
@@ -107,7 +107,7 @@ namespace HuynnLib
 
             MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent += (adUnit, adInfo) =>
             {
-                Debug.Log("Banner ad revenue paid");
+                Debug.Log("==> Banner ad revenue paid <==");
                 TrackAdRevenue(adInfo);
             };
 
@@ -122,7 +122,7 @@ namespace HuynnLib
 
         public void ShowBanner()
         {
-            Debug.Log("showbanner");
+            Debug.Log("==> showbanner <==");
             if (_isAdsBanner)
             {
                 MaxSdk.ShowBanner(BannerAdUnitID);
@@ -133,18 +133,18 @@ namespace HuynnLib
         private void OnBannerAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
 
-            Debug.Log("Banner ad loaded");
+            Debug.Log("==> Banner ad loaded <==");
         }
 
         private void OnBannerAdFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo)
         {
             // Banner ad failed to load. MAX will automatically try loading a new ad internally.
-            Debug.LogError("Banner ad failed to load with error code: " + errorInfo.Code);
+            Debug.LogError("==>Banner ad failed to load with error code: " + errorInfo.Code+" <==");
         }
 
         private void OnBannerAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-            Debug.Log("Banner ad clicked");
+            Debug.Log("==> Banner ad clicked <==");
         }
 
 
@@ -161,7 +161,7 @@ namespace HuynnLib
             MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
             MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += (adUnit, adInfo) =>
             {
-                Debug.Log("Interstitial revenue paid");
+                Debug.Log("==> Interstitial revenue paid <==");
                 TrackAdRevenue(adInfo);
             };
 
@@ -176,7 +176,7 @@ namespace HuynnLib
         private void OnInterstitialLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             // Interstitial ad is ready to be shown. MaxSdk.IsInterstitialReady(interstitialAdUnitId) will now return 'true'
-            Debug.Log("Interstitial loaded");
+            Debug.Log("==> Interstitial loaded <==");
             _currentStateInter = InterVideoState.Open;
             // Reset retry attempt
             interstitialRetryAttempt = 0;
@@ -188,7 +188,7 @@ namespace HuynnLib
             interstitialRetryAttempt++;
             double retryDelay = Math.Pow(2, Math.Min(6, interstitialRetryAttempt));
 
-            Debug.LogError("Interstitial failed to load with error code: " + errorInfo.Code);
+            Debug.LogError("==> Interstitial failed to load with error code: " + errorInfo.Code+" <==");
 
             Invoke("LoadInterstitial", (float)retryDelay);
         }
@@ -196,14 +196,14 @@ namespace HuynnLib
         private void InterstitialFailedToDisplayEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo, MaxSdkBase.AdInfo adInfo)
         {
             // Interstitial ad failed to display. We recommend loading the next ad
-            Debug.LogError("Interstitial failed to display with error code: " + errorInfo.Code);
+            Debug.LogError("==> Interstitial failed to display with error code: " + errorInfo.Code+" <==");
             _currentStateInter = InterVideoState.None;
             LoadInterstitial();
         }
 
         private void OnInterstitialDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-            Debug.Log("Interstitial dismissed");
+            Debug.Log("==> Interstitial dismissed <==");
             _currentStateInter = InterVideoState.Closed;
             _callbackInter?.Invoke(_currentStateInter);
             _callbackInter = null;
@@ -229,7 +229,7 @@ namespace HuynnLib
 
             MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent += (adUnitId, adInfo) =>
             {
-                Debug.Log("Reward paid event!");
+                Debug.Log("==> Reward paid event! <==");
                 TrackAdRevenue(adInfo);
             };
 
@@ -258,7 +258,7 @@ namespace HuynnLib
             rewardedRetryAttempt++;
             double retryDelay = Math.Pow(2, Math.Min(6, rewardedRetryAttempt));
 
-            Debug.LogError("Rewarded ad failed to load with error code: " + errorInfo.Code);
+            Debug.LogError("==> Rewarded ad failed to load with error code: " + errorInfo.Code+" <==");
 
             Invoke("LoadRewardedAd", (float)retryDelay);
         }
@@ -267,25 +267,25 @@ namespace HuynnLib
         {
             // Rewarded ad failed to display. We recommend loading the next ad
             _currentStateReward = RewardVideoState.None;
-            Debug.LogError("Rewarded ad failed to display with error code: " + errorInfo.Code);
+            Debug.LogError("==> Rewarded ad failed to display with error code: " + errorInfo.Code+" <==");
             LoadRewardedAd();
         }
 
         private void OnRewardedAdDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-            Debug.Log("Reward display success!");
+            Debug.Log("==> Reward display success! <==");
         }
 
         private void OnRewardedAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-            Debug.Log("Reward clicked!");
+            Debug.Log("==> Reward clicked! <==");
         }
 
         private void OnRewardedAdDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             LoadRewardedAd();
             isShowingAd = false;
-            Debug.Log("Reward closed!");
+            Debug.Log("==> Reward closed! <==");
         }
 
         private void OnRewardedAdReceivedRewardEvent(string adUnitId, MaxSdk.Reward reward, MaxSdkBase.AdInfo adInfo)
@@ -293,7 +293,7 @@ namespace HuynnLib
             _currentStateReward = RewardVideoState.Watched;
             _callbackReward?.Invoke(_currentStateReward);
             _callbackReward = null;
-            Debug.Log("Reward recived!!");
+            Debug.Log("==> Reward recived!! <==");
         }
         #endregion
 
@@ -301,7 +301,7 @@ namespace HuynnLib
         #region AdOpen Methods
         void InitAdOpen()
         {
-            Debug.Log("Ad open/resume init!");
+            Debug.Log("==> Ad open/resume init! <==");
 
 
             MaxSdkCallbacks.AppOpen.OnAdLoadedEvent += AppOpen_OnAdLoadedEvent;
@@ -312,7 +312,7 @@ namespace HuynnLib
             MaxSdkCallbacks.AppOpen.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
             MaxSdkCallbacks.AppOpen.OnAdRevenuePaidEvent += (adUnit, adInfo) =>
             {
-                Debug.Log("Ad open/resume paid event!");
+                Debug.Log("==> Ad open/resume paid event! <==");
                 TrackAdRevenue(adInfo);
             };
 
@@ -321,7 +321,7 @@ namespace HuynnLib
 
         private void AppOpen_OnAdLoadedEvent(string arg1, AdInfo arg2)
         {
-            Debug.Log("Load ad open/resume success!");
+            Debug.Log("==>Load ad open/resume success! <==");
             if (_isAdsOpen)
             {
                 ShowAdOpen();
@@ -331,27 +331,27 @@ namespace HuynnLib
 
         private void AppOpen_OnAdDisplayedEvent(string arg1, AdInfo arg2)
         {
-            Debug.Log("Show ad open/resume success!");
+            Debug.Log("==> Show ad open/resume success! <==");
             isShowingAd = true;
         }
 
         private void AppOpen_OnAdDisplayFailedEvent(string arg1, ErrorInfo arg2, AdInfo arg3)
         {
-            Debug.LogError("Show ad open/resume failed, code: " + arg2.Code);
+            Debug.LogError("==> Show ad open/resume failed, code: " + arg2.Code+" <==");
             Invoke("LoadAdOpen", AdOpenRetryAttemp);
             AdOpenRetryAttemp++;
         }
 
         private void AppOpenOnAdLoadFailedEvent(string arg1, ErrorInfo arg2)
         {
-            Debug.LogError("Load ad open/resume failed, code: " + arg2.Code);
+            Debug.LogError("==> Load ad open/resume failed, code: " + arg2.Code+ " <==");
             Invoke("LoadAdOpen", AdOpenRetryAttemp);
             AdOpenRetryAttemp++;
         }
 
         void LoadAdOpen()
         {
-            Debug.Log("Start load ad open/resume!");
+            Debug.Log("==> Start load ad open/resume! <==");
             if (!MaxSdk.IsAppOpenAdReady(OpenAdUnitID))
             {
                 MaxSdk.LoadAppOpenAd(OpenAdUnitID);
@@ -359,7 +359,7 @@ namespace HuynnLib
         }
         public void OnAppOpenDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-            Debug.Log("Ad open/resume close!");
+            Debug.Log("==> Ad open/resume close! <==");
             isShowingAd = false;
             LoadAdOpen();
         }
@@ -600,8 +600,7 @@ namespace HuynnLib
         private void OnAppStateChanged(AppState state)
         {
 
-            // Display the app open ad when the app is foregrounded.
-            UnityEngine.Debug.Log("App State is " + state);
+            // Display the app open ad when the app is foregrounded. 
             if (state == AppState.Foreground)
             {
                 this.ShowAdOpen();
