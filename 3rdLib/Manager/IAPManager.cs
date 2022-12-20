@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if IAP
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Purchasing;
@@ -284,3 +285,4 @@ namespace HuynnLib
 
 }
 
+#endif
