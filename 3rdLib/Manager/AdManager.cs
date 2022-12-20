@@ -38,6 +38,8 @@ namespace HuynnLib
         MaxSdkBase.BannerPosition _bannerPosition = MaxSdkBase.BannerPosition.BottomCenter;
         public MaxSdkBase.BannerPosition BannerPosition => _bannerPosition;
 
+        [SerializeField] GameObject _popUpNoAd;
+
         #region Max
 
         [Header("---ID---")]
@@ -145,7 +147,7 @@ namespace HuynnLib
             Debug.Log("Banner ad clicked");
         }
 
-       
+
         #endregion
 
         #region Interstitial Ad Methods
@@ -209,7 +211,7 @@ namespace HuynnLib
             isShowingAd = false;
         }
 
-       
+
         #endregion
 
         #region Reward Ad Methods
@@ -225,7 +227,7 @@ namespace HuynnLib
             MaxSdkCallbacks.Rewarded.OnAdReceivedRewardEvent += OnRewardedAdReceivedRewardEvent;
             MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
 
-            MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent += ( adUnitId,adInfo) =>
+            MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent += (adUnitId, adInfo) =>
             {
                 Debug.Log("Reward paid event!");
                 TrackAdRevenue(adInfo);
@@ -300,7 +302,7 @@ namespace HuynnLib
         void InitAdOpen()
         {
             Debug.Log("Ad open/resume init!");
-            LoadAdOpen();
+
 
             MaxSdkCallbacks.AppOpen.OnAdLoadedEvent += AppOpen_OnAdLoadedEvent;
             MaxSdkCallbacks.AppOpen.OnAdLoadFailedEvent += AppOpenOnAdLoadFailedEvent;
@@ -313,6 +315,8 @@ namespace HuynnLib
                 Debug.Log("Ad open/resume paid event!");
                 TrackAdRevenue(adInfo);
             };
+
+            LoadAdOpen();
         }
 
         private void AppOpen_OnAdLoadedEvent(string arg1, AdInfo arg2)
@@ -320,7 +324,7 @@ namespace HuynnLib
             Debug.Log("Load ad open/resume success!");
             if (_isAdsOpen)
             {
-                ShowAdIfReady();
+                ShowAdOpen();
                 _isAdsOpen = false;
             }
         }
@@ -333,15 +337,15 @@ namespace HuynnLib
 
         private void AppOpen_OnAdDisplayFailedEvent(string arg1, ErrorInfo arg2, AdInfo arg3)
         {
-            Debug.LogError("Show ad open/resume failed, code: "+ arg2.Code);
+            Debug.LogError("Show ad open/resume failed, code: " + arg2.Code);
             Invoke("LoadAdOpen", AdOpenRetryAttemp);
             AdOpenRetryAttemp++;
         }
 
         private void AppOpenOnAdLoadFailedEvent(string arg1, ErrorInfo arg2)
         {
-            Debug.LogError("Load ad open/resume failed, code: "+ arg2.Code);
-            Invoke("LoadAdOpen",AdOpenRetryAttemp);
+            Debug.LogError("Load ad open/resume failed, code: " + arg2.Code);
+            Invoke("LoadAdOpen", AdOpenRetryAttemp);
             AdOpenRetryAttemp++;
         }
 
@@ -360,27 +364,13 @@ namespace HuynnLib
             LoadAdOpen();
         }
 
-        public void ShowAdIfReady()
-        {
-            if (isShowingAd)
-                return;
-            if (MaxSdk.IsAppOpenAdReady(OpenAdUnitID))
-            {
-                MaxSdk.ShowAppOpenAd(OpenAdUnitID);
-            }
-            else
-            {
-                MaxSdk.LoadAppOpenAd(OpenAdUnitID);
-            }
-        }
-
 
         #endregion
 
         #endregion
 
 
-        #region Method
+        #region CheckAdLoaded
 
         public bool InterstitialIsLoaded()
         {
@@ -397,16 +387,22 @@ namespace HuynnLib
             return MaxSdk.IsAppOpenAdReady(OpenAdUnitID);
         }
 
+        #endregion
+
+        #region ShowAd
         public void ShowInterstitial(Action<InterVideoState> callback = null)
         {
             if (CheckInternetConnection() && InterstitialIsLoaded())
             {
-                isShowingAd = true; 
-                _callbackInter = callback; 
-                MaxSdk.ShowInterstitial(InterstitialAdUnitID); 
+                isShowingAd = true;
+                _callbackInter = callback;
+                MaxSdk.ShowInterstitial(InterstitialAdUnitID);
             }
             else
+            {
                 callback?.Invoke(InterVideoState.None);
+                if (_popUpNoAd) _popUpNoAd.SetActive(true);
+            }
         }
 
         public void ShowRewardVideo(Action<RewardVideoState> callback = null)
@@ -418,9 +414,26 @@ namespace HuynnLib
                 MaxSdk.ShowRewardedAd(RewardedAdUnitID);
             }
             else
+            {
                 callback?.Invoke(RewardVideoState.None);
+                if (_popUpNoAd) _popUpNoAd.SetActive(true);
+            }
         }
 
+        public void ShowAdOpen()
+        {
+            if (isShowingAd)
+                return;
+            if (MaxSdk.IsAppOpenAdReady(OpenAdUnitID))
+            {
+                MaxSdk.ShowAppOpenAd(OpenAdUnitID);
+            }
+            else
+            {
+                MaxSdk.LoadAppOpenAd(OpenAdUnitID);
+            }
+        }
+        #endregion
 
         public bool CheckInternetConnection()
         {
@@ -436,7 +449,7 @@ namespace HuynnLib
             return internet;
         }
 
-        #endregion
+
 
 
         #region Track Revenue
@@ -591,9 +604,9 @@ namespace HuynnLib
             UnityEngine.Debug.Log("App State is " + state);
             if (state == AppState.Foreground)
             {
-                this.ShowAdIfReady();
+                this.ShowAdOpen();
             }
-             
+
 
         }
     }
