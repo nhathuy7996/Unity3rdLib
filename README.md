@@ -2,7 +2,7 @@
 ## tích hợp sẵn các thư viện bên thứ 3 của unity:
 - [x] AD apploving (MAX)
 - [ ] Adapter các mạng quảng cáo
-- [ ] Facebook
+- [x] Facebook
 - [x] Firebase
 - [x] Adjust
 - [x] In-App purchase
