@@ -362,9 +362,20 @@ namespace HuynnLib
             LoadAdOpen();
         }
 
+        void LoadAdOpen()
+        {
+            Debug.Log("==> Start load ad open/resume! <==");
+            if (!MaxSdk.IsAppOpenAdReady(OpenAdUnitID))
+            {
+                MaxSdk.LoadAppOpenAd(OpenAdUnitID);
+            }
+        }
+
+
         private void AppOpen_OnAdLoadedEvent(string arg1, AdInfo arg2)
         {
             Debug.Log("==>Load ad open/resume success! <==");
+            AdOpenRetryAttemp = 0;
             if (_isAdsOpen)
             {
                 if (LoadingManager.Instant != null)
@@ -385,30 +396,27 @@ namespace HuynnLib
         {
             Debug.Log("==> Show ad open/resume success! <==");
             isShowingAd = true;
+            
         }
 
         private void AppOpen_OnAdDisplayFailedEvent(string arg1, ErrorInfo arg2, AdInfo arg3)
         {
             Debug.LogError("==> Show ad open/resume failed, code: " + arg2.Code+" <==");
-            Invoke("LoadAdOpen", AdOpenRetryAttemp);
             AdOpenRetryAttemp++;
+            double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp));
+            Invoke("LoadAdOpen", (float)retryDelay);
+          
         }
 
         private void AppOpenOnAdLoadFailedEvent(string arg1, ErrorInfo arg2)
         {
             Debug.LogError("==> Load ad open/resume failed, code: " + arg2.Code+ " <==");
-            Invoke("LoadAdOpen", AdOpenRetryAttemp);
             AdOpenRetryAttemp++;
+            double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp));
+            Invoke("LoadAdOpen", (float)retryDelay);
         }
 
-        void LoadAdOpen()
-        {
-            Debug.Log("==> Start load ad open/resume! <==");
-            if (!MaxSdk.IsAppOpenAdReady(OpenAdUnitID))
-            {
-                MaxSdk.LoadAppOpenAd(OpenAdUnitID);
-            }
-        }
+        
         public void OnAppOpenDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             Debug.Log("==> Ad open/resume close! <==");
