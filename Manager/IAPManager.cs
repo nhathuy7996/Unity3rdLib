@@ -1,15 +1,16 @@
-﻿#if !IAP
+﻿using UnityEngine;
+#if !IAP
 namespace HuynnLib
 {
 
-    public class IAPManager : Singleton<IAPManager>
+    public class IAPManager : MonoBehaviour
     {
     }
 }
 #else
 using System;
 using System.Collections.Generic;
-using UnityEngine;
+
 using UnityEngine.Purchasing;
 using UnityEngine.UI;
 using UnityEngine.Events;

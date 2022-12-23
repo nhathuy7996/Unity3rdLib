@@ -2571,6 +2571,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1591984501262375306}
   - component: {fileID: 2062035711624979696}
+  - component: {fileID: 3369000014230790961}
   m_Layer: 0
   m_Name: 3rdLib
   m_TagString: Untagged
@@ -2612,6 +2613,18 @@ MonoBehaviour:
   _isShowDebug: 0
   _isDontDestroyOnLoad: 0
   _notiDebug: {fileID: 5856749516180663948}
+--- !u!114 &3369000014230790961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6596462342938566256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ad78839527894808817413e8b4f76da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6670913793342389741
 GameObject:
   m_ObjectHideFlags: 0
@@ -2732,7 +2745,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaeff3146bd744676aada6727ef0926f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _restoreItemCheck: []
 --- !u!1 &7356154686592377321
 GameObject:
   m_ObjectHideFlags: 0
