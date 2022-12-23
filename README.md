@@ -1,7 +1,7 @@
 # Unity3rdLib
 ## tích hợp sẵn các thư viện bên thứ 3 của unity:
 - [x] AD apploving (MAX)
-- [ ] Adapter các mạng quảng cáo
+- [x] Adapter các mạng quảng cáo
 - [x] Facebook
 - [x] Firebase
 - [x] Adjust
@@ -20,7 +20,7 @@
 
 ## Cách gọi các chức năng:
 #### ***Buy product***
-       IAPManager.Instant.BuyProductID("IDProduct", () =>
+        IAPManager.Instant.BuyProductID("IDProduct", () =>
         {
             Debug.Log("Buy DOne!");
         }, () =>
@@ -64,3 +64,9 @@
 #### ***ShowPopUprate***
         MasterLib.Instant.ShowPopUpRate() //==> Show
         MasterLib.Instant.ShowPopUpRate(false) //==> Hide
+
+#### ***AdManager***
+        AdManager.Instant.ShowBanner();
+        AdManager.Instant.DestroyBanner();
+        //Call anywhwre you need show or hide banner, admanager auto load and show or hide!
+        //On inspector, set bannerADID = null if game dont have banner
