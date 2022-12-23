@@ -30,7 +30,8 @@ namespace HuynnLib
 
 
         [SerializeField]
-        bool _isAdsBanner = true, _isAdsOpen = true;
+        bool  _isAdsOpen = true, _isBannerAutoShow =false;
+        bool _isAdsBanner = true;
         public bool isAdBanner => _isAdsBanner;
 
 
@@ -53,7 +54,8 @@ namespace HuynnLib
             OpenAdUnitID = "";
 
 
-        private int interstitialRetryAttempt,
+        private int bannerRetryAttempt,
+            interstitialRetryAttempt,
             rewardedRetryAttempt,
             AdOpenRetryAttemp = 1; 
         private Action<InterVideoState> _callbackInter = null;
@@ -83,7 +85,9 @@ namespace HuynnLib
                 // AppLovin SDK is initialized, configure and start loading ads.
                 Debug.Log("==> MAX SDK Initialized <==");
 
-                InitializeBannerAds();
+                if(!string.IsNullOrWhiteSpace(BannerAdUnitID))
+                    InitializeBannerAds();
+
                 InitializeInterstitialAds();
                 InitializeRewardedAds();
                 InitAdOpen();
@@ -96,7 +100,7 @@ namespace HuynnLib
 
         private void InitializeBannerAds()
         {
-            Debug.Log("==> Init banner <==");
+            Debug.Log("==> Init banner <=="); 
             // Attach Callbacks
             MaxSdkCallbacks.Banner.OnAdLoadedEvent += OnBannerAdLoadedEvent;
             MaxSdkCallbacks.Banner.OnAdLoadFailedEvent += OnBannerAdFailedEvent;
@@ -115,29 +119,32 @@ namespace HuynnLib
             MaxSdk.SetBannerExtraParameter(BannerAdUnitID, "adaptive_banner", "false");
             // Set background or background color for banners to be fully functional.
             MaxSdk.SetBannerBackgroundColor(BannerAdUnitID, new Color(1, 1, 1, 0));
-            this.ShowBanner();
+
+            if (_isBannerAutoShow) ShowBanner();
         }
 
-        public void ShowBanner()
+        void ManuallyLoadBanner()
         {
-            Debug.Log("==> showbanner <==");
-            if (_isAdsBanner)
-            {
-                MaxSdk.ShowBanner(BannerAdUnitID);
-
-            }
+            MaxSdk.StopBannerAutoRefresh(BannerAdUnitID);
+            MaxSdk.LoadBanner(BannerAdUnitID);
         }
 
         private void OnBannerAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-
+            if (_isAdsBanner)
+                this.ShowBanner();
             Debug.Log("==> Banner ad loaded <==");
+            MaxSdk.StartBannerAutoRefresh(BannerAdUnitID);
         }
 
         private void OnBannerAdFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo)
         {
             // Banner ad failed to load. MAX will automatically try loading a new ad internally.
             Debug.LogError("==>Banner ad failed to load with error code: " + errorInfo.Code+" <==");
+            bannerRetryAttempt++;
+            double retryDelay = Math.Pow(2, Math.Min(6, bannerRetryAttempt)); 
+
+            Invoke("ManuallyLoadBanner", (float)retryDelay);
         }
 
         private void OnBannerAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -360,6 +367,15 @@ namespace HuynnLib
             Debug.Log("==>Load ad open/resume success! <==");
             if (_isAdsOpen)
             {
+                if (LoadingManager.Instant != null)
+                {
+                    LoadingManager.Instant.StopLoading(() =>
+                    {
+                        ShowAdOpen();
+                        _isAdsOpen = false;
+                    });
+                    return;
+                }
                 ShowAdOpen();
                 _isAdsOpen = false;
             }
@@ -426,6 +442,26 @@ namespace HuynnLib
         #endregion
 
         #region ShowAd
+
+        public void ShowBanner()
+        {
+            Debug.Log("==> show banner <==");
+            _isAdsBanner = true;
+
+            if (!string.IsNullOrWhiteSpace(BannerAdUnitID))
+                MaxSdk.ShowBanner(BannerAdUnitID);
+
+        }
+
+        public void DestroyBanner()
+        {
+            Debug.Log("==> destroy banner <==");
+            _isAdsBanner = false;
+
+            if (!string.IsNullOrWhiteSpace(BannerAdUnitID))
+                MaxSdk.HideBanner(BannerAdUnitID);
+        }
+
         public void ShowInterstitial(Action<InterVideoState> callback = null)
         {
             if (CheckInternetConnection() && InterstitialIsLoaded())

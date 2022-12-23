@@ -68,7 +68,7 @@ namespace HuynnLib
         }
 
 
-        public async Task GetValueRemoteAsync(string key, Action<object> waitOnDone = null)
+        public async Task GetValueRemoteAsync(string key, Action<ConfigValue> waitOnDone = null) 
         {
             while (!_isFetchDone)
                 await Task.Delay(1000);
