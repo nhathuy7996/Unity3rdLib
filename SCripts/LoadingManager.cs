@@ -50,7 +50,7 @@ namespace HuynnLib
                         Debug.LogError("==> callback ondone loading error: "+e.ToString()+" <==");
                     }
 
-                    _loading.transform.parent.gameObject.SetActive(true);
+                    _loading.transform.parent.gameObject.SetActive(false);
                 }
             });
         }

@@ -206,7 +206,7 @@ namespace HuynnLib
 
             try
             {
-                _callbackInter.Invoke(InterVideoState.None);
+                _callbackInter?.Invoke(InterVideoState.None);
             }
             catch (Exception e)
             {
@@ -221,7 +221,7 @@ namespace HuynnLib
             Debug.Log("==> Interstitial dismissed <==");
             try
             {
-                _callbackInter.Invoke(InterVideoState.None);
+                _callbackInter?.Invoke(InterVideoState.None);
             }
             catch (Exception e)
             {
