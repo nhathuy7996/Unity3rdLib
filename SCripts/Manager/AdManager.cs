@@ -327,7 +327,7 @@ namespace HuynnLib
 
             try
             {
-                _callbackReward?.Invoke(RewardVideoState.None);
+                _callbackReward?.Invoke(RewardVideoState.Watched);
 
             }
             catch (Exception e)
