@@ -1,4 +1,12 @@
-﻿#if IAP
+﻿#if !IAP
+namespace HuynnLib
+{
+
+    public class IAPManager : Singleton<IAPManager>
+    {
+    }
+}
+#else
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +15,7 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.Purchasing.Security;
 using System.Collections;
+
 
 namespace HuynnLib
 {

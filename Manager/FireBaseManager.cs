@@ -7,6 +7,7 @@ using UnityEngine;
 using System;
 using System.Threading.Tasks;
 using ConfigValue = Firebase.RemoteConfig.ConfigValue;
+using Firebase.RemoteConfig;
 
 namespace HuynnLib
 {
@@ -67,28 +68,13 @@ namespace HuynnLib
         }
 
 
-        public void GetValueRemote(string key, Action<object> waitOnDone = null)
+        public async Task GetValueRemoteAsync(string key, Action<object> waitOnDone = null)
         {
-           
-            if (!_isFetchDone)
-            {
-                StartCoroutine(GetValueOnDone(key,waitOnDone));
-                return;
-            }
+            while (!_isFetchDone)
+                await Task.Delay(1000);
 
-            if (_keyConfigs.ContainsKey(key))
-                waitOnDone?.Invoke(_keyConfigs[key]);
-            else
-                Debug.LogError("==> Remote firebase doesnt containt key " + key +" <==");
-        }
-
-        IEnumerator GetValueOnDone(string key, Action<object> onDone)
-        {
-            yield return new WaitUntil(()=> _isFetchDone);
-            if (_keyConfigs.ContainsKey(key))
-                onDone?.Invoke(_keyConfigs[key]);
-            else
-                Debug.LogError("==> Remote firebase doesnt containt key "+key+" <==");
+            var obj = FirebaseRemoteConfig.DefaultInstance.GetValue(key);
+            waitOnDone?.Invoke(obj);
         }
 
         // Start a fetch request.
@@ -150,18 +136,14 @@ namespace HuynnLib
         public void LogEventWithOneParam(string eventName)
         {
             Debug.LogError("==> LogEvent " + eventName+" <==");
-            this.LogEventWithParameter(eventName, new Hashtable() { { "value", 1 } });
+            _= this.LogEventWithParameter(eventName, new Hashtable() { { "value", 1 } });
 
         }
 
-        public void LogEventWithParameter(string event_name, Hashtable hash)
+        public async Task LogEventWithParameter(string event_name, Hashtable hash)
         {
-            StartCoroutine(waitInitDone(event_name, hash));
-        }
-
-        IEnumerator waitInitDone(string event_name, Hashtable hash)
-        {
-            yield return new WaitUntil(() => _isFetchDone);
+            while (!_isFetchDone)
+                await Task.Delay(1000);
             Firebase.Analytics.Parameter[] parameter = new Firebase.Analytics.Parameter[hash.Count];
             //List<Firebase.Analytics.Parameter> parameters = new List<Firebase.Analytics.Parameter>();
             if (hash != null && hash.Count > 0)
@@ -171,7 +153,7 @@ namespace HuynnLib
                 {
                     if (item.Equals((DictionaryEntry)default)) continue;
                     parameter[i] = (new Firebase.Analytics.Parameter(item.Key.ToString(), item.Value.ToString()));
-                    Debug.Log("==> LogEvent " + event_name.ToString() + "- Key = " + item.Key + " -  Value =" + item.Value+" <==");
+                    Debug.Log("==> LogEvent " + event_name.ToString() + "- Key = " + item.Key + " -  Value =" + item.Value + " <==");
                     i++;
                 }
 
