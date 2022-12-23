@@ -522,10 +522,6 @@ namespace HuynnLib
             {
                 MaxSdk.ShowAppOpenAd(OpenAdUnitID);
             }
-            else
-            {
-                MaxSdk.LoadAppOpenAd(OpenAdUnitID);
-            }
         }
         #endregion
 

@@ -63,6 +63,7 @@ namespace HuynnLib
 
         private void OnDrawGizmosSelected()
         {
+            CheckFirebaseJS();
             if (_notiDebug == null && this.transform.GetChild(0).GetComponent<NotiManager>() != null)
             {
                 _notiDebug = this.transform.GetChild(0).gameObject;
@@ -74,7 +75,7 @@ namespace HuynnLib
         {
     
             string[] files = Directory.GetFiles(Application.dataPath, "*.json*", SearchOption.AllDirectories)
-                                .Where(f => f.Equals("google-services")).ToArray();
+                                .Where(f => f.EndsWith("google-services.json")).ToArray();
             if (files.Length == 0)
                 Debug.LogError("==>Project doesnt contain google-services.json. Firebase may not work!!!!!<==");
 

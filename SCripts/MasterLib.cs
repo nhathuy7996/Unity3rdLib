@@ -62,7 +62,7 @@ namespace HuynnLib
             List<GameObject> doneLib = new List<GameObject>();
             for (int i = 0; i < _childLibs.Count; i++)
             {
-                _childLibs[i].GetComponent<IChildLib>().Init(() =>
+                _childLibs[i].GetComponent<IChildLib>()?.Init(() =>
                 {
                     doneLib.Add(_childLibs[i].gameObject);
                 });
