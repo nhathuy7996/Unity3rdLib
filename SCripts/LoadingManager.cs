@@ -24,13 +24,34 @@ namespace HuynnLib
         float _loadingMaxvalue;
 
         // Start is called before the first frame update
-        void Start()
+
+
+        private void Start()
+        {
+            Init();
+        }
+
+        void Init(UnityEvent onDone = null)
         {
             _loadingMaxvalue = _loading.maxValue;
+            _loading.value = 0;
+            _loading.onValueChanged.RemoveAllListeners();
+            _onDone = onDone;
             _loading.onValueChanged.AddListener((value) =>
             {
                 if (value == 100)
-                    _onDone?.Invoke();
+                {
+                    try
+                    {
+                        _onDone?.Invoke();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError("==> callback ondone loading error: "+e.ToString()+" <==");
+                    }
+
+                    _loading.transform.parent.gameObject.SetActive(true);
+                }
             });
         }
 
