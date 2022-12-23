@@ -470,7 +470,7 @@ namespace HuynnLib
                 MaxSdk.HideBanner(BannerAdUnitID);
         }
 
-        public void ShowInterstitial(Action<InterVideoState> callback = null)
+        public void ShowInterstitial(Action<InterVideoState> callback = null, bool showNoAds = false)
         {
             if (CheckInternetConnection() && InterstitialIsLoaded())
             {
@@ -488,11 +488,11 @@ namespace HuynnLib
                 {
                     Debug.LogError("==> Faild invoke callback inter, error: " + e.ToString() + " <==");
                 }
-                if (_popUpNoAd) _popUpNoAd.SetActive(true);
+                if (_popUpNoAd && showNoAds) _popUpNoAd.SetActive(true);
             }
         }
 
-        public void ShowRewardVideo(Action<RewardVideoState> callback = null)
+        public void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false)
         {
             if (VideoRewardIsLoaded())
             {
@@ -510,7 +510,7 @@ namespace HuynnLib
                 {
                     Debug.LogError("==> Faild invoke callback reward, error: " + e.ToString() + " <==");
                 }
-                if (_popUpNoAd) _popUpNoAd.SetActive(true);
+                if (_popUpNoAd && showNoAds) _popUpNoAd.SetActive(true);
             }
         }
 
