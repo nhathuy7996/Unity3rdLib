@@ -380,11 +380,11 @@ namespace HuynnLib
             {
                 if (LoadingManager.Instant != null)
                 {
-                    LoadingManager.Instant.StopLoading(() =>
+                    LoadingManager.Instant.AddOnDoneLoading(() =>
                     {
                         ShowAdOpen();
                         _isAdsOpen = false;
-                    });
+                    }).DoneCondition(0);
                     return;
                 }
                 ShowAdOpen();

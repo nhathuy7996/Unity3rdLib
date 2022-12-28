@@ -4,22 +4,29 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using System;
+using System.Linq;
 
 namespace HuynnLib
 {
     public class LoadingManager : Singleton<LoadingManager>
     {
         [SerializeField]
+        float _maxTimeLoading = 0;
+
+        [SerializeField]
+        int _numberCondition = 0;
+
+        List<bool> _conditionDone = new List<bool>(); 
+
+        [SerializeField]
         Slider _loading;
 
         [SerializeField]
         Text _loadingText;
 
-        [SerializeField]
-        float _maxTimeLoading = 0;
 
         [SerializeField]
-        UnityEvent _onDone = null;
+        UnityEvent _onDone = new UnityEvent();
 
         float _loadingMaxvalue;
 
@@ -28,11 +35,19 @@ namespace HuynnLib
 
         private void Start()
         {
+          
             Init();
         }
 
-        void Init(UnityEvent onDone = null)
+        public LoadingManager Init(UnityEvent onDone = null)
         {
+            _conditionDone = new List<bool>();
+            for (int i = 0; i< _numberCondition; i++)
+            {
+                _conditionDone.Add(false);
+            }
+
+
             _loadingMaxvalue = _loading.maxValue;
             _loading.value = 0;
             _loading.onValueChanged.RemoveAllListeners();
@@ -50,9 +65,12 @@ namespace HuynnLib
                         Debug.LogError("==> callback ondone loading error: "+e.ToString()+" <==");
                     }
 
+                    _loading.onValueChanged.RemoveAllListeners();
                     _loading.transform.parent.gameObject.SetActive(false);
                 }
             });
+
+            return this;
         }
 
         // Update is called once per frame
@@ -64,20 +82,48 @@ namespace HuynnLib
 
         }
 
-        public void StopLoading(UnityAction  callback)
+        public void StopLoading()
         {
             Debug.Log("==> Force stop loading! <==");
-            if (_loading.value >= 99f)
-            {
-                callback?.Invoke();
-                return;
-            }
-            _onDone.AddListener(callback);
+          
             _loadingMaxvalue = _loading.maxValue - _loading.value;
             _maxTimeLoading = 1;
             
         }
 
-        
+        public LoadingManager AddOnDoneLoading(UnityAction callback)
+        {
+            if (_loading.value >= 99f)
+            {
+                callback?.Invoke();
+                return this;
+            }
+            _onDone.AddListener(callback);
+            return this;
+        }
+
+        public LoadingManager DoneCondition(int id)
+        {
+            if (id >= _conditionDone.Count)
+            {
+                Debug.LogError("==> ID condition not exist, check number of conditon on inspector! <==");
+                return this;
+            }
+
+            if (_loading.value >= 99f)
+            {
+                Debug.LogWarning("==> Loading already stop, maybe check your game flow! <==");
+                return this;
+            }
+
+            _conditionDone[id] = true;
+            if (_conditionDone.Where(c => c == false).Count() == 0)
+            {
+                Debug.Log("==> All condition is done! stop loading! <==");
+                StopLoading();
+            }
+
+            return this;
+        }
     }
 }
