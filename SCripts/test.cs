@@ -58,9 +58,9 @@ public class test : MonoBehaviour
         //FireBaseManager.Instant.LogEventWithOneParam("Event_name_do_not_using_space" );
 
         //----- get value from remote config-----
-        //FireBaseManager.Instant.GetValueRemote("key", (value) =>
+        //_= FireBaseManager.Instant.GetValueRemoteAsync("key", (value) =>
         //{
-        //    int true_value = (int)value;
+        //    int true_value = (int)value.LongValue;
         //});
 
 

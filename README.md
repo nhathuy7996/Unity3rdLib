@@ -28,18 +28,26 @@
             Debug.Log("Buy Fail!");
         });
 
-#### ***restore product, call ASAP***
-        IAPManager.Instant.TryAddRestoreEvent("productID", () =>
+#### ***restore product, call ASAP*** 
+        _= IAPManager.Instant.TryAddRestoreEvent("productID", () =>
         {
             Debug.Log("Restore Done!");
         });
 
-        //Doesn't matter IAP init done or not
-        //On IOS must add :
-        IAPManager.Instant.RestorePurchases();
+        //---OR if you need check its OK ---
+        var restoreSth = IAPManager.Instant.TryAddRestoreEvent("productID", () =>
+        {
+            Debug.Log("Restore Done!");
+        });
+        if (restoreSth.Result)
+        {
+            Debug.Log("It's OK");
+        }
 
-        //Check is product restored or not:
-        IAPManager.Instant.CheckRestoredProduct("ProductID");
+        // It's doesn't matter IAP init done or not
+
+        // On IOS must add : 
+        IAPManager.Instant.RestorePurchases();
 
 
 #### ***Log event Firebase***
@@ -55,10 +63,11 @@
         FireBaseManager.Instant.LogEventWithOneParam("Event_name_do_not_using_space" );
 
 #### ***Get value from remote config***
-        FireBaseManager.Instant.GetValueRemote("key", (value) =>
+        _= FireBaseManager.Instant.GetValueRemoteAsync("key", (value) =>
         {
-            int true_value = (int)value;
+            int true_value = (int)value.LongValue;
         });
+
 
 
 #### ***ShowPopUprate***
