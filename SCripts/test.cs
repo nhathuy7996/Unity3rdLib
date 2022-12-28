@@ -68,8 +68,38 @@ public class test : MonoBehaviour
         //MasterLib.Instant.ShowPopUpRate() ==> Show
         //MasterLib.Instant.ShowPopUpRate(false) ==> Hide
 
+       
+        //AdManager.Instant.ShowInterstitial((status) =>
+        //{
+        //    //Do sth when user watched inter
+        //    if (status == InterVideoState.Closed)
+        //    {
+        //        Debug.Log("Do sth!");
+        //    }
+        //    else
+        //    {
+        //        //Do sth when inter fail to show, not ready, etc....
+        //    }
 
 
+        //}, showNoAds: true);
+        // showNoAds: true ==> if you wanna show popup "AD not avaiable" - flase or just leave it blank if you dont need popup
+
+        //AdManager.Instant.ShowRewardVideo((status) =>
+        //{
+        //    //Do sth when user watched reward
+        //    if (status == RewardVideoState.Watched)
+        //    {
+        //        Debug.Log("Do sth!");
+        //    }
+        //    else
+        //    {
+        //        //Do sth when reward fail to show, not ready, etc....
+        //    }
+
+
+        //}, showNoAds: true);
+        // showNoAds: true ==> if you wanna show popup "AD not avaiable" - flase or just leave it blank if you dont need popup
     }
 
 

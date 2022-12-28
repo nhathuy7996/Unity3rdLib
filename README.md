@@ -14,6 +14,8 @@
 
 ## Hướng dẫn sử dụng:
 - Add git remote vào thư mục Assets và pull nhánh production (_develop là các chức năng đang sửa, có thể hoạt động chưa ổn định_)
+- Download SDK [tại đây](https://github.com/nhathuy7996/Unity3rdLib/releases) và import vào project 
+        (nên xoá toàn bộ plugin và thư viện Ad, IAP ... cũ không còn dùng đễn nữa trước khi import)
 - Reimport All
 - Android Resolve -> Force Resolve
 - Kéo prefab 3rdLib vào scene (check dontDestroyOnload nếu có nhiều scene)
@@ -78,4 +80,36 @@
         AdManager.Instant.ShowBanner();
         AdManager.Instant.DestroyBanner();
         //Call anywhwre you need show or hide banner, admanager auto load and show or hide!
-        //On inspector, set bannerADID = null if game dont have banner
+        //On inspector, set bannerADID = blank if game dont have banner
+        
+        AdManager.Instant.ShowInterstitial((status) =>
+        {
+            //Do sth when user watched inter
+            if (status == InterVideoState.Closed)
+            {
+                Debug.Log("Do sth!");
+            }
+            else
+            {
+                //Do sth when inter fail to show, not ready, etc....
+            }
+
+
+        }, showNoAds: true);
+        // showNoAds: true ==> if you wanna show popup "AD not avaiable" - flase or just leave it blank if you dont need popup
+
+        AdManager.Instant.ShowRewardVideo((status) =>
+        {
+            //Do sth when user watched reward
+            if (status == RewardVideoState.Watched)
+            {
+                Debug.Log("Do sth!");
+            }
+            else
+            {
+                //Do sth when reward fail to show, not ready, etc....
+            }
+
+
+        }, showNoAds: true);
+        // showNoAds: true ==> if you wanna show popup "AD not avaiable" - flase or just leave it blank if you dont need popup
