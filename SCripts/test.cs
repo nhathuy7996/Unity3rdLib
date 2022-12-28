@@ -27,10 +27,19 @@ public class test : MonoBehaviour
         //});
 
         //------ restore product, call ASAP -----
-        //IAPManager.Instant.TryAddRestoreEvent("productID", () =>
+        //_= IAPManager.Instant.TryAddRestoreEvent("productID", () =>
         //{
         //    Debug.Log("Restore Done!");
         //});
+        //---OR if you need check its OK ---
+        //var restoreSth = IAPManager.Instant.TryAddRestoreEvent("productID", () =>
+        //{
+        //    Debug.Log("Restore Done!");
+        //});
+        //if (restoreSth.Result)
+        //{
+        //    Debug.Log("It's OK");
+        //}
         // Doesn't matter IAP init done or not
         // On IOS must add : IAPManager.Instant.RestorePurchases();
 
@@ -59,7 +68,7 @@ public class test : MonoBehaviour
         //MasterLib.Instant.ShowPopUpRate() ==> Show
         //MasterLib.Instant.ShowPopUpRate(false) ==> Hide
 
- 
+
 
     }
 

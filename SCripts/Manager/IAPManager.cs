@@ -16,6 +16,7 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.Purchasing.Security;
 using System.Collections;
+using System.Threading.Tasks;
 
 
 namespace HuynnLib
@@ -27,9 +28,6 @@ namespace HuynnLib
         private static IStoreController m_StoreController;          // The Unity Purchasing system.
         private static IExtensionProvider m_StoreExtensionProvider; // The store-specific Purchasing subsystems.
 
-
-        private Dictionary<string, Action> RestoreItemEvent = new Dictionary<string, Action>();
-        [SerializeField]
         List<string> _restoreItemCheck = new List<string>();
 
         private Action _onBuyDone = null, _onBuyFail = null;
@@ -49,23 +47,18 @@ namespace HuynnLib
         }
 
 
-        public bool TryAddRestoreEvent(string productID, Action eventRestore = null )
+        public async Task<bool> TryAddRestoreEvent(string productID, Action eventRestore = null )
         {
-            if (RestoreItemEvent.ContainsKey(productID))
+            while (!_isRestoreDone)
+                await Task.Delay(500);
+
+            if (_restoreItemCheck.Contains(productID))
             {
-                Debug.LogErrorFormat("==> Product {0} already has event restore <==", productID);
-                return false;
-             
+                UnityMainThread.wkr.AddJob(eventRestore);
+                return true;
             }
 
-            if (!_isRestoreDone)
-            {
-                _restoreItemCheck.Add(productID);
-                eventRestore?.Invoke();
-            }
-
-            RestoreItemEvent.Add(productID, eventRestore);
-            return true;
+            return false;
         }
 
         public void InitializePurchasing()
@@ -245,12 +238,8 @@ namespace HuynnLib
                     //#if  UNITY_EDITOR
                     if (!_isBuying)
                     {
-                        if (RestoreItemEvent.ContainsKey(product.id))
-                        {
-                            RestoreItemEvent[product.id]?.Invoke();
-                            _restoreItemCheck.Add(product.id);
-                            continue;
-                        }
+                        _restoreItemCheck.Add(product.id);
+                        continue;
                     }
 
                     if (_onBuyDone != null)
