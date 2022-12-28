@@ -181,7 +181,7 @@ namespace HuynnLib
         private void OnInterstitialLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             // Interstitial ad is ready to be shown. MaxSdk.IsInterstitialReady(interstitialAdUnitId) will now return 'true'
-            Debug.Log("==> Interstitial loaded <=="); 
+            Debug.Log("==> Interstitial loaded <==");
             // Reset retry attempt
             interstitialRetryAttempt = 0;
         }
@@ -467,7 +467,7 @@ namespace HuynnLib
             _isAdsBanner = false;
 
             if (!string.IsNullOrWhiteSpace(BannerAdUnitID))
-                MaxSdk.HideBanner(BannerAdUnitID);
+                MaxSdk.DestroyBanner(BannerAdUnitID);
         }
 
         public void ShowInterstitial(Action<InterVideoState> callback = null, bool showNoAds = false)
@@ -482,7 +482,7 @@ namespace HuynnLib
             {
                 try
                 {
-                    callback.Invoke(InterVideoState.None);
+                    callback?.Invoke(InterVideoState.None);
                 }
                 catch (Exception e)
                 {
@@ -504,7 +504,7 @@ namespace HuynnLib
             {
                 try
                 {
-                    callback.Invoke(RewardVideoState.None);
+                    callback?.Invoke(RewardVideoState.None);
                 }
                 catch (Exception e)
                 {
@@ -525,23 +525,7 @@ namespace HuynnLib
         }
         #endregion
 
-        public bool CheckInternetConnection()
-        {
-            var internet = false;
-            if (Application.internetReachability != NetworkReachability.NotReachable)
-            {
-                internet = true;
-            }
-            else
-            {
-                internet = false;
-            }
-            return internet;
-        }
-
-
-
-
+      
         #region Track Revenue
 
         private void TrackAdRevenue(MaxSdkBase.AdInfo adInfo)
@@ -686,6 +670,20 @@ namespace HuynnLib
         }
 
 #endif
+        public bool CheckInternetConnection()
+        {
+            var internet = false;
+            if (Application.internetReachability != NetworkReachability.NotReachable)
+            {
+                internet = true;
+            }
+            else
+            {
+                internet = false;
+            }
+            return internet;
+        }
+
 
         private void OnAppStateChanged(AppState state)
         {
