@@ -16,6 +16,9 @@ namespace HuynnLib
         [SerializeField]
         int _numberCondition = 0;
 
+        [SerializeField]
+        bool _isUseLoading = true;
+
         List<bool> _conditionDone = new List<bool>(); 
 
         [SerializeField]
@@ -124,6 +127,18 @@ namespace HuynnLib
             }
 
             return this;
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (_isUseLoading)
+            {
+                _loading.transform.parent.gameObject.SetActive(true);
+            }
+            else
+            {
+                _loading.transform.parent.gameObject.SetActive(false);
+            }
         }
     }
 }
