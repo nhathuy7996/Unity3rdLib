@@ -11,6 +11,7 @@ using Firebase.RemoteConfig;
 using System.ComponentModel;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 using UnityEngine.Device;
+using System.Linq;
 
 namespace HuynnLib
 {
@@ -28,7 +29,8 @@ namespace HuynnLib
 
         public bool isFetchDOne => _isFetchDone;
 
-        private Dictionary<string, ConfigValue> _keyConfigs = new Dictionary<string, ConfigValue>();
+        [SerializeField]
+        private List<string> _keyConfigs = new List<string>();
 
 
         Firebase.DependencyStatus dependencyStatus = Firebase.DependencyStatus.UnavailableOther;
@@ -97,6 +99,12 @@ namespace HuynnLib
                 return;
             }
 
+            if (!_keyConfigs.Contains(key))
+            {
+                Debug.LogError(string.Format("==>Remote dont have key {0} !<==", key));
+                return;
+            }
+
             var obj = FirebaseRemoteConfig.DefaultInstance.GetValue(key);
             waitOnDone?.Invoke(obj);
         }
@@ -136,6 +144,8 @@ namespace HuynnLib
                 case Firebase.RemoteConfig.LastFetchStatus.Success:
                     Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance.ActivateAsync();
                     _isFetchDone = true;
+
+                    _keyConfigs = FirebaseRemoteConfig.DefaultInstance.AllValues.Keys.ToList();
                     Debug.Log(String.Format("==> Remote data loaded and ready (last fetch time {0}).<==",
                         info.FetchTime));
 
