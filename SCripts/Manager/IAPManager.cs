@@ -46,26 +46,6 @@ namespace HuynnLib
             InitializePurchasing();
         }
 
-        /// <summary>
-        /// Restore product which user already purchase!
-        /// </summary>
-        /// <param name="productID">ID of product (in catalog)</param>
-        /// <param name="eventRestore"> action when product restore success</param>
-        /// <returns> await table Task, true if restore action done and false if wrong ID </returns>
-        public async Task<bool> TryAddRestoreEvent(string productID, Action eventRestore = null )
-        {
-            while (!_isRestoreDone)
-                await Task.Delay(500);
-
-            if (_restoreItemCheck.Contains(productID))
-            {
-                UnityMainThread.wkr.AddJob(eventRestore);
-                return true;
-            }
-
-            return false;
-        }
-
         public void InitializePurchasing()
         {
             // If we have already connected to Purchasing ...
@@ -115,13 +95,54 @@ namespace HuynnLib
             return m_StoreController != null && m_StoreExtensionProvider != null;
         }
 
+        /// <summary>
+        /// Restore product which user already purchase!
+        /// </summary>
+        /// <param name="productID">ID of product (in catalog)</param>
+        /// <param name="eventRestore"> action when product restore success</param>
+        /// <returns> await table Task, true if restore action done and false if wrong ID </returns>
+        public async Task<bool> TryAddRestoreEvent(string productID, Action eventRestore = null)
+        {
+            var catalog = ProductCatalog.LoadDefaultCatalog();
+            float countTime = 0;
+            while (_restoreItemCheck.Contains(productID) && countTime < 120000f)
+            {
+                countTime += 500;
+                await Task.Delay(500);
+            }
 
+            if (countTime >= 120000f)
+            {
+                Debug.LogError(string.Format("==>Restored product {0} fail, becuz time out! Check your network please!<==", productID));
+                return false;
+            }
+
+            if (_restoreItemCheck.Contains(productID))
+            {
+                UnityMainThread.wkr.AddJob(eventRestore);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if product is restored or not (maybe for hide button buy ...)
+        /// </summary>
+        /// <param name="productId">ID of product (in catalog)</param>
+        /// <returns>true if product already buy or restored</returns>
         public bool CheckRestoredProduct(string productId)
         {
             return this._restoreItemCheck.Contains(productId);
         }
 
 
+        /// <summary>
+        /// Call if player click btn buy product
+        /// </summary>
+        /// <param name="productId">ID of product (in catalog)</param>
+        /// <param name="onBuyDone">do sth if buy success (example: add coin ...)</param>
+        /// <param name="onBuyFail">do sth if buy fail (example: show popup sorry ...)</param>
         public void BuyProductID(string productId, Action onBuyDone = null, Action onBuyFail = null)
         {
             if (_isBuying) return;
@@ -241,11 +262,8 @@ namespace HuynnLib
                     Debug.Log(string.Format("==> ProcessPurchase: PASS. Product: '{0}' <==", args.purchasedProduct.definition.id));
                     //NoticeManager.Instance.LogNotice(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));
                     //#if  UNITY_EDITOR
-                    if (!_isBuying)
-                    {
+                    if(!_restoreItemCheck.Contains(product.id))
                         _restoreItemCheck.Add(product.id);
-                        continue;
-                    }
 
                     if (_onBuyDone != null)
                     {
@@ -258,10 +276,6 @@ namespace HuynnLib
                 }
             }
 
-            if (!_isBuying)
-            {
-                _isRestoreDone = true;
-            }
             _isBuying = false;
             // Return a flag indicating whether this product has completely been received, or if the application needs 
             // to be reminded of this purchase at next app launch. Use PurchaseProcessingResult.Pending when still 

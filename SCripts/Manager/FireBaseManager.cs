@@ -77,11 +77,25 @@ namespace HuynnLib
             FetchDataAsync();
         }
 
-
+        /// <summary>
+        /// Wait to get a value from Firebase remote config
+        /// </summary>
+        /// <param name="key">key name on Firebase remote</param>
+        /// <param name="waitOnDone">callback when get data success</param> 
         public async Task GetValueRemoteAsync(string key, Action<ConfigValue> waitOnDone = null) 
         {
-            while (!_isFetchDone)
+            double countTime = 0;
+            while (!_isFetchDone && countTime < 360000f)
+            {
+                countTime += 1000;
                 await Task.Delay(1000);
+            }
+
+            if (countTime >= 360000f)
+            {
+                Debug.LogError(string.Format("==>Fetch data {0} fail, becuz time out! Check your network please!<==", key));
+                return;
+            }
 
             var obj = FirebaseRemoteConfig.DefaultInstance.GetValue(key);
             waitOnDone?.Invoke(obj);
@@ -151,10 +165,26 @@ namespace HuynnLib
 
         }
 
+        /// <summary>
+        /// Wait to log event to firebase analytics!
+        /// </summary>
+        /// <param name="event_name">name of event</param>
+        /// <param name="hash">A hash table which contain value and parameter</param> 
         public async Task LogEventWithParameter(string event_name, Hashtable hash)
         {
-            while (!_isFetchDone)
+            double countTime = 0;
+            while (!_isFetchDone && countTime < 360000f)
+            {
+                countTime += 1000;
                 await Task.Delay(1000);
+            }
+
+            if (countTime >= 360000f)
+            {
+                Debug.LogError(string.Format("==>Logevent {0} fail, becuz time out! Check your network please!<==", event_name));
+                return;
+            }
+
             Firebase.Analytics.Parameter[] parameter = new Firebase.Analytics.Parameter[hash.Count];
             //List<Firebase.Analytics.Parameter> parameters = new List<Firebase.Analytics.Parameter>();
             if (hash != null && hash.Count > 0)
