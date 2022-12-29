@@ -533,7 +533,11 @@ namespace HuynnLib
             }
         }
 
-        public void ShowAdOpen()
+        /// <summary>
+        /// It'll help firebase log event more correctly, ignore it if you done care
+        /// </summary>
+        /// <param name="isAdOpen">Is Ads treated as an open AD</param>
+        public void ShowAdOpen(bool isAdOpen = false)
         {
             if (isShowingAd)
             {
@@ -543,7 +547,9 @@ namespace HuynnLib
 
             if (MaxSdk.IsAppOpenAdReady(OpenAdUnitID))
             {
+                FireBaseManager.Instant.isOpenAdShow = isAdOpen;
                 MaxSdk.ShowAppOpenAd(OpenAdUnitID);
+
             }
             else
             {
@@ -552,7 +558,7 @@ namespace HuynnLib
         }
         #endregion
 
-      
+
         #region Track Revenue
 
         private void TrackAdRevenue(MaxSdkBase.AdInfo adInfo)
