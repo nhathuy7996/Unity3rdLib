@@ -33,9 +33,7 @@ namespace HuynnLib
         private Action _onBuyDone = null, _onBuyFail = null;
 
         public bool IsInitDone => IsInitialized();
-        private bool _isBuying = false;
-
-        private bool _isRestoreDone = false;
+        private bool _isBuying = false; 
 
         Action _onInitDone;
 
@@ -104,8 +102,8 @@ namespace HuynnLib
         public async Task<bool> TryAddRestoreEvent(string productID, Action eventRestore = null)
         {
             var catalog = ProductCatalog.LoadDefaultCatalog();
-            float countTime = 0;
-            while (_restoreItemCheck.Contains(productID) && countTime < 120000f)
+            double countTime = 0;
+            while (!_restoreItemCheck.Contains(productID) && !IsInitialized() && countTime < 120000f)
             {
                 countTime += 500;
                 await Task.Delay(500);
@@ -262,6 +260,7 @@ namespace HuynnLib
                     Debug.Log(string.Format("==> ProcessPurchase: PASS. Product: '{0}' <==", args.purchasedProduct.definition.id));
                     //NoticeManager.Instance.LogNotice(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));
                     //#if  UNITY_EDITOR
+                     
                     if(!_restoreItemCheck.Contains(product.id))
                         _restoreItemCheck.Add(product.id);
 
@@ -271,7 +270,7 @@ namespace HuynnLib
                         _onBuyDone = null;
                     }
 
-
+                    _isBuying = false;
                     return PurchaseProcessingResult.Complete;
                 }
             }
