@@ -100,7 +100,8 @@ namespace HuynnLib
 
         private void InitializeBannerAds()
         {
-            Debug.Log("==> Init banner <=="); 
+            Debug.Log("==> Init banner <==");
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load);
             // Attach Callbacks
             MaxSdkCallbacks.Banner.OnAdLoadedEvent += OnBannerAdLoadedEvent;
             MaxSdkCallbacks.Banner.OnAdLoadFailedEvent += OnBannerAdFailedEvent;
@@ -135,12 +136,16 @@ namespace HuynnLib
                 this.ShowBanner();
             Debug.Log("==> Banner ad loaded <==");
             MaxSdk.StartBannerAutoRefresh(BannerAdUnitID);
+
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load_done );
+
         }
 
         private void OnBannerAdFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo)
         {
             // Banner ad failed to load. MAX will automatically try loading a new ad internally.
             Debug.LogError("==>Banner ad failed to load with error code: " + errorInfo.Code+" <==");
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load_fail);
             bannerRetryAttempt++;
             double retryDelay = Math.Pow(2, Math.Min(6, bannerRetryAttempt)); 
 
@@ -175,6 +180,7 @@ namespace HuynnLib
         }
         void LoadInterstitial()
         {
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load);
             MaxSdk.LoadInterstitial(InterstitialAdUnitID);
         }
 
@@ -182,6 +188,7 @@ namespace HuynnLib
         {
             // Interstitial ad is ready to be shown. MaxSdk.IsInterstitialReady(interstitialAdUnitId) will now return 'true'
             Debug.Log("==> Interstitial loaded <==");
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load_done);
             // Reset retry attempt
             interstitialRetryAttempt = 0;
         }
@@ -193,6 +200,7 @@ namespace HuynnLib
             double retryDelay = Math.Pow(2, Math.Min(6, interstitialRetryAttempt));
 
             Debug.LogError("==> Interstitial failed to load with error code: " + errorInfo.Code+" <==");
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load_fail);
 
             Invoke("LoadInterstitial", (float)retryDelay);
         }
@@ -261,6 +269,7 @@ namespace HuynnLib
 
         private void LoadRewardedAd()
         {
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.load);
             MaxSdk.LoadRewardedAd(RewardedAdUnitID);
         }
 
@@ -269,6 +278,7 @@ namespace HuynnLib
             // Rewarded ad is ready to be shown. MaxSdk.IsRewardedAdReady(rewardedAdUnitId) will now return 'true'
 
             // Reset retry attempt
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.load_done);
             rewardedRetryAttempt = 0;
         }
 
@@ -280,7 +290,7 @@ namespace HuynnLib
             double retryDelay = Math.Pow(2, Math.Min(6, rewardedRetryAttempt));
 
             Debug.LogError("==> Rewarded ad failed to load with error code: " + errorInfo.Code+" <==");
-
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.load_fail);
             Invoke("LoadRewardedAd", (float)retryDelay);
             
         }
@@ -365,6 +375,9 @@ namespace HuynnLib
         void LoadAdOpen()
         {
             Debug.Log("==> Start load ad open/resume! <==");
+
+            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load); 
+
             if (!MaxSdk.IsAppOpenAdReady(OpenAdUnitID))
             {
                 MaxSdk.LoadAppOpenAd(OpenAdUnitID);
@@ -375,6 +388,9 @@ namespace HuynnLib
         private void AppOpen_OnAdLoadedEvent(string arg1, AdInfo arg2)
         {
             Debug.Log("==>Load ad open/resume success! <==");
+
+            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load_done); 
+
             AdOpenRetryAttemp = 0;
             if (_isAdsOpen)
             {
@@ -395,6 +411,7 @@ namespace HuynnLib
         private void AppOpen_OnAdDisplayedEvent(string arg1, AdInfo arg2)
         {
             Debug.Log("==> Show ad open/resume success! <==");
+            FireBaseManager.Instant.LogADResumeEvent(  adState: AD_STATE.show);
             isShowingAd = true;
             
         }
@@ -402,6 +419,7 @@ namespace HuynnLib
         private void AppOpen_OnAdDisplayFailedEvent(string arg1, ErrorInfo arg2, AdInfo arg3)
         {
             Debug.LogError("==> Show ad open/resume failed, code: " + arg2.Code+" <==");
+            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show_fail);
             AdOpenRetryAttemp++;
             double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp));
             Invoke("LoadAdOpen", (float)retryDelay);
@@ -411,6 +429,7 @@ namespace HuynnLib
         private void AppOpenOnAdLoadFailedEvent(string arg1, ErrorInfo arg2)
         {
             Debug.LogError("==> Load ad open/resume failed, code: " + arg2.Code+ " <==");
+            FireBaseManager.Instant.LogADResumeEvent( adState: AD_STATE.load_fail);
             AdOpenRetryAttemp++;
             double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp));
             Invoke("LoadAdOpen", (float)retryDelay);

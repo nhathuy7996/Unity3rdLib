@@ -8,11 +8,20 @@ using System;
 using System.Threading.Tasks;
 using ConfigValue = Firebase.RemoteConfig.ConfigValue;
 using Firebase.RemoteConfig;
+using System.ComponentModel;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
+using UnityEngine.Device;
 
 namespace HuynnLib
 {
     public class FireBaseManager : Singleton<FireBaseManager>, IChildLib
     {
+
+        #region For AD event
+        public bool _isOpenAdShow = false;
+
+        int _countAdOpenLoad = 0;
+        #endregion
 
         private bool _isFetchDone = false;
 
@@ -132,6 +141,7 @@ namespace HuynnLib
                     break;
             }
         }
+
         #region Firebase Logevent
         public void LogEventWithOneParam(string eventName)
         {
@@ -165,5 +175,173 @@ namespace HuynnLib
 
 
         #endregion
+
+        #region FIREBASE CUSTOM EVENT
+
+        /// <summary>
+        ///   state: Trạng thái của level sau khi người chơi chơi qua
+        /// </summary>
+        public void LogEventLevel(int level, LEVEL_STATE_EVENT state)
+        {
+            _= this.LogEventWithParameter(state.ToString(), new Hashtable()
+            {
+                {"id_level", level}
+            });
+        }
+
+        ///<param name="name">tên button</param>
+        ///<param name="screen">vị trí màn hình của user</param>
+        ///<param name="level">level hiện tại (nếu trong gameplay) hoặc đã pass (nếu ngoài gameplay) của user</param>
+        ///<param name="customParam">Hậu tố nếu cần thêm</param>
+        /// <summary>
+        /// Log event when user click a button
+        /// <code>
+        ///  name: "tên button"
+        ///  screen: "vị trí màn hình của user",
+        ///  level: "level hiện tại (nếu trong gameplay) hoặc đã pass (nếu ngoài gameplay) của user"
+        ///  customParam: "Hậu tố nếu cần thêm"
+        /// </code>
+        /// <example>
+        /// For example:
+        /// <code>
+        ///     - add_new_melee_gameplay_4 : user thêm unit melee trong gameplay tại level 4
+        ///     - claim_x2_speed_gameplay_15 : user click x2 speed trong gameplay tại level 15
+        /// </code> 
+        /// </example>
+        /// </summary>
+        public void LogClickBtnEvent(string name, string screen, int level = -1, string customParam = "")
+        {
+            _ = this.LogEventWithParameter("btn_click", new Hashtable()
+            {
+                {"id_click",string.Format("{0}_{1}",name, screen) + (level < 0 ?"":"_"+level) + (string.IsNullOrWhiteSpace(customParam)?"":"_"+customParam )}
+            });
+        }
+
+
+        ///<param name="name">tên button</param>
+        ///<param name="screen">vị trí màn hình của user</param>
+        ///<param name="level">level hiện tại (nếu trong gameplay) hoặc đã pass (nếu ngoài gameplay) của user</param>
+        ///<param name="customParam">Hậu tố nếu cần thêm</param>
+        /// <summary>
+        /// Log event when user click button AD
+        /// <code>
+        ///  name: "tên button"
+        ///  screen: "vị trí màn hình của user",
+        ///  level: "level hiện tại (nếu trong gameplay) hoặc đã pass (nếu ngoài gameplay) của user"
+        ///  customParam: "Hậu tố nếu cần thêm"
+        /// </code>
+        /// <example>
+        /// For example:
+        /// <code>
+        ///     - add_new_melee_gameplay_4 : user xem ad reward thêm unit melee trong gameplay tại level 4
+        ///     - claim_x2_speed_gameplay_15 : user xem ad reward x2 speed trong gameplay tại level 15
+        /// </code> 
+        /// </example>
+        /// </summary>
+        public void LogClickRewardBtnEvent(string name, string screen, int level= -1, string customParam = "")
+        {
+            _ = this.LogEventWithParameter("reward_ad_on_click", new Hashtable()
+            {
+                 {"id_click",string.Format("{0}_{1}",name, screen) + (level < 0 ?"":"_"+level) + (string.IsNullOrWhiteSpace(customParam)?"":"_"+customParam )}
+            });
+        }
+
+        public void LogADEvent(AD_TYPE adType, AD_STATE adState)
+        {
+            _ = this.LogEventWithParameter("ad_event", new Hashtable()
+            {
+                 {"ad_load_stats",string.Format( "ad_{0}_{1}",adType.ToString(), adState.ToString() )}
+            });
+        }
+
+
+        public void LogADResumeEvent( AD_STATE adState)
+        {
+            AD_TYPE adType = AD_TYPE.resume;
+
+            if(adState == AD_STATE.load && _countAdOpenLoad == 0)
+            {
+                adType = AD_TYPE.open;
+                
+            }
+
+            if ((adState == AD_STATE.load_fail || adState == AD_STATE.load_done))
+            {
+                if(_countAdOpenLoad == 0)
+                    adType = AD_TYPE.open;
+            }
+
+            if (adState == AD_STATE.show)
+            {
+                if (_countAdOpenLoad == 0)
+                {
+                    adType = AD_TYPE.open;
+                    if (_isOpenAdShow)
+                        adState = AD_STATE.show_open;
+                    else
+                        adState = AD_STATE.show_resume;
+                }
+                else
+                {
+                    adType = AD_TYPE.resume;
+                }
+                    _countAdOpenLoad++;
+            }
+
+            if (adState == AD_STATE.show_fail)
+            {
+                if (_countAdOpenLoad == 0)
+                {
+                    adType = AD_TYPE.open;
+                    if (_isOpenAdShow)
+                        adState = AD_STATE.show_open_fail;
+                    else
+                        adState = AD_STATE.show_resume_fail;
+                }
+                else
+                {
+                    adType = AD_TYPE.resume;
+                }
+                _countAdOpenLoad++;
+            }
+
+            _ = this.LogEventWithParameter("ad_event", new Hashtable()
+            {
+                 {"ad_load_stats",string.Format( "ad_{0}_{1}",adType.ToString(), adState.ToString() )}
+            });
+        }
+
+        #endregion
+
     }
+}
+
+
+public enum LEVEL_STATE_EVENT
+{
+    start_level,
+    fail_level,
+    win_level
+}
+
+public enum AD_TYPE
+{
+    open,
+    resume,
+    banner,
+    inter,
+    reward
+}
+
+public enum AD_STATE
+{
+    load,
+    load_done,
+    load_fail,
+    show,
+    show_fail,
+    show_open,
+    show_open_fail,
+    show_resume,
+    show_resume_fail,
 }

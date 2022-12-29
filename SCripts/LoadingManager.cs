@@ -39,7 +39,7 @@ namespace HuynnLib
         private void Start()
         {
           
-            Init();
+            Init(); 
         }
 
         public LoadingManager Init(UnityEvent onDone = null)
