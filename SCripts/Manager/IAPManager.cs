@@ -46,7 +46,12 @@ namespace HuynnLib
             InitializePurchasing();
         }
 
-
+        /// <summary>
+        /// Restore product which user already purchase!
+        /// </summary>
+        /// <param name="productID">ID of product (in catalog)</param>
+        /// <param name="eventRestore"> action when product restore success</param>
+        /// <returns> await table Task, true if restore action done and false if wrong ID </returns>
         public async Task<bool> TryAddRestoreEvent(string productID, Action eventRestore = null )
         {
             while (!_isRestoreDone)

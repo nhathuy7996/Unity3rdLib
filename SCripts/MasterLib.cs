@@ -7,7 +7,7 @@ using System;
 namespace HuynnLib
 {
     public class MasterLib : Singleton<MasterLib>
-{
+    {
         [SerializeField]
         bool _isAutoAssign = false;
         [SerializeField]
@@ -16,7 +16,8 @@ namespace HuynnLib
         bool _isInitByOrder = false;
         [SerializeField]
         List<GameObject> _childLibs = new List<GameObject>();
-
+        [SerializeField]
+        List<GameObject> _doneLib = new List<GameObject>(); //Runtime check
         [SerializeField] GameObject _popUpRate;
 
         private void Awake()
@@ -26,7 +27,7 @@ namespace HuynnLib
 
             InitChildLib(() => { Debug.Log("=====> Init done all! <====="); });
 
-            
+
         }
 
         public void InitChildLib(Action onAllInitDone = null)
@@ -34,7 +35,7 @@ namespace HuynnLib
             if (_isInitByOrder)
             {
                 Queue<IChildLib> orderInit = new Queue<IChildLib>();
-                for (int  i = 0; i< _childLibs.Count; i++)
+                for (int i = 0; i < _childLibs.Count; i++)
                 {
                     orderInit.Enqueue(_childLibs[i].GetComponent<IChildLib>());
                 }
@@ -43,7 +44,7 @@ namespace HuynnLib
 
                 onInitDone = (childLib) =>
                 {
-                    
+
                     childLib.Init(() =>
                     {
                         if (orderInit.Count != 0)
@@ -55,20 +56,29 @@ namespace HuynnLib
 
                 onInitDone.Invoke(orderInit.Dequeue());
 
-              
+
                 return;
             }
 
-            List<GameObject> doneLib = new List<GameObject>();
+
             for (int i = 0; i < _childLibs.Count; i++)
             {
-                _childLibs[i].GetComponent<IChildLib>()?.Init(() =>
+                GameObject g = _childLibs[i].gameObject;
+                try
                 {
-                    doneLib.Add(_childLibs[i].gameObject);
-                });
+                    _childLibs[i].GetComponent<IChildLib>()?.Init(() =>
+                    {
+                        _doneLib.Add(g);
+                    });
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(string.Format("==> Init child lib {0} error: {1} <==", g.name, e.ToString()));
+                }
+
             }
-            StartCoroutine(WaitAllLibInitDone(doneLib, onAllInitDone));
-            
+            StartCoroutine(WaitAllLibInitDone(_doneLib, onAllInitDone));
+
         }
 
         IEnumerator WaitAllLibInitDone(List<GameObject> doneLib, Action onAllInitDone)

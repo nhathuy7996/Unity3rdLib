@@ -18,7 +18,14 @@ namespace HuynnLib
         void Update()
         {
             while (jobs.Count > 0)
-                jobs.Dequeue()?.Invoke();
+                try
+                {
+                    jobs.Dequeue()?.Invoke();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("==> Error on invoke some action on main thread!:"+e.ToString()+" <==");
+                }
         }
 
         internal void AddJob(Action newJob)
