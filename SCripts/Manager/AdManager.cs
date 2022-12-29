@@ -60,6 +60,7 @@ namespace HuynnLib
             AdOpenRetryAttemp = 1; 
         private Action<InterVideoState> _callbackInter = null;
         private Action<RewardVideoState> _callbackReward = null;
+        private Action _callbackOpenAD = null;
         #endregion
 
         private bool isShowingAd = false;
@@ -439,6 +440,15 @@ namespace HuynnLib
         public void OnAppOpenDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             Debug.Log("==> Ad open/resume close! <==");
+            try
+            {
+                _callbackOpenAD?.Invoke();
+                _callbackOpenAD = null;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("==>Callback ad open error: "+e.ToString()+"<==");
+            }
             isShowingAd = false;
             LoadAdOpen();
         }
@@ -537,23 +547,24 @@ namespace HuynnLib
         /// It'll help firebase log event more correctly, ignore it if you done care
         /// </summary>
         /// <param name="isAdOpen">Is Ads treated as an open AD</param>
-        public void ShowAdOpen(bool isAdOpen = false)
+        public void ShowAdOpen(bool isAdOpen = false, Action callback = null)
         {
             if (isShowingAd)
             {
-                FireBaseManager.Instant.isOpenAdShow = false;
+                FireBaseManager.Instant.adTypeShow = AD_TYPE.resume;
                 return;
             }
 
             if (MaxSdk.IsAppOpenAdReady(OpenAdUnitID))
             {
-                FireBaseManager.Instant.isOpenAdShow = isAdOpen;
+                FireBaseManager.Instant.adTypeShow = isAdOpen? AD_TYPE.open: AD_TYPE.resume;
                 MaxSdk.ShowAppOpenAd(OpenAdUnitID);
-
+                _callbackOpenAD = callback;
             }
             else
             {
-                FireBaseManager.Instant.isOpenAdShow = false;
+                FireBaseManager.Instant.adTypeShow = AD_TYPE.resume;
+                callback?.Invoke();
             }
         }
         #endregion

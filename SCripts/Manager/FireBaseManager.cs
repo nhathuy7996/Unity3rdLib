@@ -18,9 +18,10 @@ namespace HuynnLib
     {
 
         #region For AD event
-        public bool isOpenAdShow = false;
 
-        int _countAdOpenLoad = 0;
+        AD_TYPE _adTypeLoaded = AD_TYPE.open;
+        public AD_TYPE adTypeShow = AD_TYPE.resume;
+
         #endregion
 
         private bool _isFetchDone = false;
@@ -257,29 +258,29 @@ namespace HuynnLib
 
         public void LogADResumeEvent( AD_STATE adState)
         {
-            AD_TYPE adType = AD_TYPE.resume;
-            if (_countAdOpenLoad == 0)
-                adType = AD_TYPE.open;
-
-
+            AD_TYPE adType = this._adTypeLoaded;
+              
             if (adState == AD_STATE.show)
             {
-                if (isOpenAdShow)
+                if (adTypeShow == AD_TYPE.open)
                     adState = AD_STATE.show_open;
                 else
                     adState = AD_STATE.show_resume;
-                _countAdOpenLoad++;
-                isOpenAdShow = false;
+
+
+                this._adTypeLoaded = AD_TYPE.resume;
+                adTypeShow = AD_TYPE.resume;
             }
 
             if (adState == AD_STATE.show_fail)
             {
-                if (isOpenAdShow)
+                if (adTypeShow == AD_TYPE.open)
                     adState = AD_STATE.show_open_fail;
                 else
                     adState = AD_STATE.show_resume_fail;
-                _countAdOpenLoad++;
-                isOpenAdShow = false;
+
+                this._adTypeLoaded = AD_TYPE.resume;
+                adTypeShow = AD_TYPE.resume;
             }
 
             LogADEvent(adType,adState); 
