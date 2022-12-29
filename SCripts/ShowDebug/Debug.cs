@@ -10,7 +10,7 @@ public class Debug : UnityEngine.Debug
  
     public static new void Log(object message)
     {
-#if !DEBUG
+#if PRODUCTION
             return;
 #endif
         UnityEngine.Debug.Log(message.ToString() + _hr);
@@ -20,7 +20,7 @@ public class Debug : UnityEngine.Debug
  
     public static new void Log(object message, Object context)
     {
-#if !DEBUG
+#if PRODUCTION
             return;
 #endif
         UnityEngine.Debug.Log(message.ToString() + _hr, context);
@@ -30,7 +30,7 @@ public class Debug : UnityEngine.Debug
  
     public static new void LogError(object message)
     {
-#if !DEBUG
+#if PRODUCTION
             return;
 #endif
         UnityEngine.Debug.LogError(message.ToString() + _hr);
@@ -41,7 +41,7 @@ public class Debug : UnityEngine.Debug
  
     public static new void LogError(object message, Object context)
     {
-#if !DEBUG
+#if PRODUCTION
             return;
 #endif
         UnityEngine.Debug.LogError(message.ToString() + _hr, context);
@@ -51,7 +51,7 @@ public class Debug : UnityEngine.Debug
  
     public static new void LogWarning(object message)
     {
-#if !DEBUG
+#if PRODUCTION
             return;
 #endif
         UnityEngine.Debug.LogWarning(message.ToString() + _hr);
@@ -61,7 +61,7 @@ public class Debug : UnityEngine.Debug
  
     public static new void LogWarning(object message, Object context)
     {
-#if !DEBUG
+#if PRODUCTION
             return;
 #endif
         UnityEngine.Debug.LogWarning(message.ToString() + _hr, context);
