@@ -361,9 +361,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dbd3d264208c43b085c08fc1748d11a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _maxTimeLoading: 10
+  _numberCondition: 1
+  _isUseLoading: 0
   _loading: {fileID: 1482692546}
   _loadingText: {fileID: 1599238044}
-  _maxTimeLoading: 10
   _onDone:
     m_PersistentCalls:
       m_Calls: []
@@ -403,7 +405,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -664,7 +666,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1416,6 +1418,7 @@ MonoBehaviour:
   - {fileID: 337766984811589102}
   - {fileID: 8802076312074791181}
   - {fileID: 7307226560747280542}
+  _doneLib: []
   _popUpRate: {fileID: 5372181371580631130}
 --- !u!1 &1968515887355318984
 GameObject:
@@ -3189,6 +3192,7 @@ MonoBehaviour:
   _isShowDebug: 0
   _isDontDestroyOnLoad: 0
   _notiDebug: {fileID: 5856749516180663948}
+  _noInternetDebug: {fileID: 4807736212578123294}
 --- !u!114 &3369000014230790961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3989,6 +3993,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e08251a38765d4f8f85e1cc0246efd2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isOpenAdShow: 0
 --- !u!1 &8829738218123470283
 GameObject:
   m_ObjectHideFlags: 0

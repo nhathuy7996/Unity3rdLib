@@ -9,7 +9,7 @@ namespace HuynnLib
     public class Huynn3rdLib : MonoBehaviour
     {
         [SerializeField] bool _isShowDebug = false, _isDontDestroyOnLoad = false;
-        [SerializeField] GameObject _notiDebug;
+        [SerializeField] GameObject _notiDebug, _noInternetDebug;
 
         int _devTapCount = 0;
 
@@ -27,6 +27,10 @@ namespace HuynnLib
         // Update is called once per frame
         void Update()
         {
+            if (_noInternetDebug && !AdManager.Instant.CheckInternetConnection())
+                _noInternetDebug.SetActive(true);
+
+
             if (!_isShowDebug || _notiDebug == null)
                 return;
             if (Input.touchCount < 3)
