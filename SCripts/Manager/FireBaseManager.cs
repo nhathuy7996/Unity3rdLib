@@ -160,7 +160,7 @@ namespace HuynnLib
         #region Firebase Logevent
         public void LogEventWithOneParam(string eventName)
         {
-            Debug.LogError("==> LogEvent " + eventName+" <==");
+            Debug.Log("==> LogEvent " + eventName+" <==");
             _= this.LogEventWithParameter(eventName, new Hashtable() { { "value", 1 } });
 
         }
