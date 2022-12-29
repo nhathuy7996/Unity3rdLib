@@ -536,10 +536,18 @@ namespace HuynnLib
         public void ShowAdOpen()
         {
             if (isShowingAd)
+            {
+                FireBaseManager.Instant.isOpenAdShow = false;
                 return;
+            }
+
             if (MaxSdk.IsAppOpenAdReady(OpenAdUnitID))
             {
                 MaxSdk.ShowAppOpenAd(OpenAdUnitID);
+            }
+            else
+            {
+                FireBaseManager.Instant.isOpenAdShow = false;
             }
         }
         #endregion

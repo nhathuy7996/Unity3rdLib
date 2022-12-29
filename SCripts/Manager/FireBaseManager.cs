@@ -18,7 +18,7 @@ namespace HuynnLib
     {
 
         #region For AD event
-        public bool _isOpenAdShow = false;
+        public bool isOpenAdShow = false;
 
         int _countAdOpenLoad = 0;
         #endregion
@@ -258,57 +258,31 @@ namespace HuynnLib
         public void LogADResumeEvent( AD_STATE adState)
         {
             AD_TYPE adType = AD_TYPE.resume;
-
-            if(adState == AD_STATE.load && _countAdOpenLoad == 0)
-            {
+            if (_countAdOpenLoad == 0)
                 adType = AD_TYPE.open;
-                
-            }
 
-            if ((adState == AD_STATE.load_fail || adState == AD_STATE.load_done))
-            {
-                if(_countAdOpenLoad == 0)
-                    adType = AD_TYPE.open;
-            }
 
             if (adState == AD_STATE.show)
             {
-                if (_countAdOpenLoad == 0)
-                {
-                    adType = AD_TYPE.open;
-                    if (_isOpenAdShow)
-                        adState = AD_STATE.show_open;
-                    else
-                        adState = AD_STATE.show_resume;
-                }
+                if (isOpenAdShow)
+                    adState = AD_STATE.show_open;
                 else
-                {
-                    adType = AD_TYPE.resume;
-                }
-                    _countAdOpenLoad++;
+                    adState = AD_STATE.show_resume;
+                _countAdOpenLoad++;
+                isOpenAdShow = false;
             }
 
             if (adState == AD_STATE.show_fail)
             {
-                if (_countAdOpenLoad == 0)
-                {
-                    adType = AD_TYPE.open;
-                    if (_isOpenAdShow)
-                        adState = AD_STATE.show_open_fail;
-                    else
-                        adState = AD_STATE.show_resume_fail;
-                }
+                if (isOpenAdShow)
+                    adState = AD_STATE.show_open_fail;
                 else
-                {
-                    adType = AD_TYPE.resume;
-                }
+                    adState = AD_STATE.show_resume_fail;
                 _countAdOpenLoad++;
+                isOpenAdShow = false;
             }
 
-            _ = this.LogEventWithParameter("ad_event", new Hashtable()
-            {
-                 {"ad_load_stats",string.Format( "ad_{0}_{1}",adType.ToString(), adState.ToString() )}
-            });
+            LogADEvent(adType,adState); 
         }
 
         #endregion
