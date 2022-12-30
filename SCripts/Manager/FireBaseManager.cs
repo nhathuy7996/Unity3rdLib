@@ -84,8 +84,9 @@ namespace HuynnLib
         /// </summary>
         /// <param name="key">key name on Firebase remote</param>
         /// <param name="waitOnDone">callback when get data success</param> 
-        public async Task GetValueRemoteAsync(string key, Action<ConfigValue> waitOnDone = null) 
+        public async Task GetValueRemoteAsync(string key, Action<ConfigValue> waitOnDone) 
         {
+     
             double countTime = 0;
             while (!_isFetchDone && countTime < 360000f)
             {

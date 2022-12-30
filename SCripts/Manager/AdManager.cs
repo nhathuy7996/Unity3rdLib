@@ -57,10 +57,22 @@ namespace HuynnLib
         private int bannerRetryAttempt,
             interstitialRetryAttempt,
             rewardedRetryAttempt,
-            AdOpenRetryAttemp = 1; 
+            AdOpenRetryAttemp = 1;
+
+        #region CallBack
         private Action<InterVideoState> _callbackInter = null;
         private Action<RewardVideoState> _callbackReward = null;
         private Action<bool> _callbackOpenAD = null;
+
+        private Action _bannerClickCallback = null;
+        private Action _interClickCallback = null;
+        private Action _rewardClickCallback = null;
+        private Action _adOpenClickCallback = null;
+
+        #endregion
+
+
+
         #endregion
 
         private bool isShowingAd = false;
@@ -71,10 +83,16 @@ namespace HuynnLib
             Debug.Log("==========> Ad start Init! <==========");
 
             InitMAX();
+            InitClickCallback();
 
             AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
 
             _onInitDone?.Invoke();
+        }
+
+        void InitClickCallback()
+        {
+            
         }
 
         #region MAX
@@ -156,6 +174,7 @@ namespace HuynnLib
         private void OnBannerAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             Debug.Log("==> Banner ad clicked <==");
+            _bannerClickCallback?.Invoke();
         }
 
 
@@ -168,6 +187,7 @@ namespace HuynnLib
             MaxSdkCallbacks.Interstitial.OnAdLoadedEvent += OnInterstitialLoadedEvent;
             MaxSdkCallbacks.Interstitial.OnAdLoadFailedEvent += OnInterstitialFailedEvent;
             MaxSdkCallbacks.Interstitial.OnAdDisplayFailedEvent += InterstitialFailedToDisplayEvent;
+            MaxSdkCallbacks.Interstitial.OnAdClickedEvent += Interstitial_OnAdClickedEvent;
             MaxSdkCallbacks.Interstitial.OnAdHiddenEvent += OnInterstitialDismissedEvent;
             MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
             MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += (adUnit, adInfo) =>
@@ -179,6 +199,8 @@ namespace HuynnLib
             // Load the first interstitial
             LoadInterstitial();
         }
+
+
         void LoadInterstitial()
         {
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load);
@@ -223,6 +245,20 @@ namespace HuynnLib
             }
 
             _callbackInter = null;
+        }
+
+
+        private void Interstitial_OnAdClickedEvent(string arg1, AdInfo arg2)
+        {
+            try
+            {
+                _interClickCallback?.Invoke();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("==> Faild invoke click inter callback, error: " + e.ToString() + " <==");
+            }
+            _interClickCallback = null;
         }
 
         private void OnInterstitialDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -323,6 +359,17 @@ namespace HuynnLib
         private void OnRewardedAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             Debug.Log("==> Reward clicked! <==");
+            try
+            {
+                _rewardClickCallback?.Invoke( );
+
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("==> Faild invoke reward click callback, error: " + e.ToString() + " <==");
+            }
+
+            _rewardClickCallback = null;
         }
 
         private void OnRewardedAdDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -362,6 +409,7 @@ namespace HuynnLib
             MaxSdkCallbacks.AppOpen.OnAdLoadFailedEvent += AppOpenOnAdLoadFailedEvent;
             MaxSdkCallbacks.AppOpen.OnAdDisplayFailedEvent += AppOpen_OnAdDisplayFailedEvent;
             MaxSdkCallbacks.AppOpen.OnAdDisplayedEvent += AppOpen_OnAdDisplayedEvent;
+            MaxSdkCallbacks.AppOpen.OnAdClickedEvent += AppOpen_OnAdClickedEvent;
             MaxSdkCallbacks.AppOpen.OnAdHiddenEvent += OnAppOpenDismissedEvent;
             MaxSdkCallbacks.AppOpen.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
             MaxSdkCallbacks.AppOpen.OnAdRevenuePaidEvent += (adUnit, adInfo) =>
@@ -372,6 +420,8 @@ namespace HuynnLib
 
             LoadAdOpen();
         }
+
+
 
         void LoadAdOpen()
         {
@@ -415,6 +465,22 @@ namespace HuynnLib
             FireBaseManager.Instant.LogADResumeEvent(  adState: AD_STATE.show);
             isShowingAd = true;
             
+        }
+
+        private void AppOpen_OnAdClickedEvent(string arg1, AdInfo arg2)
+        {
+            Debug.Log("==>Click open/resume success! <==");
+
+            try
+            {
+                _adOpenClickCallback?.Invoke(); 
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("==>Callback click ad open error: " + e.ToString() + "<==");
+            }
+
+            _adOpenClickCallback = null;
         }
 
         private void AppOpen_OnAdDisplayFailedEvent(string arg1, ErrorInfo arg2, AdInfo arg3)
