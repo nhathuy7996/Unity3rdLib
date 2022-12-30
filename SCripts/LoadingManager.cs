@@ -94,8 +94,10 @@ namespace HuynnLib
 
         public void StopLoading()
         {
+           
+            if (_maxTimeLoading == 0.2f)
+                return;
             Debug.Log("==> Force stop loading! <==");
-
             _loadingMaxvalue = _loading.maxValue - _loading.value;
             _maxTimeLoading = 0.2f;
 

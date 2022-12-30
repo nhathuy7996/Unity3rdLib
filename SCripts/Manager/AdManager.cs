@@ -399,12 +399,12 @@ namespace HuynnLib
                 {
                     LoadingManager.Instant.AddOnDoneLoading(() =>
                     {
-                        ShowAdOpen();
+                        ShowAdOpen(true);
                         _isAdsOpen = false;
                     }).DoneCondition(0);
                     return;
                 }
-                ShowAdOpen();
+                ShowAdOpen(true);
                 _isAdsOpen = false;
             }
         }
@@ -556,9 +556,19 @@ namespace HuynnLib
         }
 
         /// <summary>
-        /// It'll help firebase log event more correctly, ignore it if you done care
+        /// Show ad open or resume, if you need callback must check is ad show done or not
+        /// <code>
+        /// AdManager.Instant.ShowAdOpen(true,(isSuccess)=>{
+        ///       if(isSuccess){
+        ///         Debug.Log("Done!");
+        ///       }else{
+        ///         Debug.Log("Fail!");
+        ///       }
+        /// })
+        /// </code>
         /// </summary>
         /// <param name="isAdOpen">Is Ads treated as an open AD</param>
+        /// <param name="callback">Callback when adopen show done or fail pass true if ad show success and false if ad fail</param>
         public void ShowAdOpen(bool isAdOpen = false, Action<bool> callback = null)
         {
             if (isShowingAd)
@@ -586,6 +596,25 @@ namespace HuynnLib
                 } 
             }
         }
+
+        /// <summary>
+        /// Show ad open or resume, if you need callback must check is ad show done or not
+        /// <code>
+        /// AdManager.Instant.ShowAdOpen((isSuccess)=>{
+        ///       if(isSuccess){
+        ///         Debug.Log("Done!");
+        ///       }else{
+        ///         Debug.Log("Fail!");
+        ///       }
+        /// })
+        /// </code>
+        /// </summary> 
+        /// <param name="callback">Callback when adopen show done or fail pass true if ad show success and false if ad fail</param>
+        public void ShowAdOpen(Action<bool> callback = null)
+        {
+            ShowAdOpen(false, callback);
+        }
+
         #endregion
 
 
@@ -753,7 +782,7 @@ namespace HuynnLib
         {
             if (!focus)
             {
-                this.ShowAdOpen();
+                this.ShowAdOpen(false);
             }
         }
 #endif
@@ -765,7 +794,7 @@ namespace HuynnLib
             // Display the app open ad when the app is foregrounded. 
             if (state == AppState.Foreground)
             {
-                this.ShowAdOpen();
+                this.ShowAdOpen(false);
             }
 
 
