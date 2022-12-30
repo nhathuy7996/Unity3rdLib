@@ -3,15 +3,30 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using System.Linq;
+using UnityEditor;
+
 
 namespace HuynnLib
 {
-    public class Huynn3rdLib : MonoBehaviour
+    public class Huynn3rdLib : Singleton<Huynn3rdLib>
     {
         [SerializeField] bool _isShowDebug = false, _isDontDestroyOnLoad = false;
         [SerializeField] GameObject _notiDebug, _noInternetDebug;
-
+        MasterLib _masterLib;
         int _devTapCount = 0;
+
+        [SerializeField] GameObject _popupRate;
+
+        [Header("------------LIB-------------")]
+        [SerializeField]
+        bool _isAutoInit = false;
+        public bool isAutoInit => _isAutoInit;
+        [SerializeField]
+        bool _isInitByOrder = false;
+        public bool isInitByOrder => _isInitByOrder;
+
+        [SerializeField] List<GameObject> _childLibs = new List<GameObject>();
+        public List<GameObject> ChildLibs => _childLibs;
 
         // Start is called before the first frame update
         void Start()
@@ -60,6 +75,11 @@ namespace HuynnLib
                 _notiDebug.SetActive(true);
         }
 
+        public void ShowPopUpRate(bool isShow = true)
+        {
+            _popupRate.SetActive(isShow);
+        }
+
         public void CloseApplication()
         {
             Application.Quit();
@@ -67,7 +87,11 @@ namespace HuynnLib
 
         private void OnDrawGizmosSelected()
         {
-            CheckFirebaseJS();
+            if (!_masterLib)
+                _masterLib = this.GetComponentInChildren<MasterLib>();
+
+            //CheckFirebaseJS();
+
             if (_notiDebug == null && this.transform.GetChild(0).GetComponent<NotiManager>() != null)
             {
                 _notiDebug = this.transform.GetChild(0).gameObject;
@@ -75,17 +99,32 @@ namespace HuynnLib
             _notiDebug.SetActive(_isShowDebug);
         }
 
-        public void CheckFirebaseJS()
+        public void GetSubLib()
+        {
+            _childLibs = this.GetComponentInChildren<MasterLib>().GetChildLib();
+        }
+
+        public bool CheckFirebaseJS()
         {
     
             string[] files = Directory.GetFiles(Application.dataPath, "*.json*", SearchOption.AllDirectories)
                                 .Where(f => f.EndsWith("google-services.json")).ToArray();
             if (files.Length == 0)
+            {
                 Debug.LogError("==>Project doesnt contain google-services.json. Firebase may not work!!!!!<==");
+                return false;
+            }
 
             if (files.Length > 1)
+            {
                 Debug.LogError("==>Project contain more than one file google-services.json. Firebase may not work wrong!!!!!<==");
+                return false;
+            }
+
+            return true;
         }
+
+        
     }
 }
 

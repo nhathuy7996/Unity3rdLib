@@ -6,16 +6,16 @@ using System;
 
 namespace HuynnLib
 {
-    public class MasterLib : Singleton<MasterLib>
+    public class MasterLib : MonoBehaviour
     {
+    
         [SerializeField]
-        bool _isAutoAssign = false;
+        bool _isAutoInit = Huynn3rdLib.Instant.isAutoInit;
         [SerializeField]
-        bool _isAutoInit = false;
-        [SerializeField]
-        bool _isInitByOrder = false;
-        [SerializeField]
-        List<GameObject> _childLibs = new List<GameObject>();
+        bool _isInitByOrder = Huynn3rdLib.Instant.isInitByOrder;
+
+        List<GameObject> _childLibs = Huynn3rdLib.Instant.ChildLibs;
+
         [SerializeField]
         List<GameObject> _doneLib = new List<GameObject>(); //Runtime check
         [SerializeField] GameObject _popUpRate;
@@ -32,9 +32,12 @@ namespace HuynnLib
 
         public void InitChildLib(Action onAllInitDone = null)
         {
+            
             if (_isInitByOrder)
             {
                 Queue<IChildLib> orderInit = new Queue<IChildLib>();
+                
+
                 for (int i = 0; i < _childLibs.Count; i++)
                 {
                     orderInit.Enqueue(_childLibs[i].GetComponent<IChildLib>());
@@ -87,11 +90,10 @@ namespace HuynnLib
             onAllInitDone?.Invoke();
         }
 
-        private void OnDrawGizmosSelected()
-        {
-            if (!_isAutoAssign)
-                return;
+ 
 
+        public List<GameObject> GetChildLib()
+        {
             for (int i = 0; i < this.transform.childCount; i++)
             {
                 Transform Ichild = this.transform.GetChild(i);
@@ -108,13 +110,10 @@ namespace HuynnLib
                 _childLibs.Add(this.transform.GetChild(i).gameObject);
             }
 
-            _isAutoAssign = false;
+            return _childLibs;
         }
 
-        public void ShowPopUpRate(bool isShow = true)
-        {
-            _popUpRate.SetActive(isShow);
-        }
+    
     }
 
 
