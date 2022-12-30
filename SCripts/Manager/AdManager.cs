@@ -105,12 +105,16 @@ namespace HuynnLib
                 // AppLovin SDK is initialized, configure and start loading ads.
                 Debug.Log("==> MAX SDK Initialized <==");
 
-                if(!string.IsNullOrWhiteSpace(BannerAdUnitID))
-                    InitializeBannerAds();
+                if (_isOffInter)
+                    InitializeInterstitialAds();
 
-                InitializeInterstitialAds();
-                InitializeRewardedAds();
                 InitAdOpen();
+                if (_isOffBanner)
+                    if (!string.IsNullOrWhiteSpace(BannerAdUnitID))
+                        InitializeBannerAds();
+
+                if (_isOffReward)
+                    InitializeRewardedAds();
 
             };
             MaxSdk.SetSdkKey(MaxSdkKey);
