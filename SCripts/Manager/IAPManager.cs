@@ -99,20 +99,20 @@ namespace HuynnLib
         /// <param name="productID">ID of product (in catalog)</param>
         /// <param name="eventRestore"> action when product restore success</param>
         /// <returns> await table Task, true if restore action done and false if wrong ID </returns>
-        public async Task<bool> TryAddRestoreEvent(string productID, Action eventRestore = null)
+        public async Task<bool> TryAddRestoreEvent(string productID, Action eventRestore = null, bool isTimeOut = false)
         {
             var catalog = ProductCatalog.LoadDefaultCatalog();
             double countTime = 0;
-            while (!_restoreItemCheck.Contains(productID) && !IsInitialized() && countTime < 120000f)
+            while (!_restoreItemCheck.Contains(productID) || !IsInitialized() )
             {
                 countTime += 500;
+                if(isTimeOut)
+                    if (countTime >= 360000f)
+                    {
+                        Debug.LogError(string.Format("==>Restored product {0} fail, becuz time out! Check your network please!<==", productID));
+                        return false;
+                    }
                 await Task.Delay(500);
-            }
-
-            if (countTime >= 120000f)
-            {
-                Debug.LogError(string.Format("==>Restored product {0} fail, becuz time out! Check your network please!<==", productID));
-                return false;
             }
 
             if (_restoreItemCheck.Contains(productID))
@@ -121,6 +121,7 @@ namespace HuynnLib
                 return true;
             }
 
+            Debug.LogError(string.Format("==>Restored product {0} fail, Check product ID!<==", productID));
             return false;
         }
 
