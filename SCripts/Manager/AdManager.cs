@@ -30,9 +30,10 @@ namespace HuynnLib
 
 
         [SerializeField]
-        bool  _isAdsOpen = true, _isBannerAutoShow =false;
-        bool _isAdsBanner = true;
-        public bool isAdBanner => _isAdsBanner;
+        bool _isBannerAutoShow =false;
+        bool _isBannerCurrentlyAllow = true, _isOffBanner = false, _isOffInter = false,
+            _isOffReward = false, _isOffAdsOpen = false, _isOffAdsResume = false;
+        public bool isAdBanner => _isBannerCurrentlyAllow;
 
 
         [SerializeField]
@@ -151,7 +152,7 @@ namespace HuynnLib
 
         private void OnBannerAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-            if (_isAdsBanner)
+            if (_isBannerCurrentlyAllow)
                 this.ShowBanner();
             Debug.Log("==> Banner ad loaded <==");
             MaxSdk.StartBannerAutoRefresh(BannerAdUnitID);
@@ -443,20 +444,7 @@ namespace HuynnLib
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load_done); 
 
             AdOpenRetryAttemp = 0;
-            if (_isAdsOpen)
-            {
-                if (LoadingManager.Instant != null)
-                {
-                    LoadingManager.Instant.AddOnDoneLoading(() =>
-                    {
-                        ShowAdOpen(true);
-                        _isAdsOpen = false;
-                    }).DoneCondition(0);
-                    return;
-                }
-                ShowAdOpen(true);
-                _isAdsOpen = false;
-            }
+             
         }
 
         private void AppOpen_OnAdDisplayedEvent(string arg1, AdInfo arg2)
@@ -560,8 +548,10 @@ namespace HuynnLib
 
         public void ShowBanner()
         {
+            if (_isOffBanner)
+                return;
             Debug.Log("==> show banner <==");
-            _isAdsBanner = true;
+            _isBannerCurrentlyAllow = true;
 
             if (!string.IsNullOrWhiteSpace(BannerAdUnitID))
                 MaxSdk.ShowBanner(BannerAdUnitID);
@@ -571,7 +561,7 @@ namespace HuynnLib
         public void DestroyBanner()
         {
             Debug.Log("==> destroy banner <==");
-            _isAdsBanner = false;
+            _isBannerCurrentlyAllow = false;
 
             if (!string.IsNullOrWhiteSpace(BannerAdUnitID))
                 MaxSdk.DestroyBanner(BannerAdUnitID);
@@ -579,6 +569,8 @@ namespace HuynnLib
 
         public void ShowInterstitial(Action<InterVideoState> callback = null, bool showNoAds = false)
         {
+            if (_isOffInter)
+                return;
             if (CheckInternetConnection() && InterstitialIsLoaded())
             {
                 isShowingAd = true;
@@ -601,6 +593,9 @@ namespace HuynnLib
 
         public void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false)
         {
+            if (_isOffReward)
+                return;
+
             if (CheckInternetConnection() && VideoRewardIsLoaded())
             {
                 isShowingAd = true;
@@ -637,6 +632,12 @@ namespace HuynnLib
         /// <param name="callback">Callback when adopen show done or fail pass true if ad show success and false if ad fail</param>
         public void ShowAdOpen(bool isAdOpen = false, Action<bool> callback = null)
         {
+            if (isAdOpen && _isOffAdsOpen)
+                return;
+
+            if (!isAdOpen && _isOffAdsResume)
+                return;
+
             if (isShowingAd)
             {
                 FireBaseManager.Instant.adTypeShow = AD_TYPE.resume;
