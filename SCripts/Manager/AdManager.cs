@@ -60,7 +60,7 @@ namespace HuynnLib
             AdOpenRetryAttemp = 1; 
         private Action<InterVideoState> _callbackInter = null;
         private Action<RewardVideoState> _callbackReward = null;
-        private Action _callbackOpenAD = null;
+        private Action<bool> _callbackOpenAD = null;
         #endregion
 
         private bool isShowingAd = false;
@@ -420,9 +420,21 @@ namespace HuynnLib
         private void AppOpen_OnAdDisplayFailedEvent(string arg1, ErrorInfo arg2, AdInfo arg3)
         {
             Debug.LogError("==> Show ad open/resume failed, code: " + arg2.Code+" <==");
+
+            try
+            {
+                _callbackOpenAD?.Invoke(false);
+                _callbackOpenAD = null;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("==>Callback ad open error: " + e.ToString() + "<==");
+            }
+
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show_fail);
             AdOpenRetryAttemp++;
             double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp));
+            isShowingAd = false;
             Invoke("LoadAdOpen", (float)retryDelay);
           
         }
@@ -442,7 +454,7 @@ namespace HuynnLib
             Debug.Log("==> Ad open/resume close! <==");
             try
             {
-                _callbackOpenAD?.Invoke();
+                _callbackOpenAD?.Invoke(true);
                 _callbackOpenAD = null;
             }
             catch (Exception e)
@@ -523,7 +535,7 @@ namespace HuynnLib
 
         public void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false)
         {
-            if (VideoRewardIsLoaded())
+            if (CheckInternetConnection() && VideoRewardIsLoaded())
             {
                 isShowingAd = true;
                 _callbackReward = callback;
@@ -547,7 +559,7 @@ namespace HuynnLib
         /// It'll help firebase log event more correctly, ignore it if you done care
         /// </summary>
         /// <param name="isAdOpen">Is Ads treated as an open AD</param>
-        public void ShowAdOpen(bool isAdOpen = false, Action callback = null)
+        public void ShowAdOpen(bool isAdOpen = false, Action<bool> callback = null)
         {
             if (isShowingAd)
             {
@@ -555,7 +567,7 @@ namespace HuynnLib
                 return;
             }
 
-            if (MaxSdk.IsAppOpenAdReady(OpenAdUnitID))
+            if (CheckInternetConnection() && AdsOpenIsLoaded())
             {
                 FireBaseManager.Instant.adTypeShow = isAdOpen? AD_TYPE.open: AD_TYPE.resume;
                 MaxSdk.ShowAppOpenAd(OpenAdUnitID);
@@ -564,7 +576,14 @@ namespace HuynnLib
             else
             {
                 FireBaseManager.Instant.adTypeShow = AD_TYPE.resume;
-                callback?.Invoke();
+                try
+                {
+                    callback?.Invoke(false);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("==> Faild invoke callback adopen/resume, error: " + e.ToString() + " <==");
+                } 
             }
         }
         #endregion
@@ -727,6 +746,17 @@ namespace HuynnLib
             }
             return internet;
         }
+
+#if UNITY_EDITOR
+
+        private void OnApplicationFocus(bool focus)
+        {
+            if (!focus)
+            {
+                this.ShowAdOpen();
+            }
+        }
+#endif
 
 
         private void OnAppStateChanged(AppState state)

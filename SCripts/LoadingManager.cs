@@ -26,6 +26,8 @@ namespace HuynnLib
         [Header("---------Config---------")]
         [Space(10)]
         [SerializeField]
+        GameObject _loadingPopUp;
+        [SerializeField]
         Slider _loading;
 
         [SerializeField]
@@ -62,7 +64,7 @@ namespace HuynnLib
                 if (value == 100)
                 {
                     Debug.Log("==>Loading Done!<==");
-                    _loading.transform.parent.gameObject.SetActive(false);
+                    _loadingPopUp.SetActive(false);
 
                     try
                     {
@@ -95,7 +97,7 @@ namespace HuynnLib
             Debug.Log("==> Force stop loading! <==");
 
             _loadingMaxvalue = _loading.maxValue - _loading.value;
-            _maxTimeLoading = 1;
+            _maxTimeLoading = 0.2f;
 
         }
 
@@ -138,11 +140,11 @@ namespace HuynnLib
         {
             if (_isUseLoading && _loading.value < 100)
             {
-                _loading.transform.parent.gameObject.SetActive(true);
+                _loadingPopUp.SetActive(true);
             }
             else
             {
-                _loading.transform.parent.gameObject.SetActive(false);
+                _loadingPopUp.SetActive(false);
             }
         }
     }
