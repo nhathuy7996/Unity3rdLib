@@ -91,10 +91,53 @@ namespace HuynnLib
             _onInitDone?.Invoke();
         }
 
+
         void InitClickCallback()
         {
-            
+
+            _bannerClickCallback = () =>
+            {
+
+            };
+
+            _interClickCallback = () =>
+            {
+
+            };
+
+            _rewardClickCallback = () =>
+            {
+
+            };
         }
+
+
+        #region ClickCallBack
+        public AdManager AssignClickCallBackBanner(Action callback)
+        {
+            _bannerClickCallback = callback;
+            return this;
+        }
+
+        public AdManager AssignClickCallBackInter(Action callback)
+        {
+            _interClickCallback = callback;
+            return this;
+        }
+
+        public AdManager AssignClickCallBackReward(Action callback)
+        {
+            _rewardClickCallback = callback;
+            return this;
+        }
+
+        public AdManager AssignClickCallBackAdOpne(Action callback)
+        {
+            _adOpenClickCallback = callback;
+            return this;
+        }
+        #endregion
+
 
         #region MAX
 
