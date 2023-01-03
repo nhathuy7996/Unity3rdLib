@@ -9,9 +9,9 @@ namespace HuynnLib
     public class MasterLib : MonoBehaviour
     {
 
-        [SerializeField]
+      
         bool _isAutoInit = (Huynn3rdLib.Instant != null) ? Huynn3rdLib.Instant.isAutoInit : false;
-        [SerializeField]
+     
         bool _isInitByOrder = (Huynn3rdLib.Instant != null) ? Huynn3rdLib.Instant.isInitByOrder : false;
 
         List<GameObject> _childLibs = (Huynn3rdLib.Instant != null) ? Huynn3rdLib.Instant.ChildLibs : new List<GameObject>();
