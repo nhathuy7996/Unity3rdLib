@@ -204,8 +204,11 @@ namespace HuynnLib
                 foreach (DictionaryEntry item in hash)
                 {
                     if (item.Equals((DictionaryEntry)default)) continue;
-                    parameter[i] = (new Firebase.Analytics.Parameter(item.Key.ToString(), item.Value.ToString()));
-                    Debug.Log("==> LogEvent " + event_name.ToString() + "- Key = " + item.Key + " -  Value =" + item.Value + " <==");
+                    string key = item.Key.ToString().Replace(":", "").Replace("!", "").Replace(" ", "_");
+                    string value = item.Value.ToString().Replace(":", "").Replace("!", "").Replace(" ", "_");
+
+                    parameter[i] = (new Firebase.Analytics.Parameter(key, value));
+                    Debug.Log("==> LogEvent " + event_name.ToString() + "- Key = " + key + " -  Value =" + value + " <==");
                     i++;
                 }
 
