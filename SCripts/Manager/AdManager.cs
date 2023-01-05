@@ -148,15 +148,15 @@ namespace HuynnLib
                 // AppLovin SDK is initialized, configure and start loading ads.
                 Debug.Log("==> MAX SDK Initialized <==");
 
-                if (_isOffInter)
+                InitAdOpen();
+                if (!_isOffInter)
                     InitializeInterstitialAds();
 
-                InitAdOpen();
-                if (_isOffBanner)
+                if (!_isOffBanner)
                     if (!string.IsNullOrWhiteSpace(BannerAdUnitID))
                         InitializeBannerAds();
 
-                if (_isOffReward)
+                if (!_isOffReward)
                     InitializeRewardedAds();
 
             };
@@ -222,7 +222,15 @@ namespace HuynnLib
         private void OnBannerAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             Debug.Log("==> Banner ad clicked <==");
-            _bannerClickCallback?.Invoke();
+            try
+            {
+                _bannerClickCallback?.Invoke();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("==> invoke banner click callback error: "+e.ToString()+" <==");
+            }
+            _bannerClickCallback = null;
         }
 
 
