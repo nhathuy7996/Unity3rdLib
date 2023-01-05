@@ -9,20 +9,18 @@ namespace HuynnLib
     public class MasterLib : MonoBehaviour
     {
 
-      
-        bool _isAutoInit = (Huynn3rdLib.Instant != null) ? Huynn3rdLib.Instant.isAutoInit : false;
+        Huynn3rdLib huynn3RdLib;
      
-        bool _isInitByOrder = (Huynn3rdLib.Instant != null) ? Huynn3rdLib.Instant.isInitByOrder : false;
-
-        List<GameObject> _childLibs = (Huynn3rdLib.Instant != null) ? Huynn3rdLib.Instant.ChildLibs : new List<GameObject>();
+        bool _isInitByOrder = false;
+ 
 
         [SerializeField]
         List<GameObject> _doneLib = new List<GameObject>(); //Runtime check
-        [SerializeField] GameObject _popUpRate;
 
         private void Awake()
         {
-            if (!_isAutoInit)
+            huynn3RdLib = this.GetComponentInParent<Huynn3rdLib>();
+            if (!huynn3RdLib.isAutoInit)
                 return;
 
             InitChildLib(() => { Debug.Log("=====> Init done all! <====="); });
@@ -38,9 +36,9 @@ namespace HuynnLib
                 Queue<IChildLib> orderInit = new Queue<IChildLib>();
                 
 
-                for (int i = 0; i < _childLibs.Count; i++)
+                for (int i = 0; i < huynn3RdLib.ChildLibs.Count; i++)
                 {
-                    orderInit.Enqueue(_childLibs[i].GetComponent<IChildLib>());
+                    orderInit.Enqueue(huynn3RdLib.ChildLibs[i].GetComponent<IChildLib>());
                 }
 
                 Action<IChildLib> onInitDone = null;
@@ -64,12 +62,12 @@ namespace HuynnLib
             }
 
 
-            for (int i = 0; i < _childLibs.Count; i++)
+            for (int i = 0; i < huynn3RdLib.ChildLibs.Count; i++)
             {
-                GameObject g = _childLibs[i].gameObject;
+                GameObject g = huynn3RdLib.ChildLibs[i].gameObject;
                 try
                 {
-                    _childLibs[i].GetComponent<IChildLib>()?.Init(() =>
+                    huynn3RdLib.ChildLibs[i].GetComponent<IChildLib>()?.Init(() =>
                     {
                         _doneLib.Add(g);
                     });
@@ -86,33 +84,9 @@ namespace HuynnLib
 
         IEnumerator WaitAllLibInitDone(List<GameObject> doneLib, Action onAllInitDone)
         {
-            yield return new WaitUntil(() => doneLib.Count == _childLibs.Count);
+            yield return new WaitUntil(() => doneLib.Count == huynn3RdLib.ChildLibs.Count);
             onAllInitDone?.Invoke();
         }
-
- 
-
-        public List<GameObject> GetChildLib()
-        {
-            for (int i = 0; i < this.transform.childCount; i++)
-            {
-                Transform Ichild = this.transform.GetChild(i);
-                if (Ichild.GetComponent<IChildLib>() == null)
-                    DestroyImmediate(Ichild.gameObject);
-            }
-
-            this._childLibs.Clear();
-            IChildLib[] childLib = this.GetComponentsInChildren<IChildLib>();
-
-            for (int i = 0; i < childLib.Count(); i++)
-            {
-
-                _childLibs.Add(this.transform.GetChild(i).gameObject);
-            }
-
-            return _childLibs;
-        }
-
     
     }
 

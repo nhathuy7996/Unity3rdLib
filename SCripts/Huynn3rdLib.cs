@@ -4,7 +4,9 @@ using System.IO;
 using UnityEngine;
 using System.Linq;
 using UnityEditor;
-
+using System.Xml;
+using SimpleJSON;
+using System;
 
 namespace HuynnLib
 {
@@ -25,17 +27,18 @@ namespace HuynnLib
         bool _isInitByOrder = false;
         public bool isInitByOrder => _isInitByOrder;
 
-        [SerializeField] List<GameObject> _childLibs = new List<GameObject>();
+        [SerializeField] List<GameObject> _childLibs;
         public List<GameObject> ChildLibs => _childLibs;
 
         // Start is called before the first frame update
         void Start()
         {
-            if(_isDontDestroyOnLoad)
+            if (_isDontDestroyOnLoad)
                 DontDestroyOnLoad(this.gameObject);
 
 #if UNITY_EDITOR
             this.CheckFirebaseJS();
+            this.CheckFirebaseXml();
 #endif
         }
 
@@ -50,12 +53,12 @@ namespace HuynnLib
                 return;
             if (Input.touchCount < 3)
             {
-                if(_devTapCount != 0)
+                if (_devTapCount != 0)
                     _devTapCount = 0;
                 return;
             }
 
-            if (Screen.width - Vector2.Distance(Input.GetTouch(0).position, Input.GetTouch(1).position) > Screen.width/4 )
+            if (Screen.width - Vector2.Distance(Input.GetTouch(0).position, Input.GetTouch(1).position) > Screen.width / 4)
             {
                 return;
             }
@@ -97,16 +100,35 @@ namespace HuynnLib
                 _notiDebug = this.transform.GetChild(0).gameObject;
             }
             _notiDebug.SetActive(_isShowDebug);
+
+             
         }
 
         public void GetSubLib()
         {
-            _childLibs = this.GetComponentInChildren<MasterLib>().GetChildLib();
+            if (!_masterLib)
+                _masterLib = this.GetComponentInChildren<MasterLib>();
+            for (int i = 0; i < _masterLib.transform.childCount; i++)
+            {
+                Transform Ichild = _masterLib.transform.GetChild(i);
+                if (Ichild.GetComponent<IChildLib>() == null)
+                    DestroyImmediate(Ichild.gameObject);
+            }
+
+            this._childLibs = new List<GameObject>();
+            IChildLib[] childLib = this.GetComponentsInChildren<IChildLib>();
+
+            for (int i = 0; i < childLib.Count(); i++)
+            {
+
+                _childLibs.Add(_masterLib.transform.GetChild(i).gameObject);
+            }
+           
         }
 
         public bool CheckFirebaseJS()
         {
-    
+
             string[] files = Directory.GetFiles(Application.dataPath, "*.json*", SearchOption.AllDirectories)
                                 .Where(f => f.EndsWith("google-services.json")).ToArray();
             if (files.Length == 0)
@@ -124,7 +146,19 @@ namespace HuynnLib
             return true;
         }
 
-        
+        public string CheckFirebaseXml()
+        {
+            string[] files = Directory.GetFiles(Application.dataPath, "*google-services.xml", SearchOption.AllDirectories).ToArray();
+            if (files.Length == 1)
+            {
+                return files[0];
+            }
+
+            Debug.LogError("==>Project error google-services.xml. Firebase may not work wrong!!!!!<==");
+            return null;
+        }
+
+
     }
 }
 
