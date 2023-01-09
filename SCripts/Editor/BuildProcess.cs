@@ -18,28 +18,17 @@ class BuildProcess : IPreprocessBuildWithReport
     {
         if (!CheckFirebaseJson())
         {
-            EditorUtility.DisplayDialog("Oop, something wrong?",
-                "Missing google-service.js. All firebase services may not work?", "Ok!" );
-
+            
             return;
         }
 
-        if (EditorUserBuildSettings.buildAppBundle)
-        {
-            //var Adjust = UnityEngine.GameObject.Find("Adjust");
-            //if (Adjust != null)
-            //{
-            //    var adjustType = Adjust.GetComponent("Adjust").GetType();
+        FixGoogleXml();
 
-            //    PropertyInfo[] adjustProperties = adjustType.GetProperties(BindingFlags.Public);
-            //    foreach (PropertyInfo info in adjustProperties)
-            //    {
-            //        Debug.LogError(info);
-            //    }
-            //}
+    }
 
-        }
-
+    [MenuItem("3rdLib/Check google-services.xml")]
+    static void FixGoogleXml()
+    {
 
         XmlDocument xmlDoc = new XmlDocument();
         string googleServiceXmlPath = CheckFirebaseXml();
@@ -125,10 +114,10 @@ class BuildProcess : IPreprocessBuildWithReport
 
             if (!string.IsNullOrEmpty(errors))
             {
-                if(EditorUtility.DisplayDialog("Oop, something wrong?",
+                if (EditorUtility.DisplayDialog("Oop, something wrong?",
                     "data different between google-service.xml and google-services.json: \n" +
-                    errors+
-                    " All firebase services may not work, auto fix it?", "Ok!","Fuck off"))
+                    errors +
+                    " All firebase services may not work, auto fix it?", "Ok!", "Fuck off"))
                 {
                     string data = "<?xml version='1.0' encoding='utf-8'?>\n" +
                         "<resources xmlns:tools=\"http://schemas.android.com/tools\" tools:keep=\"@string/gcm_defaultSenderId," +
@@ -136,36 +125,37 @@ class BuildProcess : IPreprocessBuildWithReport
                         "@string/project_id,@string/google_api_key," +
                         "@string/google_crash_reporting_api_key,@string/google_app_id," +
                         "@string/default_web_client_id\">\n  " +
-                        "<string name=\"gcm_defaultSenderId\" translatable=\"false\">"+ project_info["project_number"] + "</string>\n  " +
-                        "<string name=\"google_storage_bucket\" translatable=\"false\">"+ project_info["storage_bucket"] + "</string>\n  " +
-                        "<string name=\"project_id\" translatable=\"false\">"+ project_info["project_id"] + "</string>\n  " +
-                        "<string name=\"google_api_key\" translatable=\"false\">"+ client["api_key"][0]["current_key"] + "</string>\n  " +
-                        "<string name=\"google_crash_reporting_api_key\" translatable=\"false\">"+ client["api_key"][0]["current_key"] + "</string>\n  " +
-                        "<string name=\"google_app_id\" translatable=\"false\">"+ client["client_info"]["mobilesdk_app_id"] + "</string>\n  " +
-                        "<string name=\"default_web_client_id\" translatable=\"false\">"+ default_web_client_id + "</string>\n" +
+                        "<string name=\"gcm_defaultSenderId\" translatable=\"false\">" + project_info["project_number"] + "</string>\n  " +
+                        "<string name=\"google_storage_bucket\" translatable=\"false\">" + project_info["storage_bucket"] + "</string>\n  " +
+                        "<string name=\"project_id\" translatable=\"false\">" + project_info["project_id"] + "</string>\n  " +
+                        "<string name=\"google_api_key\" translatable=\"false\">" + client["api_key"][0]["current_key"] + "</string>\n  " +
+                        "<string name=\"google_crash_reporting_api_key\" translatable=\"false\">" + client["api_key"][0]["current_key"] + "</string>\n  " +
+                        "<string name=\"google_app_id\" translatable=\"false\">" + client["client_info"]["mobilesdk_app_id"] + "</string>\n  " +
+                        "<string name=\"default_web_client_id\" translatable=\"false\">" + default_web_client_id + "</string>\n" +
                         "</resources>";
 
-                    FileStream stream = new FileStream(CheckFirebaseXml(), FileMode.Create); 
+                    FileStream stream = new FileStream(CheckFirebaseXml(), FileMode.Create);
                     using (StreamWriter writer = new StreamWriter(stream))
                     {
                         writer.Write(data);
-                        writer.Close();
+
                         writer.Flush();
+                        writer.Close();
                     }
                 }
 
             }
 
             reader.Close();
-            
-        }
 
+        }
 
 
 
     }
 
-    public bool CheckFirebaseJson()
+    [MenuItem("3rdLib/Check google-services.json")]
+    public static bool CheckFirebaseJson()
     {
 
         string[] files = Directory.GetFiles(Application.dataPath, "*.json*", SearchOption.AllDirectories)
@@ -173,19 +163,25 @@ class BuildProcess : IPreprocessBuildWithReport
         if (files.Length == 0)
         {
             Debug.LogError("==>Project doesnt contain google-services.json. Firebase may not work!!!!!<==");
+            EditorUtility.DisplayDialog("Oop, something wrong?",
+                "Missing google-service.js. All firebase services may not work?", "Ok!");
+
             return false;
         }
 
         if (files.Length > 1)
         {
             Debug.LogError("==>Project contain more than one file google-services.json. Firebase may not work wrong!!!!!<==");
+            EditorUtility.DisplayDialog("Oop, something wrong?",
+                "Too many google-service.js. All firebase services may not work?", "Ok!");
+
             return false;
         }
 
         return true;
     }
 
-    public string CheckFirebaseXml()
+    public static string CheckFirebaseXml()
     {
         string[] files = Directory.GetFiles(Application.dataPath, "*google-services.xml", SearchOption.AllDirectories).ToArray();
         if (files.Length == 1)
