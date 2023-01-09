@@ -12,6 +12,7 @@ using System.ComponentModel;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 using UnityEngine.Device;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace HuynnLib
 {
@@ -39,9 +40,7 @@ namespace HuynnLib
         public void Init(Action _onActionDone)
         {
             Debug.Log("==========> Firebase start Init! <==========");
-#if UNITY_EDITOR
-            _onActionDone?.Invoke();
-#endif
+
             Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
             {
                 var dependencyStatus = task.Result;
@@ -169,6 +168,20 @@ namespace HuynnLib
         }
 
         #region Firebase Logevent
+
+        public string Checker(string str)
+        {
+
+            string newstr = null;
+            var regexItem = new Regex("[^a-zA-Z0-9_.]+");
+            if (regexItem.IsMatch(str[str.Length - 1].ToString()))
+            {
+                newstr = str.Remove(str.Length - 1);
+            }
+            string replacestr = Regex.Replace(newstr, "[^a-zA-Z0-9_]+", "_");
+            return replacestr;
+        }
+
         public void LogEventWithOneParam(string eventName)
         {
             Debug.Log("==> LogEvent " + eventName+" <==");
@@ -204,8 +217,8 @@ namespace HuynnLib
                 foreach (DictionaryEntry item in hash)
                 {
                     if (item.Equals((DictionaryEntry)default)) continue;
-                    string key = item.Key.ToString().Replace(":", "").Replace("!", "").Replace(" ", "_");
-                    string value = item.Value.ToString().Replace(":", "").Replace("!", "").Replace(" ", "_");
+                    string key = this.Checker(item.Key.ToString());
+                    string value = this.Checker(item.Value.ToString());
 
                     parameter[i] = (new Firebase.Analytics.Parameter(key, value));
                     Debug.Log("==> LogEvent " + event_name.ToString() + "- Key = " + key + " -  Value =" + value + " <==");

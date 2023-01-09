@@ -67,9 +67,9 @@ namespace HuynnLib
                 GameObject g = huynn3RdLib.ChildLibs[i].gameObject;
                 try
                 {
-                    huynn3RdLib.ChildLibs[i].GetComponent<IChildLib>()?.Init(() =>
+                    g.GetComponent<IChildLib>()?.Init(() =>
                     {
-                        _doneLib.Add(g);
+                        _doneLib.Add(g); 
                     });
                 }
                 catch (Exception e)

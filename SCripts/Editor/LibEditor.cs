@@ -24,6 +24,7 @@ public class LibEditor : Editor
             PrefabUtility.RecordPrefabInstancePropertyModifications(myScript);
         }
 
+        myScript.CheckFirebaseJS();
 
         //if (!myScript.CheckFirebaseJS())
         //{

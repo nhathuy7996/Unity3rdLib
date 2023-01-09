@@ -7,6 +7,7 @@ using UnityEditor;
 using System.Xml;
 using SimpleJSON;
 using System;
+using UnityEngine.UI;
 
 namespace HuynnLib
 {
@@ -17,7 +18,11 @@ namespace HuynnLib
         MasterLib _masterLib;
         int _devTapCount = 0;
 
+        [Header("------------POPUP-------------")]
         [SerializeField] GameObject _popupRate;
+        [SerializeField] GameObject _popupForceUpdate;
+        [SerializeField] Button _forceUpdateBlackPanel, _forceUpdateNo;
+
 
         [Header("------------LIB-------------")]
         [SerializeField]
@@ -30,11 +35,43 @@ namespace HuynnLib
         [SerializeField] List<GameObject> _childLibs;
         public List<GameObject> ChildLibs => _childLibs;
 
+
         // Start is called before the first frame update
         void Start()
         {
             if (_isDontDestroyOnLoad)
                 DontDestroyOnLoad(this.gameObject);
+
+            _= FireBaseManager.Instant.GetValueRemoteAsync("FORCE_UPDATE", (value) =>
+            {
+                try
+                {
+                    var data = JSON.Parse(value.StringValue);
+                    if (!Application.version.Equals(data["version"]))
+                    {
+                        _popupForceUpdate.SetActive(true);
+                    }
+
+                    if (data["force"].AsBool)
+                    {
+                        _forceUpdateNo.onClick.AddListener(() =>
+                        {
+                            Application.Quit();
+                        });
+                        _forceUpdateBlackPanel.onClick.AddListener(() =>
+                        {
+                            Application.Quit();
+                        });
+
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("===>Error on set forceupdate popup!<==== "+e.ToString());
+                }
+
+            });
 
 #if UNITY_EDITOR
             this.CheckFirebaseJS();
@@ -81,6 +118,11 @@ namespace HuynnLib
         public void ShowPopUpRate(bool isShow = true)
         {
             _popupRate.SetActive(isShow);
+        }
+
+        public void GotoMarket()
+        {
+            Application.OpenURL("market://details?id="+Application.identifier);
         }
 
         public void CloseApplication()
@@ -139,7 +181,7 @@ namespace HuynnLib
 
             if (files.Length > 1)
             {
-                Debug.LogError("==>Project contain more than one file google-services.json. Firebase may not work wrong!!!!!<==");
+                Debug.LogError(string.Format("==>Project contain more than one file google-services.json: \n{0} \n{1} . Firebase may not work wrong!!!!!<==", files[0], files[1]));
                 return false;
             }
 

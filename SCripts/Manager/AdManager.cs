@@ -622,6 +622,16 @@ namespace HuynnLib
                 MaxSdk.DestroyBanner(BannerAdUnitID);
         }
 
+
+        /// <summary>
+        /// Show AD inter, if user watch ad to get reward but ad not load done yet then you must show the popup "AD not avaiable", then set showNoAds = true
+        /// <code>
+        ///AdManager.Instant.ShowInterstitial((interState, true)=>{
+        ///});
+        /// </code>
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="showNoAds"></param>
         public void ShowInterstitial(Action<InterVideoState> callback = null, bool showNoAds = false)
         {
             if (_isOffInter)
@@ -646,6 +656,16 @@ namespace HuynnLib
             }
         }
 
+
+        /// <summary>
+        /// Show AD reward, if user watch ad to get reward but ad not load done yet then you must show the popup "AD not avaiable", then set showNoAds = true
+        /// <code>
+        ///AdManager.Instant.ShowRewardVideo((interState, true)=>{
+        ///});
+        /// </code>
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="showNoAds"></param>
         public void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false)
         {
             if (_isOffReward)
