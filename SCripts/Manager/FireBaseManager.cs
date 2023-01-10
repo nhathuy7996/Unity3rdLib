@@ -20,11 +20,12 @@ namespace HuynnLib
     {
 
         [SerializeField]
-        string _adjsutLevelAchived, _adValue;
+        string  _adValue, _adjsutLevelAchived;
 
         #region For AD event
 
         AD_TYPE _adTypeLoaded = AD_TYPE.open;
+        [HideInInspector]
         public AD_TYPE adTypeShow = AD_TYPE.resume;
 
         #endregion
