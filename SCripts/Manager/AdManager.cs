@@ -83,32 +83,11 @@ namespace HuynnLib
         {
             Debug.Log("==========> Ad start Init! <==========");
 
-            InitMAX();
-            InitClickCallback();
+            InitMAX(); 
 
             AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
 
             _onInitDone?.Invoke();
-        }
-
-
-        void InitClickCallback()
-        {
-
-            _bannerClickCallback = () =>
-            {
-
-            };
-
-            _interClickCallback = () =>
-            {
-
-            };
-
-            _rewardClickCallback = () =>
-            {
-
-            };
         }
 
 
@@ -222,6 +201,7 @@ namespace HuynnLib
         private void OnBannerAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             Debug.Log("==> Banner ad clicked <==");
+            FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.banner, adNetwork: adInfo.NetworkName);
             try
             {
                 _bannerClickCallback?.Invoke();
@@ -304,8 +284,10 @@ namespace HuynnLib
         }
 
 
-        private void Interstitial_OnAdClickedEvent(string arg1, AdInfo arg2)
+        private void Interstitial_OnAdClickedEvent(string arg1, AdInfo adInfo)
         {
+            Debug.Log("==> Inter ad clicked <==");
+            FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.inter, adNetwork: adInfo.NetworkName);
             try
             {
                 _interClickCallback?.Invoke();
@@ -414,7 +396,8 @@ namespace HuynnLib
 
         private void OnRewardedAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-            Debug.Log("==> Reward clicked! <==");
+            Debug.Log("==> Reward clicked! <=="); 
+            FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.reward, adNetwork: adInfo.NetworkName);
             try
             {
                 _rewardClickCallback?.Invoke( );
@@ -510,10 +493,10 @@ namespace HuynnLib
             
         }
 
-        private void AppOpen_OnAdClickedEvent(string arg1, AdInfo arg2)
+        private void AppOpen_OnAdClickedEvent(string arg1, AdInfo adInfo)
         {
-            Debug.Log("==>Click open/resume success! <==");
-
+            Debug.Log("==>Click open/resume success! <=="); 
+            FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.open, adNetwork: adInfo.NetworkName);
             try
             {
                 _adOpenClickCallback?.Invoke(); 

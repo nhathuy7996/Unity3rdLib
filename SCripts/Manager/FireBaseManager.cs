@@ -19,6 +19,9 @@ namespace HuynnLib
     public class FireBaseManager : Singleton<FireBaseManager>, IChildLib
     {
 
+        [SerializeField]
+        string _adjsutLevelAchived, _adValue;
+
         #region For AD event
 
         AD_TYPE _adTypeLoaded = AD_TYPE.open;
@@ -245,6 +248,17 @@ namespace HuynnLib
             {
                 {"id_level", level}
             });
+
+            if (string.IsNullOrEmpty(_adjsutLevelAchived))
+                return;
+#if NOT_ADJUST
+#else
+            if (state == LEVEL_STATE_EVENT.win_level)
+            {
+                AdjustEvent launchApp = new AdjustEvent(_adjsutLevelAchived);
+                Adjust.trackEvent(launchApp);
+            }
+#endif
         }
 
         ///<param name="name">tên button</param>
@@ -341,6 +355,27 @@ namespace HuynnLib
             }
 
             LogADEvent(adType,adState); 
+        }
+
+
+        public void LogEventClickAds(AD_TYPE ad_type, string adNetwork)
+        {
+            _ = this.LogEventWithParameter("ad_event", new Hashtable()
+            {
+                 {string.Format("ad_{0}_load_stats", adNetwork),string.Format( "ad_{0}_click", ad_type.ToString() )}
+            });
+        }
+
+        public void LogAdValueAdjust(double value)
+        {
+            if (string.IsNullOrEmpty(_adValue))
+                return;
+#if NOT_ADJUST
+#else
+            AdjustEvent adjustEvent = new AdjustEvent(_adValue);
+            adjustEvent.setRevenue(value, "USD");
+            Adjust.trackEvent(adjustEvent);
+#endif
         }
 
         #endregion
