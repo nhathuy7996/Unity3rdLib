@@ -56,11 +56,11 @@ namespace HuynnLib
                     {
                         _forceUpdateNo.onClick.AddListener(() =>
                         {
-                            Application.Quit();
+                            CloseApplication();
                         });
                         _forceUpdateBlackPanel.onClick.AddListener(() =>
                         {
-                            Application.Quit();
+                            CloseApplication();
                         });
 
                     }
