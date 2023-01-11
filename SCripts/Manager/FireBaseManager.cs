@@ -14,6 +14,11 @@ using UnityEngine.Device;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+#if NOT_ADJUST
+#else
+using com.adjust.sdk;
+#endif
+
 namespace HuynnLib
 {
     public class FireBaseManager : Singleton<FireBaseManager>, IChildLib
@@ -22,13 +27,13 @@ namespace HuynnLib
         [SerializeField]
         string  _adValue, _adjsutLevelAchived;
 
-        #region For AD event
+#region For AD event
 
         AD_TYPE _adTypeLoaded = AD_TYPE.open;
         [HideInInspector]
         public AD_TYPE adTypeShow = AD_TYPE.resume;
 
-        #endregion
+#endregion
 
         private bool _isFetchDone = false;
 
@@ -171,19 +176,12 @@ namespace HuynnLib
             }
         }
 
-        #region Firebase Logevent
+#region Firebase Logevent
 
         public string Checker(string str)
         {
-
-            string newstr = null;
-            var regexItem = new Regex("[^a-zA-Z0-9_.]+");
-            if (regexItem.IsMatch(str[str.Length - 1].ToString()))
-            {
-                newstr = str.Remove(str.Length - 1);
-            }
-            string replacestr = Regex.Replace(newstr, "[^a-zA-Z0-9_]+", "_");
-            return replacestr;
+            str = str.Replace(" ", "_");
+            return Regex.Replace(str, "[^0-9A-Za-z_+-]", "");
         }
 
         public void LogEventWithOneParam(string eventName)
@@ -236,9 +234,9 @@ namespace HuynnLib
         }
 
 
-        #endregion
+#endregion
 
-        #region FIREBASE CUSTOM EVENT
+#region FIREBASE CUSTOM EVENT
 
         /// <summary>
         ///   state: Trạng thái của level sau khi người chơi chơi qua
@@ -379,7 +377,7 @@ namespace HuynnLib
 #endif
         }
 
-        #endregion
+#endregion
 
     }
 }
