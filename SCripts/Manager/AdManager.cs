@@ -31,7 +31,7 @@ namespace HuynnLib
 
         [SerializeField]
         bool _isBannerAutoShow =false;
-        bool _isBannerCurrentlyAllow = true, _isOffBanner = false, _isOffInter = false,
+        bool _isBannerCurrentlyAllow = false, _isOffBanner = false, _isOffInter = false,
             _isOffReward = false, _isOffAdsOpen = false, _isOffAdsResume = false;
         public bool isAdBanner => _isBannerCurrentlyAllow;
 
@@ -268,7 +268,7 @@ namespace HuynnLib
         {
             // Interstitial ad failed to display. We recommend loading the next ad
             Debug.LogError("==> Interstitial failed to display with error code: " + errorInfo.Code+" <==");
-            
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.show);
             LoadInterstitial();
 
             try
@@ -392,6 +392,7 @@ namespace HuynnLib
         private void OnRewardedAdDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             Debug.Log("==> Reward display success! <==");
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.show);
         }
 
         private void OnRewardedAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -602,7 +603,7 @@ namespace HuynnLib
             _isBannerCurrentlyAllow = false;
 
             if (!string.IsNullOrWhiteSpace(BannerAdUnitID))
-                MaxSdk.DestroyBanner(BannerAdUnitID);
+                MaxSdk.HideBanner(BannerAdUnitID);
         }
 
 

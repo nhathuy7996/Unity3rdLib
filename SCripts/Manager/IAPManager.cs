@@ -3,7 +3,7 @@
 namespace HuynnLib
 {
 
-    public class IAPManager : MonoBehaviour
+    public class IAPManager : Singleton<IAPManager>
     {
     }
 }
