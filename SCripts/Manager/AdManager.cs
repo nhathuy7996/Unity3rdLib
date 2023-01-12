@@ -776,6 +776,8 @@ namespace HuynnLib
             adjustAdRevenue.setAdRevenuePlacement(adInfo.Placement);
 
             Adjust.trackAdRevenue(adjustAdRevenue);
+
+            FireBaseManager.Instant.LogAdValueAdjust(adInfo.Revenue);
         }
 
         private void OnAdRevenuePaidEvent(string adUnitId, MaxSdkBase.AdInfo impressionData)

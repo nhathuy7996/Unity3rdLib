@@ -84,6 +84,10 @@ namespace HuynnLib
         {
             if (_noInternetDebug && !AdManager.Instant.CheckInternetConnection())
                 _noInternetDebug.SetActive(true);
+            else if (AdManager.Instant.CheckInternetConnection())
+            {
+                _noInternetDebug.SetActive(false);
+            }
 
 
             if (!_isShowDebug || _notiDebug == null)
