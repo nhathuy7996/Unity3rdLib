@@ -194,7 +194,7 @@ namespace HuynnLib
             Debug.Log("==> Banner ad loaded <==");
             MaxSdk.StartBannerAutoRefresh(BannerAdUnitID);
 
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load_done);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load_done, adNetwork: adInfo.NetworkName);
 
         }
 
@@ -234,6 +234,7 @@ namespace HuynnLib
             MaxSdkCallbacks.Interstitial.OnAdLoadedEvent += OnInterstitialLoadedEvent;
             MaxSdkCallbacks.Interstitial.OnAdLoadFailedEvent += OnInterstitialFailedEvent;
             MaxSdkCallbacks.Interstitial.OnAdDisplayFailedEvent += InterstitialFailedToDisplayEvent;
+            MaxSdkCallbacks.Interstitial.OnAdDisplayedEvent += Interstitial_OnAdDisplayedEvent;
             MaxSdkCallbacks.Interstitial.OnAdClickedEvent += Interstitial_OnAdClickedEvent;
             MaxSdkCallbacks.Interstitial.OnAdHiddenEvent += OnInterstitialDismissedEvent;
             MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
@@ -247,6 +248,7 @@ namespace HuynnLib
             LoadInterstitial();
         }
 
+      
 
         void LoadInterstitial()
         {
@@ -258,7 +260,7 @@ namespace HuynnLib
         {
             // Interstitial ad is ready to be shown. MaxSdk.IsInterstitialReady(interstitialAdUnitId) will now return 'true'
             Debug.Log("==> Interstitial loaded <==");
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load_done);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load_done, adNetwork: adInfo.NetworkName);
             // Reset retry attempt
             interstitialRetryAttempt = 0;
         }
@@ -275,11 +277,17 @@ namespace HuynnLib
             Invoke("LoadInterstitial", (float)retryDelay);
         }
 
+        private void Interstitial_OnAdDisplayedEvent(string arg1, AdInfo adInfo)
+        {
+            Debug.Log("==> Interstitial show! <==");
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.show, adNetwork: adInfo.NetworkName);
+        }
+
         private void InterstitialFailedToDisplayEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo, MaxSdkBase.AdInfo adInfo)
         {
             // Interstitial ad failed to display. We recommend loading the next ad
             Debug.LogError("==> Interstitial failed to display with error code: " + errorInfo.Code + " <==");
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.show);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.show_fail, adNetwork: adInfo.NetworkName);
             LoadInterstitial();
 
             try
@@ -364,7 +372,7 @@ namespace HuynnLib
             // Rewarded ad is ready to be shown. MaxSdk.IsRewardedAdReady(rewardedAdUnitId) will now return 'true'
 
             // Reset retry attempt
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.load_done);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.load_done, adNetwork: adInfo.NetworkName);
             rewardedRetryAttempt = 0;
         }
 
@@ -386,6 +394,7 @@ namespace HuynnLib
             // Rewarded ad failed to display. We recommend loading the next ad
 
             Debug.LogError("==> Rewarded ad failed to display with error code: " + errorInfo.Code + " <==");
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.show_fail, adInfo.NetworkName);
             LoadRewardedAd();
             try
             {
@@ -403,7 +412,7 @@ namespace HuynnLib
         private void OnRewardedAdDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             Debug.Log("==> Reward display success! <==");
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.show);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.show, adInfo.NetworkName);
         }
 
         private void OnRewardedAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -491,7 +500,7 @@ namespace HuynnLib
         {
             Debug.Log("==>Load ad open/resume success! <==");
 
-            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load_done);
+            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load_done, adNetwork: arg2.NetworkName);
 
             AdOpenRetryAttemp = 0;
 
@@ -500,7 +509,7 @@ namespace HuynnLib
         private void AppOpen_OnAdDisplayedEvent(string arg1, AdInfo arg2)
         {
             Debug.Log("==> Show ad open/resume success! <==");
-            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show);
+            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show, adNetwork: arg2.NetworkName);
             isShowingAd = true;
 
         }

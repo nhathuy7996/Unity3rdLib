@@ -317,16 +317,16 @@ namespace HuynnLib
             });
         }
 
-        public void LogADEvent(AD_TYPE adType, AD_STATE adState)
+        public void LogADEvent(AD_TYPE adType, AD_STATE adState, string adNetwork = "")
         {
             _ = this.LogEventWithParameter("ad_event", new Hashtable()
             {
-                 {"ad_load_stats",string.Format( "ad_{0}_{1}",adType.ToString(), adState.ToString() )}
+                 {string.Format("ad_{0}_load_stats", adNetwork),string.Format( "ad_{0}_{1}",adType.ToString(), adState.ToString() )}
             });
         }
 
 
-        public void LogADResumeEvent( AD_STATE adState)
+        public void LogADResumeEvent(AD_STATE adState, string adNetwork = "")
         {
             AD_TYPE adType = this._adTypeLoaded;
               
@@ -353,7 +353,7 @@ namespace HuynnLib
                 adTypeShow = AD_TYPE.resume;
             }
 
-            LogADEvent(adType,adState); 
+            LogADEvent(adType,adState,adNetwork); 
         }
 
 
