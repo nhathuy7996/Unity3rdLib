@@ -25,7 +25,8 @@ namespace HuynnLib
     {
 
         [SerializeField]
-        string  _adValue, _adjsutLevelAchived;
+        public string  _adValue, _adjsutLevelAchived;
+
 
 #region For AD event
 

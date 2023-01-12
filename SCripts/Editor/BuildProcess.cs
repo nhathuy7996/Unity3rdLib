@@ -10,6 +10,7 @@ using SimpleJSON;
 using System;
 using System.Reflection;
 
+
 class BuildProcess : IPreprocessBuildWithReport
 {
     public int callbackOrder { get { return 0; } }
@@ -41,7 +42,7 @@ class BuildProcess : IPreprocessBuildWithReport
 
         using (StreamReader reader = new StreamReader(Directory.GetFiles(Application.dataPath, "*google-services.json", SearchOption.AllDirectories)[0]))
         {
-            var dataParsed = JSON.Parse(reader.ReadToEnd());
+            var dataParsed = SimpleJSON.JSON.Parse(reader.ReadToEnd());
 
             string errors = "";
 
