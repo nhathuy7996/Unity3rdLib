@@ -42,7 +42,9 @@ class ProjectInfoEditor : EditorWindow
         PlayerSettings.Android.bundleVersionCode = EditorGUILayout.IntField("Version Code", PlayerSettings.Android.bundleVersionCode);
 
         PlayerSettings.bundleVersion = EditorGUILayout.TextField("App Version", PlayerSettings.bundleVersion);
-        PlayerSettings.applicationIdentifier = EditorGUILayout.TextField("Package Name", PlayerSettings.applicationIdentifier);
+        string applicationIdentifier = EditorGUILayout.TextField("Package Name", PlayerSettings.applicationIdentifier);
+        PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, applicationIdentifier);
+        
         #endregion
 
         #region ADJUST
@@ -206,8 +208,7 @@ class ProjectInfoEditor : EditorWindow
         if (GUILayout.Button("Build"))
         {
 
-            BuildPlayerWindow.DefaultBuildMethods.GetBuildPlayerOptions(defaultBuildOptions);
-            BuildPipeline.BuildPlayer(defaultBuildOptions);
+            EditorWindow.GetWindow(Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
         }
         EditorGUILayout.EndHorizontal();
 
