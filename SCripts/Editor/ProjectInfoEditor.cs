@@ -87,6 +87,8 @@ class ProjectInfoEditor : EditorWindow
                 fireBaseManager.ADValue = EditorGUILayout.TextField("ad_value", fireBaseManager.ADValue);
                 fireBaseManager.Level_Achived = EditorGUILayout.TextField("level_achived", fireBaseManager.Level_Achived);
             }
+            PrefabUtility.RecordPrefabInstancePropertyModifications(fireBaseManager);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(adjustGameObject);
         }
         else
         {
@@ -182,6 +184,8 @@ class ProjectInfoEditor : EditorWindow
             adManager.InterstitialAdUnitID = EditorGUILayout.TextField("Inter ID", adManager.InterstitialAdUnitID);
             adManager.RewardedAdUnitID = EditorGUILayout.TextField("Reward ID", adManager.RewardedAdUnitID);
             adManager.OpenAdUnitID = EditorGUILayout.TextField("AppOpen ID", adManager.OpenAdUnitID);
+
+            PrefabUtility.RecordPrefabInstancePropertyModifications(adManager);
         }
         #endregion
 
