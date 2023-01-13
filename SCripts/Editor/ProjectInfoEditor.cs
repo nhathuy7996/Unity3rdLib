@@ -13,7 +13,7 @@ using System.IO;
 class ProjectInfoEditor : EditorWindow
 {
 
-    static string AdjustToken;
+    
     Adjust adjustGameObject;
 
 
@@ -22,7 +22,8 @@ class ProjectInfoEditor : EditorWindow
     HuynnLib.AdManager adManager = null;
     AppLovinSettings max = null;
 
-    static string bundleVersionCode = "1";
+    BuildPlayerOptions defaultBuildOptions = new BuildPlayerOptions();
+
     // Add menu named "My Window" to the Window menu
     [MenuItem("3rdLib/Checklist APERO")]
     public static void InitWindowEditor()
@@ -31,8 +32,6 @@ class ProjectInfoEditor : EditorWindow
         EditorWindow wnd = GetWindow<ProjectInfoEditor>();
         wnd.titleContent = new GUIContent("Huynn 3rdLib - APERO version!");
 
-        bundleVersionCode = PlayerSettings.Android.bundleVersionCode.ToString();
-
     }
 
     void OnGUI()
@@ -40,11 +39,7 @@ class ProjectInfoEditor : EditorWindow
         #region EDITOR
         EditorGUILayout.LabelField("Build Version:");
 
-        bundleVersionCode = EditorGUILayout.TextField("Version Code", bundleVersionCode);
-
-        int intVersionCode = 0;
-        int.TryParse(bundleVersionCode.ToString(), out intVersionCode);
-        PlayerSettings.Android.bundleVersionCode = intVersionCode;
+        PlayerSettings.Android.bundleVersionCode = EditorGUILayout.IntField("Version Code", PlayerSettings.Android.bundleVersionCode);
 
         PlayerSettings.bundleVersion = EditorGUILayout.TextField("App Version", PlayerSettings.bundleVersion);
         PlayerSettings.applicationIdentifier = EditorGUILayout.TextField("Package Name", PlayerSettings.applicationIdentifier);
@@ -204,6 +199,18 @@ class ProjectInfoEditor : EditorWindow
             BuildProcess.FixGoogleXml();
         }
         EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        
+       
+        if (GUILayout.Button("Build"))
+        {
+
+            BuildPlayerWindow.DefaultBuildMethods.GetBuildPlayerOptions(defaultBuildOptions);
+            BuildPipeline.BuildPlayer(defaultBuildOptions);
+        }
+        EditorGUILayout.EndHorizontal();
+
         if (GUILayout.Button("Close"))
         {
             Close();

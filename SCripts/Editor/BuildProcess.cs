@@ -40,7 +40,10 @@ class BuildProcess : IPreprocessBuildWithReport
             return;
         }
 
-        using (StreamReader reader = new StreamReader(Directory.GetFiles(Application.dataPath, "*google-services.json", SearchOption.AllDirectories)[0]))
+        if (!CheckFirebaseJson())
+            return;
+
+            using (StreamReader reader = new StreamReader(Directory.GetFiles(Application.dataPath, "*google-services.json", SearchOption.AllDirectories)[0]))
         {
             var dataParsed = SimpleJSON.JSON.Parse(reader.ReadToEnd());
 
