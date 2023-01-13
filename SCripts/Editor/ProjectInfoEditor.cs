@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.PackageManager.UI;
@@ -18,7 +19,7 @@ class ProjectInfoEditor : EditorWindow
 
     GoogleMobileAdsSettings gg = null;
 
-    AdManager adManager = null;
+    HuynnLib.AdManager adManager = null;
     AppLovinSettings max = null;
 
     static string bundleVersionCode = "1";
@@ -61,14 +62,14 @@ class ProjectInfoEditor : EditorWindow
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Adjust Mode");
             string adjustEvironment = adjustGameObject.environment.ToString();
-            bool dropDownSelected = EditorGUILayout.DropdownButton(content: new GUIContent(adjustEvironment),FocusType.Passive);
+            bool dropDownSelected = EditorGUILayout.DropdownButton(content: new GUIContent(adjustEvironment), FocusType.Passive);
             EditorGUILayout.EndHorizontal();
 
             if (dropDownSelected)
             {
-             
+
                 GenericMenu menu = new GenericMenu();
-                 
+
                 AddMenuItemForColor(menu, AdjustEnvironment.Production.ToString(), AdjustEnvironment.Production,
                     adjustGameObject.environment == AdjustEnvironment.Production);
                 AddMenuItemForColor(menu, AdjustEnvironment.Sandbox.ToString(), AdjustEnvironment.Sandbox,
@@ -103,7 +104,7 @@ class ProjectInfoEditor : EditorWindow
         if (gg)
         {
             gg.GoogleMobileAdsAndroidAppId = EditorGUILayout.TextField("Android AD ID", gg.GoogleMobileAdsAndroidAppId);
-
+            PrefabUtility.RecordPrefabInstancePropertyModifications(gg);
         }
         else
         {
@@ -120,24 +121,26 @@ class ProjectInfoEditor : EditorWindow
         }
         #endregion
 
-        if(!adManager)
-            adManager = GameObject.FindObjectOfType<AdManager>();
+        if (!adManager)
+            adManager = GameObject.FindObjectOfType<HuynnLib.AdManager>();
         #region APPLOVIN
         EditorGUILayout.Space(20);
         EditorGUILayout.LabelField("AppLovin:");
         if (max != null)
         {
             max.SdkKey = EditorGUILayout.TextField("MaxSdk key", max.SdkKey);
-            adManager.MaxSdkKey = max.SdkKey;
+            if (adManager)
+                adManager.MaxSdkKey = max.SdkKey;
             if (gg != null)
             {
                 max.AdMobAndroidAppId = gg.GoogleMobileAdsAndroidAppId;
-                EditorGUILayout.LabelField("Android AD ID:                       "+ max.AdMobAndroidAppId);
+                EditorGUILayout.LabelField("Android AD ID:                       " + max.AdMobAndroidAppId);
             }
             else
             {
                 max.AdMobAndroidAppId = EditorGUILayout.TextField("Android AD ID", max.AdMobAndroidAppId);
             }
+            PrefabUtility.RecordPrefabInstancePropertyModifications(max);
         }
         else
         {
@@ -152,7 +155,7 @@ class ProjectInfoEditor : EditorWindow
                 Debug.LogError("Can not find MaxSdkSetting!");
             }
         }
-        
+
         #endregion
 
         #region FACEBOOK
@@ -166,7 +169,7 @@ class ProjectInfoEditor : EditorWindow
             //FacebookSettings max = UnityEditor.AssetDatabase.LoadAssetAtPath<FacebookSettings>(path);
             //Debug.LogError(max.GetInstanceID());
 
-            
+
         }
         else
         {
@@ -192,10 +195,12 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.Space(20);
 
         EditorGUILayout.BeginHorizontal();
-        if( GUILayout.Button("Check google-services.json")){
+        if (GUILayout.Button("Check google-services.json"))
+        {
             BuildProcess.CheckFirebaseJson();
         }
-        if(GUILayout.Button("Check google-services.xml")){
+        if (GUILayout.Button("Check google-services.xml"))
+        {
             BuildProcess.FixGoogleXml();
         }
         EditorGUILayout.EndHorizontal();
@@ -220,3 +225,4 @@ class ProjectInfoEditor : EditorWindow
 
 
 }
+#endif
