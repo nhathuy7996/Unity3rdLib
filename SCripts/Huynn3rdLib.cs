@@ -82,12 +82,10 @@ namespace HuynnLib
         // Update is called once per frame
         void Update()
         {
-            if (_noInternetDebug && !AdManager.Instant.CheckInternetConnection())
-                _noInternetDebug.SetActive(true);
-            else if (AdManager.Instant.CheckInternetConnection())
+            if (_noInternetDebug)
             {
-                _noInternetDebug.SetActive(false);
-            }
+                _noInternetDebug.SetActive(!AdManager.Instant.CheckInternetConnection());
+            }  
 
 
             if (!_isShowDebug || _notiDebug == null)
