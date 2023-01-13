@@ -20,23 +20,41 @@ class ProjectInfoEditor : EditorWindow
 
     AdManager adManager = null;
     AppLovinSettings max = null;
+
+    static string bundleVersionCode = "1";
     // Add menu named "My Window" to the Window menu
     [MenuItem("3rdLib/Checklist APERO")]
     public static void InitWindowEditor()
     {
         // This method is called when the user selects the menu item in the Editor
         EditorWindow wnd = GetWindow<ProjectInfoEditor>();
-        wnd.titleContent = new GUIContent("Huynn 3rdLib - APERO version!"); 
+        wnd.titleContent = new GUIContent("Huynn 3rdLib - APERO version!");
 
-        
+        bundleVersionCode = PlayerSettings.Android.bundleVersionCode.ToString();
+
     }
 
     void OnGUI()
     {
+        #region EDITOR
+        EditorGUILayout.LabelField("Build Version:");
+
+        bundleVersionCode = EditorGUILayout.TextField("Version Code", bundleVersionCode);
+
+        int intVersionCode = 0;
+        int.TryParse(bundleVersionCode.ToString(), out intVersionCode);
+        PlayerSettings.Android.bundleVersionCode = intVersionCode;
+
+        PlayerSettings.bundleVersion = EditorGUILayout.TextField("App Version", PlayerSettings.bundleVersion);
+        PlayerSettings.applicationIdentifier = EditorGUILayout.TextField("Package Name", PlayerSettings.applicationIdentifier);
+        #endregion
+
         #region ADJUST
-      
+
         if (adjustGameObject)
         {
+            EditorGUILayout.Space(20);
+            EditorGUILayout.LabelField("Adjust:");
             adjustGameObject.appToken = EditorGUILayout.TextField("Adjust Token", adjustGameObject.appToken);
 
 
@@ -158,6 +176,8 @@ class ProjectInfoEditor : EditorWindow
         #region AD ID SETTING
         if (adManager)
         {
+            EditorGUILayout.Space(20);
+            EditorGUILayout.LabelField("AD IDs:");
             adManager.BannerAdUnitID = EditorGUILayout.TextField("Banner ID", adManager.BannerAdUnitID);
             adManager.InterstitialAdUnitID = EditorGUILayout.TextField("Inter ID", adManager.InterstitialAdUnitID);
             adManager.RewardedAdUnitID = EditorGUILayout.TextField("Reward ID", adManager.RewardedAdUnitID);
