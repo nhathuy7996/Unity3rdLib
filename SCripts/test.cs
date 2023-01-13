@@ -5,6 +5,7 @@ using UnityEngine;
 using HuynnLib;
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Common;
+using System.Text.RegularExpressions;
 
 public class test : MonoBehaviour
 {
@@ -14,9 +15,12 @@ public class test : MonoBehaviour
      
     }
 
+    
+
     // Update is called once per frame
     void Update()
     {
+         
         //-----Buy product-----
         //IAPManager.Instant.BuyProductID("IDProduct", () =>
         //{
@@ -68,7 +72,7 @@ public class test : MonoBehaviour
         //MasterLib.Instant.ShowPopUpRate() ==> Show
         //MasterLib.Instant.ShowPopUpRate(false) ==> Hide
 
-       
+
         //AdManager.Instant.ShowInterstitial((status) =>
         //{
         //    //Do sth when user watched inter

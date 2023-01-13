@@ -6,44 +6,46 @@ using System;
 
 namespace HuynnLib
 {
-    public class MasterLib : Singleton<MasterLib>
-{
-        [SerializeField]
-        bool _isAutoAssign = false;
-        [SerializeField]
-        bool _isAutoInit = false;
-        [SerializeField]
-        bool _isInitByOrder = false;
-        [SerializeField]
-        List<GameObject> _childLibs = new List<GameObject>();
+    public class MasterLib : MonoBehaviour
+    {
 
-        [SerializeField] GameObject _popUpRate;
+        Huynn3rdLib huynn3RdLib;
+     
+        bool _isInitByOrder = false;
+ 
+
+        [SerializeField]
+        List<GameObject> _doneLib = new List<GameObject>(); //Runtime check
 
         private void Awake()
         {
-            if (!_isAutoInit)
+            huynn3RdLib = this.GetComponentInParent<Huynn3rdLib>();
+            if (!huynn3RdLib.isAutoInit)
                 return;
 
             InitChildLib(() => { Debug.Log("=====> Init done all! <====="); });
 
-            
+
         }
 
         public void InitChildLib(Action onAllInitDone = null)
         {
+            
             if (_isInitByOrder)
             {
                 Queue<IChildLib> orderInit = new Queue<IChildLib>();
-                for (int  i = 0; i< _childLibs.Count; i++)
+                
+
+                for (int i = 0; i < huynn3RdLib.ChildLibs.Count; i++)
                 {
-                    orderInit.Enqueue(_childLibs[i].GetComponent<IChildLib>());
+                    orderInit.Enqueue(huynn3RdLib.ChildLibs[i].GetComponent<IChildLib>());
                 }
 
                 Action<IChildLib> onInitDone = null;
 
                 onInitDone = (childLib) =>
                 {
-                    
+
                     childLib.Init(() =>
                     {
                         if (orderInit.Count != 0)
@@ -55,56 +57,37 @@ namespace HuynnLib
 
                 onInitDone.Invoke(orderInit.Dequeue());
 
-              
+
                 return;
             }
 
-            List<GameObject> doneLib = new List<GameObject>();
-            for (int i = 0; i < _childLibs.Count; i++)
+
+            for (int i = 0; i < huynn3RdLib.ChildLibs.Count; i++)
             {
-                _childLibs[i].GetComponent<IChildLib>()?.Init(() =>
+                GameObject g = huynn3RdLib.ChildLibs[i].gameObject;
+                try
                 {
-                    doneLib.Add(_childLibs[i].gameObject);
-                });
+                    g.GetComponent<IChildLib>()?.Init(() =>
+                    {
+                        _doneLib.Add(g); 
+                    });
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(string.Format("==> Init child lib {0} error: {1} <==", g.name, e.ToString()));
+                }
+
             }
-            StartCoroutine(WaitAllLibInitDone(doneLib, onAllInitDone));
-            
+            StartCoroutine(WaitAllLibInitDone(_doneLib, onAllInitDone));
+
         }
 
         IEnumerator WaitAllLibInitDone(List<GameObject> doneLib, Action onAllInitDone)
         {
-            yield return new WaitUntil(() => doneLib.Count == _childLibs.Count);
+            yield return new WaitUntil(() => doneLib.Count == huynn3RdLib.ChildLibs.Count);
             onAllInitDone?.Invoke();
         }
-
-        private void OnDrawGizmosSelected()
-        {
-            if (!_isAutoAssign)
-                return;
-
-            for (int i = 0; i < this.transform.childCount; i++)
-            {
-                Transform Ichild = this.transform.GetChild(i);
-                if (Ichild.GetComponent<IChildLib>() == null)
-                    DestroyImmediate(Ichild.gameObject);
-            }
-
-            this._childLibs.Clear();
-            IChildLib[] childLib = this.GetComponentsInChildren<IChildLib>();
-
-            for (int i = 0; i < childLib.Count(); i++)
-            {
-
-                _childLibs.Add(this.transform.GetChild(i).gameObject);
-            }
-
-            _isAutoAssign = false;
-        }
-
-        public void ShowPopUpRate(bool isShow = true)
-        {
-            _popUpRate.SetActive(isShow);
-        }
+    
     }
 
 

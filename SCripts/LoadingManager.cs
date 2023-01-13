@@ -11,25 +11,29 @@ namespace HuynnLib
     public class LoadingManager : Singleton<LoadingManager>
     {
         [SerializeField]
+        bool _isUseLoading = true, _isLoadingAutoStart = true;
+
+        [SerializeField]
         float _maxTimeLoading = 0;
 
         [SerializeField]
         int _numberCondition = 0;
 
         [SerializeField]
-        bool _isUseLoading = true;
+        List<bool> _conditionDone = new List<bool>();
 
-        List<bool> _conditionDone = new List<bool>(); 
 
+        [Header("---------Config---------")]
+        [Space(10)]
+        [SerializeField]
+        GameObject _loadingPopUp;
         [SerializeField]
         Slider _loading;
 
         [SerializeField]
         Text _loadingText;
 
-
-        [SerializeField]
-        UnityEvent _onDone = new UnityEvent();
+        Action _onDone = null;
 
         float _loadingMaxvalue;
 
@@ -38,14 +42,14 @@ namespace HuynnLib
 
         private void Start()
         {
-          
-            Init();
+            if(_isLoadingAutoStart)
+                Init(); 
         }
 
-        public LoadingManager Init(UnityEvent onDone = null)
+        public LoadingManager Init(Action onDone = null)
         {
-            _conditionDone = new List<bool>();
-            for (int i = 0; i< _numberCondition; i++)
+            _conditionDone.Clear();
+            for (int i = 0; i < _numberCondition; i++)
             {
                 _conditionDone.Add(false);
             }
@@ -59,17 +63,20 @@ namespace HuynnLib
             {
                 if (value == 100)
                 {
+                    Debug.Log("==>Loading Done!<==");
+                    _loadingPopUp.SetActive(false);
+
                     try
                     {
                         _onDone?.Invoke();
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError("==> callback ondone loading error: "+e.ToString()+" <==");
+                        Debug.LogError("==> callback ondone loading error: " + e.ToString() + " <==");
                     }
 
                     _loading.onValueChanged.RemoveAllListeners();
-                    _loading.transform.parent.gameObject.SetActive(false);
+
                 }
             });
 
@@ -87,21 +94,23 @@ namespace HuynnLib
 
         public void StopLoading()
         {
+           
+            if (_maxTimeLoading == 0.2f)
+                return;
             Debug.Log("==> Force stop loading! <==");
-          
             _loadingMaxvalue = _loading.maxValue - _loading.value;
-            _maxTimeLoading = 1;
-            
+            _maxTimeLoading = 0.2f;
+
         }
 
-        public LoadingManager AddOnDoneLoading(UnityAction callback)
+        public LoadingManager AddOnDoneLoading(Action callback)
         {
             if (_loading.value >= 99f)
             {
                 callback?.Invoke();
                 return this;
             }
-            _onDone.AddListener(callback);
+            _onDone += (callback);
             return this;
         }
 
@@ -131,13 +140,13 @@ namespace HuynnLib
 
         private void OnDrawGizmosSelected()
         {
-            if (_isUseLoading)
+            if (_isUseLoading && _loading.value < 100)
             {
-                _loading.transform.parent.gameObject.SetActive(true);
+                _loadingPopUp.SetActive(true);
             }
             else
             {
-                _loading.transform.parent.gameObject.SetActive(false);
+                _loadingPopUp.SetActive(false);
             }
         }
     }
