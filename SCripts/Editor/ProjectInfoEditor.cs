@@ -5,13 +5,21 @@ using com.adjust.sdk;
 using GoogleMobileAds.Editor;
 using System;
 using HuynnLib;
+using Facebook.Unity.Settings;
+using Codice.Client.BaseCommands;
+using System.IO;
 
 class ProjectInfoEditor : EditorWindow
 {
 
     static string AdjustToken;
+    Adjust adjustGameObject;
 
-  
+
+    GoogleMobileAdsSettings gg = null;
+
+    AdManager adManager = null;
+    AppLovinSettings max = null;
     // Add menu named "My Window" to the Window menu
     [MenuItem("3rdLib/Checklist APERO")]
     public static void InitWindowEditor()
@@ -20,15 +28,16 @@ class ProjectInfoEditor : EditorWindow
         EditorWindow wnd = GetWindow<ProjectInfoEditor>();
         wnd.titleContent = new GUIContent("Huynn 3rdLib - APERO version!"); 
 
-       
+        
     }
 
     void OnGUI()
     {
-        Adjust adjustGameObject = GameObject.FindObjectOfType<Adjust>();
+        #region ADJUST
+      
         if (adjustGameObject)
         {
-            AdjustToken = EditorGUILayout.TextField("Adjust Token", AdjustToken);
+            adjustGameObject.appToken = EditorGUILayout.TextField("Adjust Token", adjustGameObject.appToken);
 
 
             EditorGUILayout.BeginHorizontal();
@@ -49,32 +58,122 @@ class ProjectInfoEditor : EditorWindow
                 menu.ShowAsContext();
             }
 
+
             EditorGUILayout.Space(20);
             EditorGUILayout.LabelField("Events Token:");
-   
+
 
             FireBaseManager fireBaseManager = GameObject.FindObjectOfType<FireBaseManager>();
             if (fireBaseManager)
             {
-                fireBaseManager._adValue = EditorGUILayout.TextField("ad_value", fireBaseManager._adValue);
-                fireBaseManager._adjsutLevelAchived = EditorGUILayout.TextField("level_achived", fireBaseManager._adjsutLevelAchived);
-            }
-
-
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:ExampleData");
-            if (guids.Length != 0)
-            {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guids[0]);
-                GoogleMobileAdsSettingsEditor gg = UnityEditor.AssetDatabase.LoadAssetAtPath<GoogleMobileAdsSettingsEditor>(path);
-
-
+                fireBaseManager.ADValue = EditorGUILayout.TextField("ad_value", fireBaseManager.ADValue);
+                fireBaseManager.Level_Achived = EditorGUILayout.TextField("level_achived", fireBaseManager.Level_Achived);
             }
         }
+        else
+        {
+            adjustGameObject = GameObject.FindObjectOfType<Adjust>();
+        }
+        #endregion
+
+        #region GOOGLE ADS SETTING
+        EditorGUILayout.Space(20);
+        EditorGUILayout.LabelField("Google:");
+
+        if (gg)
+        {
+            gg.GoogleMobileAdsAndroidAppId = EditorGUILayout.TextField("Android AD ID", gg.GoogleMobileAdsAndroidAppId);
+
+        }
+        else
+        {
+            string[] ggSetting = UnityEditor.AssetDatabase.FindAssets("t:GoogleMobileAdsSettings");
+            if (ggSetting.Length != 0)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(ggSetting[0]);
+                gg = UnityEditor.AssetDatabase.LoadAssetAtPath<GoogleMobileAdsSettings>(path);
+            }
+            else
+            {
+                EditorGUILayout.LabelField("Can not find GoogleMobileAdsSettings!");
+            }
+        }
+        #endregion
+
+        if(!adManager)
+            adManager = GameObject.FindObjectOfType<AdManager>();
+        #region APPLOVIN
+        EditorGUILayout.Space(20);
+        EditorGUILayout.LabelField("AppLovin:");
+        if (max != null)
+        {
+            max.SdkKey = EditorGUILayout.TextField("MaxSdk key", max.SdkKey);
+            adManager.MaxSdkKey = max.SdkKey;
+            if (gg != null)
+            {
+                max.AdMobAndroidAppId = gg.GoogleMobileAdsAndroidAppId;
+                EditorGUILayout.LabelField("Android AD ID:                          "+ max.AdMobAndroidAppId);
+            }
+            else
+            {
+                max.AdMobAndroidAppId = EditorGUILayout.TextField("Android AD ID", max.AdMobAndroidAppId);
+            }
+        }
+        else
+        {
+            string[] maxSetting = UnityEditor.AssetDatabase.FindAssets("t:AppLovinSettings");
+            if (maxSetting.Length != 0)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(maxSetting[0]);
+                max = UnityEditor.AssetDatabase.LoadAssetAtPath<AppLovinSettings>(path);
+            }
+            else
+            {
+                Debug.LogError("Can not find MaxSdkSetting!");
+            }
+        }
+        
+        #endregion
+
+        #region FACEBOOK
+        string[] facebookSetting = UnityEditor.AssetDatabase.FindAssets("t:FacebookSettings");
+        if (facebookSetting.Length != 0)
+        {
+            EditorGUILayout.Space(20);
+            EditorGUILayout.LabelField("Facebook: - chịu, ĐM FB");
+
+
+        }
+        else
+        {
+            Debug.LogError("Can not find MaxSdkSetting!");
+        }
+
+        #endregion
+
+        #region AD ID SETTING
+        if (adManager)
+        {
+            adManager.BannerAdUnitID = EditorGUILayout.TextField("Banner ID", adManager.BannerAdUnitID);
+            adManager.InterstitialAdUnitID = EditorGUILayout.TextField("Inter ID", adManager.InterstitialAdUnitID);
+            adManager.RewardedAdUnitID = EditorGUILayout.TextField("Reward ID", adManager.RewardedAdUnitID);
+            adManager.OpenAdUnitID = EditorGUILayout.TextField("AppOpen ID", adManager.OpenAdUnitID);
+        }
+        #endregion
 
         EditorGUILayout.Space(20);
-        if (GUILayout.Button("Save Data"))
+
+        EditorGUILayout.BeginHorizontal();
+        if( GUILayout.Button("Check google-services.json")){
+            BuildProcess.CheckFirebaseJson();
+        }
+        if(GUILayout.Button("Check google-services.xml")){
+            BuildProcess.FixGoogleXml();
+        }
+        EditorGUILayout.EndHorizontal();
+        if (GUILayout.Button("Close"))
         {
-            OnClickSave();
+            Close();
             GUIUtility.ExitGUI();
         }
     }
@@ -91,16 +190,5 @@ class ProjectInfoEditor : EditorWindow
         adjustGameObject.environment = (AdjustEnvironment)item;
     }
 
-    void OnClickSave()
-    {
-        Adjust adjustGameObject = GameObject.FindObjectOfType<Adjust>();
-        if (adjustGameObject)
-        {
-            adjustGameObject.appToken = AdjustToken;
-        }
-
-        Debug.LogError(AdjustToken);
-        Close();
-    }
 
 }

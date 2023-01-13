@@ -25,10 +25,37 @@ namespace HuynnLib
     {
 
         [SerializeField]
-        public string  _adValue, _adjsutLevelAchived;
+        private string  _adValue, _adjsutLevelAchived;
 
+#if UNITY_EDITOR
+        public string ADValue
+        {
+            get
+            {
+                return _adValue;
+            }
 
-#region For AD event
+            set
+            {
+                _adValue = value;
+            }
+        }
+
+        public string Level_Achived
+        {
+            get
+            {
+                return _adjsutLevelAchived;
+            }
+
+            set
+            {
+                _adjsutLevelAchived = value;
+            }
+        }
+#endif
+
+        #region For AD event
 
         AD_TYPE _adTypeLoaded = AD_TYPE.open;
         [HideInInspector]

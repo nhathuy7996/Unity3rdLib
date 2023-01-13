@@ -47,13 +47,73 @@ namespace HuynnLib
         [Header("---ID---")]
         [Space(10)]
         [SerializeField]
-        private string MaxSdkKey = "3N4Mt8SNhOzkQnGb9oHsRRG1ItybcZDpJWN1fVAHLdRagxP-_k_ZXVaMAdMe5Otsmp6qJSXskfsrtakfRmPAGW";
+        private string _MaxSdkKey = "3N4Mt8SNhOzkQnGb9oHsRRG1ItybcZDpJWN1fVAHLdRagxP-_k_ZXVaMAdMe5Otsmp6qJSXskfsrtakfRmPAGW";
         [SerializeField]
-        private string BannerAdUnitID = "df980c4d809fc01e",
-            InterstitialAdUnitID = "3a70c7be99dade7d",
-            RewardedAdUnitID = "6b7094c5d21fcfe5",
-            OpenAdUnitID = "";
+        private string _BannerAdUnitID = "df980c4d809fc01e",
+            _InterstitialAdUnitID = "3a70c7be99dade7d",
+            _RewardedAdUnitID = "6b7094c5d21fcfe5",
+            _OpenAdUnitID = "";
 
+#if UNITY_EDITOR
+        public string MaxSdkKey
+        {
+            get
+            {
+                return _MaxSdkKey;
+            }
+            set
+            {
+                _MaxSdkKey = value;
+            }
+        }
+        public string BannerAdUnitID
+        {
+            get
+            {
+                return _BannerAdUnitID;
+            }
+            set
+            {
+                _BannerAdUnitID = value;
+            }
+        }
+
+        public string InterstitialAdUnitID
+        {
+            get
+            {
+                return _InterstitialAdUnitID;
+            }
+            set
+            {
+                _InterstitialAdUnitID = value;
+            }
+        }
+
+        public string RewardedAdUnitID
+        {
+            get
+            {
+                return _RewardedAdUnitID;
+            }
+            set
+            {
+                _RewardedAdUnitID = value;
+            }
+        }
+
+        public string OpenAdUnitID
+        {
+            get
+            {
+                return _OpenAdUnitID;
+            }
+            set
+            {
+                _OpenAdUnitID = value;
+            }
+        }
+#endif
 
         private int bannerRetryAttempt,
             interstitialRetryAttempt,
@@ -137,7 +197,7 @@ namespace HuynnLib
                     InitializeRewardedAds();
 
             };
-            MaxSdk.SetSdkKey(MaxSdkKey);
+            MaxSdk.SetSdkKey(_MaxSdkKey);
             MaxSdk.InitializeSdk();
         }
         #region Banner Ad Methods
@@ -154,7 +214,7 @@ namespace HuynnLib
             {
                 if (_isOffBanner)
                     return;
-                if (string.IsNullOrWhiteSpace(BannerAdUnitID))
+                if (string.IsNullOrWhiteSpace(_BannerAdUnitID))
                     return;
                 Debug.Log("==> Init banner <==");
                 FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load);
@@ -172,10 +232,10 @@ namespace HuynnLib
 
                 // Banners are automatically sized to 320x50 on phones and 728x90 on tablets.
                 // You may use the utility method `MaxSdkUtils.isTablet()` to help with view sizing adjustments.
-                MaxSdk.CreateBanner(BannerAdUnitID, _bannerPosition);
-                MaxSdk.SetBannerExtraParameter(BannerAdUnitID, "adaptive_banner", "false");
+                MaxSdk.CreateBanner(_BannerAdUnitID, _bannerPosition);
+                MaxSdk.SetBannerExtraParameter(_BannerAdUnitID, "adaptive_banner", "false");
                 // Set background or background color for banners to be fully functional.
-                MaxSdk.SetBannerBackgroundColor(BannerAdUnitID, new Color(1, 1, 1, 0));
+                MaxSdk.SetBannerBackgroundColor(_BannerAdUnitID, new Color(1, 1, 1, 0));
 
                 if (_isBannerAutoShow) ShowBanner();
             });
@@ -183,8 +243,8 @@ namespace HuynnLib
 
         void ManuallyLoadBanner()
         {
-            MaxSdk.StopBannerAutoRefresh(BannerAdUnitID);
-            MaxSdk.LoadBanner(BannerAdUnitID);
+            MaxSdk.StopBannerAutoRefresh(_BannerAdUnitID);
+            MaxSdk.LoadBanner(_BannerAdUnitID);
         }
 
         private void OnBannerAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -192,7 +252,7 @@ namespace HuynnLib
             if (_isBannerCurrentlyAllow)
                 this.ShowBanner();
             Debug.Log("==> Banner ad loaded <==");
-            MaxSdk.StartBannerAutoRefresh(BannerAdUnitID);
+            MaxSdk.StartBannerAutoRefresh(_BannerAdUnitID);
 
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load_done, adNetwork: adInfo.NetworkName);
 
@@ -253,7 +313,7 @@ namespace HuynnLib
         void LoadInterstitial()
         {
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load);
-            MaxSdk.LoadInterstitial(InterstitialAdUnitID);
+            MaxSdk.LoadInterstitial(_InterstitialAdUnitID);
         }
 
         private void OnInterstitialLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -364,7 +424,7 @@ namespace HuynnLib
         private void LoadRewardedAd()
         {
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.load);
-            MaxSdk.LoadRewardedAd(RewardedAdUnitID);
+            MaxSdk.LoadRewardedAd(_RewardedAdUnitID);
         }
 
         private void OnRewardedAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -489,9 +549,9 @@ namespace HuynnLib
 
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load);
 
-            if (!MaxSdk.IsAppOpenAdReady(OpenAdUnitID))
+            if (!MaxSdk.IsAppOpenAdReady(_OpenAdUnitID))
             {
-                MaxSdk.LoadAppOpenAd(OpenAdUnitID);
+                MaxSdk.LoadAppOpenAd(_OpenAdUnitID);
             }
         }
 
@@ -588,17 +648,17 @@ namespace HuynnLib
 
         public bool InterstitialIsLoaded()
         {
-            return MaxSdk.IsInterstitialReady(InterstitialAdUnitID);
+            return MaxSdk.IsInterstitialReady(_InterstitialAdUnitID);
         }
 
         public bool VideoRewardIsLoaded()
         {
-            return MaxSdk.IsRewardedAdReady(RewardedAdUnitID);
+            return MaxSdk.IsRewardedAdReady(_RewardedAdUnitID);
         }
 
         public bool AdsOpenIsLoaded()
         {
-            return MaxSdk.IsAppOpenAdReady(OpenAdUnitID);
+            return MaxSdk.IsAppOpenAdReady(_OpenAdUnitID);
         }
 
         #endregion
@@ -612,8 +672,8 @@ namespace HuynnLib
             Debug.Log("==> show banner <==");
             _isBannerCurrentlyAllow = true;
 
-            if (!string.IsNullOrWhiteSpace(BannerAdUnitID))
-                MaxSdk.ShowBanner(BannerAdUnitID);
+            if (!string.IsNullOrWhiteSpace(_BannerAdUnitID))
+                MaxSdk.ShowBanner(_BannerAdUnitID);
 
         }
 
@@ -622,8 +682,8 @@ namespace HuynnLib
             Debug.Log("==> destroy banner <==");
             _isBannerCurrentlyAllow = false;
 
-            if (!string.IsNullOrWhiteSpace(BannerAdUnitID))
-                MaxSdk.HideBanner(BannerAdUnitID);
+            if (!string.IsNullOrWhiteSpace(_BannerAdUnitID))
+                MaxSdk.HideBanner(_BannerAdUnitID);
         }
 
 
@@ -644,7 +704,7 @@ namespace HuynnLib
             {
                 isShowingAd = true;
                 _callbackInter = callback;
-                MaxSdk.ShowInterstitial(InterstitialAdUnitID);
+                MaxSdk.ShowInterstitial(_InterstitialAdUnitID);
             }
             else
             {
@@ -679,7 +739,7 @@ namespace HuynnLib
             {
                 isShowingAd = true;
                 _callbackReward = callback;
-                MaxSdk.ShowRewardedAd(RewardedAdUnitID);
+                MaxSdk.ShowRewardedAd(_RewardedAdUnitID);
             }
             else
             {
@@ -726,7 +786,7 @@ namespace HuynnLib
             if (CheckInternetConnection() && AdsOpenIsLoaded())
             {
                 FireBaseManager.Instant.adTypeShow = isAdOpen ? AD_TYPE.open : AD_TYPE.resume;
-                MaxSdk.ShowAppOpenAd(OpenAdUnitID);
+                MaxSdk.ShowAppOpenAd(_OpenAdUnitID);
                 _callbackOpenAD = callback;
             }
             else

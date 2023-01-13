@@ -28,7 +28,7 @@ class BuildProcess : IPreprocessBuildWithReport
     }
 
     [MenuItem("3rdLib/Check google-services.xml")]
-    static void FixGoogleXml()
+    public static void FixGoogleXml()
     {
 
         XmlDocument xmlDoc = new XmlDocument();
