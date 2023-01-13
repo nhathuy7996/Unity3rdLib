@@ -9,6 +9,9 @@ using HuynnLib;
 using Facebook.Unity.Settings;
 using Codice.Client.BaseCommands;
 using System.IO;
+using NUnit.Framework.Internal;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
+using System.Collections.Generic;
 
 class ProjectInfoEditor : EditorWindow
 {
@@ -24,6 +27,8 @@ class ProjectInfoEditor : EditorWindow
 
     BuildPlayerOptions defaultBuildOptions = new BuildPlayerOptions();
 
+    static string fbAppID;
+    static object facebookAppIDProp;
     // Add menu named "My Window" to the Window menu
     [MenuItem("3rdLib/Checklist APERO")]
     public static void InitWindowEditor()
@@ -32,6 +37,22 @@ class ProjectInfoEditor : EditorWindow
         EditorWindow wnd = GetWindow<ProjectInfoEditor>();
         wnd.titleContent = new GUIContent("Huynn 3rdLib - APERO version!");
 
+        //string[] facebookSetting = UnityEditor.AssetDatabase.FindAssets("t:FacebookSettings");
+        //if (facebookSetting.Length != 0)
+        //{
+
+        //    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(facebookSetting[0]);
+        //    FacebookSettings facebook = UnityEditor.AssetDatabase.LoadAssetAtPath<FacebookSettings>(path);
+        //    var appIds = facebook.GetType().GetProperty("AppIds");
+
+        //    if (appIds != null)
+        //    {
+
+        //        appIds.GetValue(facebookAppIDProp, null);
+        //        fbAppID = ((string[])facebookAppIDProp)[0];
+        //    }
+
+        //}
     }
 
     void OnGUI()
@@ -160,13 +181,18 @@ class ProjectInfoEditor : EditorWindow
         if (facebookSetting.Length != 0)
         {
             EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("Facebook:                               - chịu, ĐM FB");
+            EditorGUILayout.LabelField("Facebook:");
+            
+            fbAppID = EditorGUILayout.TextField("App ID", fbAppID);
 
             string path = UnityEditor.AssetDatabase.GUIDToAssetPath(facebookSetting[0]);
-            //FacebookSettings max = UnityEditor.AssetDatabase.LoadAssetAtPath<FacebookSettings>(path);
-            //Debug.LogError(max.GetInstanceID());
+            FacebookSettings facebook = UnityEditor.AssetDatabase.LoadAssetAtPath<FacebookSettings>(path);
+            var appIds = facebook.GetType().GetProperty("AppIds");
 
-
+            if (appIds != null)
+                appIds.SetValue(facebook, new List<string>() { fbAppID }, null);
+            else
+                Debug.LogError("Can not find FB app ID field!");
         }
         else
         {

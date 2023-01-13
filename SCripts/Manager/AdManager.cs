@@ -972,6 +972,7 @@ namespace HuynnLib
 #endif
         public bool CheckInternetConnection()
         {
+            
             var internet = false;
             if (Application.internetReachability != NetworkReachability.NotReachable)
             {
