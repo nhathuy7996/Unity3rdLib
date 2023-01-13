@@ -112,7 +112,7 @@ class ProjectInfoEditor : EditorWindow
             if (gg != null)
             {
                 max.AdMobAndroidAppId = gg.GoogleMobileAdsAndroidAppId;
-                EditorGUILayout.LabelField("Android AD ID:                          "+ max.AdMobAndroidAppId);
+                EditorGUILayout.LabelField("Android AD ID:                       "+ max.AdMobAndroidAppId);
             }
             else
             {
@@ -140,9 +140,13 @@ class ProjectInfoEditor : EditorWindow
         if (facebookSetting.Length != 0)
         {
             EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("Facebook: - chịu, ĐM FB");
+            EditorGUILayout.LabelField("Facebook:                               - chịu, ĐM FB");
 
+            string path = UnityEditor.AssetDatabase.GUIDToAssetPath(facebookSetting[0]);
+            //FacebookSettings max = UnityEditor.AssetDatabase.LoadAssetAtPath<FacebookSettings>(path);
+            //Debug.LogError(max.GetInstanceID());
 
+            
         }
         else
         {
