@@ -23,6 +23,7 @@ class ProjectInfoEditor : EditorWindow
     AppLovinSettings max = null;
 
     BuildPlayerOptions defaultBuildOptions = new BuildPlayerOptions();
+    FireBaseManager fireBaseManager;
 
     // Add menu named "My Window" to the Window menu
     [MenuItem("3rdLib/Checklist APERO")]
@@ -36,6 +37,8 @@ class ProjectInfoEditor : EditorWindow
 
     void OnGUI()
     {
+        if (!adManager)
+            adManager = GameObject.FindObjectOfType<HuynnLib.AdManager>();
         #region EDITOR
         EditorGUILayout.LabelField("Build Version:");
 
@@ -101,6 +104,11 @@ class ProjectInfoEditor : EditorWindow
         if (gg)
         {
             gg.GoogleMobileAdsAndroidAppId = EditorGUILayout.TextField("Android AD ID", gg.GoogleMobileAdsAndroidAppId);
+            if (adManager)
+            {
+                adManager.paid_ad_revenue = EditorGUILayout.TextField("Event Paid AD", adManager.paid_ad_revenue);
+                PrefabUtility.RecordPrefabInstancePropertyModifications(adManager);
+            }
             PrefabUtility.RecordPrefabInstancePropertyModifications(gg);
         }
         else
@@ -118,8 +126,7 @@ class ProjectInfoEditor : EditorWindow
         }
         #endregion
 
-        if (!adManager)
-            adManager = GameObject.FindObjectOfType<HuynnLib.AdManager>();
+      
         #region APPLOVIN
         EditorGUILayout.Space(20);
         EditorGUILayout.LabelField("AppLovin:");
