@@ -53,6 +53,8 @@ namespace HuynnLib
                 _adjsutLevelAchived = value;
             }
         }
+
+       
 #endif
 
         #region For AD event
