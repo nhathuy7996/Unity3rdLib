@@ -16,7 +16,7 @@ using System.Collections.Generic;
 class ProjectInfoEditor : EditorWindow
 {
 
-    
+    bool isShowKeyStorePass = false, isShowAliasPass = false;
     Adjust adjustGameObject;
 
 
@@ -27,8 +27,9 @@ class ProjectInfoEditor : EditorWindow
 
     BuildPlayerOptions defaultBuildOptions = new BuildPlayerOptions();
 
-    static string fbAppID;
-    static object facebookAppIDProp;
+    FacebookSettings facebook;
+
+    string fbAppID, fbClientToken,fbKeyStore;
     // Add menu named "My Window" to the Window menu
     [MenuItem("3rdLib/Checklist APERO")]
     public static void InitWindowEditor()
@@ -37,22 +38,6 @@ class ProjectInfoEditor : EditorWindow
         EditorWindow wnd = GetWindow<ProjectInfoEditor>();
         wnd.titleContent = new GUIContent("Huynn 3rdLib - APERO version!");
 
-        //string[] facebookSetting = UnityEditor.AssetDatabase.FindAssets("t:FacebookSettings");
-        //if (facebookSetting.Length != 0)
-        //{
-
-        //    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(facebookSetting[0]);
-        //    FacebookSettings facebook = UnityEditor.AssetDatabase.LoadAssetAtPath<FacebookSettings>(path);
-        //    var appIds = facebook.GetType().GetProperty("AppIds");
-
-        //    if (appIds != null)
-        //    {
-
-        //        appIds.GetValue(facebookAppIDProp, null);
-        //        fbAppID = ((string[])facebookAppIDProp)[0];
-        //    }
-
-        //}
     }
 
     void OnGUI()
@@ -65,6 +50,29 @@ class ProjectInfoEditor : EditorWindow
         PlayerSettings.bundleVersion = EditorGUILayout.TextField("App Version", PlayerSettings.bundleVersion);
         string applicationIdentifier = EditorGUILayout.TextField("Package Name", PlayerSettings.applicationIdentifier);
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, applicationIdentifier);
+
+        EditorGUILayout.BeginHorizontal();
+        PlayerSettings.Android.useCustomKeystore = EditorGUILayout.Toggle("Custom KeyStore", PlayerSettings.Android.useCustomKeystore);
+        if (PlayerSettings.Android.useCustomKeystore)
+        {
+            if (EditorGUILayout.LinkButton("Select"))
+            {
+                string path = EditorUtility.OpenFilePanel("Select keystore file", "", "keystore");
+                if (path.Length != 0)
+                {
+                    PlayerSettings.Android.keystoreName = path;
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.LabelField("KeyStore Path:                      "+ PlayerSettings.Android.keystoreName);
+
+            KeyStoreInfo();
+        }
+        else
+        {
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.LabelField("KeyStore Path:                      Debug keystore!!!");
+        }
         
         #endregion
 
@@ -116,11 +124,12 @@ class ProjectInfoEditor : EditorWindow
         #endregion
 
         #region GOOGLE ADS SETTING
-        EditorGUILayout.Space(20);
-        EditorGUILayout.LabelField("Google:");
+       
 
         if (gg)
         {
+            EditorGUILayout.Space(20);
+            EditorGUILayout.LabelField("Google:");
             gg.GoogleMobileAdsAndroidAppId = EditorGUILayout.TextField("Android AD ID", gg.GoogleMobileAdsAndroidAppId);
             PrefabUtility.RecordPrefabInstancePropertyModifications(gg);
         }
@@ -142,10 +151,11 @@ class ProjectInfoEditor : EditorWindow
         if (!adManager)
             adManager = GameObject.FindObjectOfType<HuynnLib.AdManager>();
         #region APPLOVIN
-        EditorGUILayout.Space(20);
-        EditorGUILayout.LabelField("AppLovin:");
+       
         if (max != null)
         {
+            EditorGUILayout.Space(20);
+            EditorGUILayout.LabelField("AppLovin:");
             max.SdkKey = EditorGUILayout.TextField("MaxSdk key", max.SdkKey);
             if (adManager)
                 adManager.MaxSdkKey = max.SdkKey;
@@ -177,27 +187,66 @@ class ProjectInfoEditor : EditorWindow
         #endregion
 
         #region FACEBOOK
-        string[] facebookSetting = UnityEditor.AssetDatabase.FindAssets("t:FacebookSettings");
-        if (facebookSetting.Length != 0)
+
+        if (facebook == null)
         {
-            EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("Facebook:");
-            
-            fbAppID = EditorGUILayout.TextField("App ID", fbAppID);
-
-            string path = UnityEditor.AssetDatabase.GUIDToAssetPath(facebookSetting[0]);
-            FacebookSettings facebook = UnityEditor.AssetDatabase.LoadAssetAtPath<FacebookSettings>(path);
-            var appIds = facebook.GetType().GetProperty("AppIds");
-
-            if (appIds != null)
-                appIds.SetValue(facebook, new List<string>() { fbAppID }, null);
+            string[] facebookSetting = UnityEditor.AssetDatabase.FindAssets("t:FacebookSettings");
+            if (facebookSetting.Length != 0)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(facebookSetting[0]);
+                facebook = UnityEditor.AssetDatabase.LoadAssetAtPath<FacebookSettings>(path);
+            }
             else
-                Debug.LogError("Can not find FB app ID field!");
+            {
+                Debug.LogError("Can not find MaxSdkSetting!");
+            }
         }
         else
         {
-            Debug.LogError("Can not find MaxSdkSetting!");
+          
+            EditorGUILayout.Space(20);
+            EditorGUILayout.LabelField("Facebook:");
+
+            fbAppID = EditorGUILayout.TextField("App ID", fbAppID);
+            var appIds = facebook.GetType().GetProperty("AppIds");
+
+            if (appIds != null)
+            {
+                object facebookAppIDProp = null;
+                if (string.IsNullOrEmpty(fbAppID))
+                {
+                    facebookAppIDProp = appIds.GetValue(facebookAppIDProp, null);
+                    fbAppID = ((List<string>)facebookAppIDProp)[0];
+                }
+                appIds.SetValue(facebook, new List<string>() { fbAppID }, null);
+            }
+            else
+                Debug.LogError("Can not find FB app ID field!");
+
+            fbClientToken = EditorGUILayout.TextField("Client token", fbClientToken);
+            var clientToken = facebook.GetType().GetProperty("ClientTokens");
+
+            if (clientToken != null)
+            {
+                object facebookClientTokenProps = null;
+                if (string.IsNullOrEmpty(fbClientToken))
+                {
+                    facebookClientTokenProps = appIds.GetValue(facebookClientTokenProps, null);
+                    fbClientToken = ((List<string>)facebookClientTokenProps)[0];
+                }
+                clientToken.SetValue(facebook, new List<string>() { fbClientToken }, null);
+            }
+            else
+                Debug.LogError("Can not find FB client token field!");
+
+            var keyStorePath = facebook.GetType().GetProperty("AndroidKeystorePath");
+            if (keyStorePath != null)
+            {
+                keyStorePath.SetValue(facebook,  PlayerSettings.Android.keystoreName , null);
+            }
         }
+        
+        
 
         #endregion
 
@@ -243,6 +292,26 @@ class ProjectInfoEditor : EditorWindow
             Close();
             GUIUtility.ExitGUI();
         }
+    }
+
+    void KeyStoreInfo()
+    {
+        EditorGUILayout.BeginHorizontal();
+        if(!isShowKeyStorePass)
+            PlayerSettings.keystorePass = EditorGUILayout.PasswordField("Keystore Pass", PlayerSettings.keystorePass);
+        else
+            PlayerSettings.keystorePass = EditorGUILayout.TextField("Keystore Pass", PlayerSettings.keystorePass);
+        isShowKeyStorePass = EditorGUILayout.Toggle("Show", isShowKeyStorePass);
+        EditorGUILayout.EndHorizontal();
+
+        PlayerSettings.Android.keyaliasName = EditorGUILayout.TextField("Keystore Alias", PlayerSettings.Android.keyaliasName);
+        EditorGUILayout.BeginHorizontal();
+        if (!isShowAliasPass)
+            PlayerSettings.keyaliasPass = EditorGUILayout.PasswordField("Keystore Pass", PlayerSettings.keyaliasPass);
+        else
+            PlayerSettings.keyaliasPass = EditorGUILayout.TextField("Keystore Pass", PlayerSettings.keyaliasPass);
+        isShowAliasPass = EditorGUILayout.Toggle("Show", isShowAliasPass);
+        EditorGUILayout.EndHorizontal();
     }
 
     void AddMenuItemForColor(GenericMenu menu, string menuPath, AdjustEnvironment value, bool isSelected = false)
