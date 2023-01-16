@@ -140,6 +140,7 @@ namespace HuynnLib
 
         private void OnDrawGizmosSelected()
         {
+     
             if (_isUseLoading && _loading.value < 100)
             {
                 _loadingPopUp.SetActive(true);

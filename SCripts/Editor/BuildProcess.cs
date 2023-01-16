@@ -17,6 +17,18 @@ class BuildProcess : IPreprocessBuildWithReport
 
     public void OnPreprocessBuild(BuildReport report)
     {
+        if (!PlayerSettings.applicationIdentifier.StartsWith("com."))
+        {
+            EditorUtility.DisplayDialog("Attention Pleas?",
+               "Your package name not start with \"com.\". This can make you can't build your project, consider change it ASAP!!", "Ok");
+        }
+
+        if (PlayerSettings.applicationIdentifier.Split('.').Count() < 3)
+        {
+            EditorUtility.DisplayDialog("Attention Pleas?",
+               "Your package name is not in format 'com.X.Y' . This can make you can't build your project, consider change it ASAP!!", "Ok");
+        }
+
         if (!CheckFirebaseJson())
         {
             

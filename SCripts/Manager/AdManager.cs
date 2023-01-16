@@ -28,7 +28,22 @@ namespace HuynnLib
     public class AdManager : Singleton<AdManager>, IChildLib
     {
 
+        [SerializeField]
+        string _paid_ad_revenue = "paid_ad_impression_value";
+#if UNITY_EDITOR
+        public string paid_ad_revenue
+        {
+            get
+            {
+                return _paid_ad_revenue;
+            }
 
+            set
+            {
+                _paid_ad_revenue = value;
+            }
+        }
+#endif
         [SerializeField]
         bool _isBannerAutoShow = false;
         bool _isBannerCurrentlyAllow = false, _isOffBanner = false, _isOffInter = false,
@@ -851,7 +866,7 @@ namespace HuynnLib
               new Firebase.Analytics.Parameter("value", revenue),
               new Firebase.Analytics.Parameter("currency", "USD"), // All AppLovin revenue is sent in USD
             };
-            Firebase.Analytics.FirebaseAnalytics.LogEvent("paid_ad_impression_value", impressionParameters);
+            Firebase.Analytics.FirebaseAnalytics.LogEvent(_paid_ad_revenue, impressionParameters);
         }
 
         #endregion
@@ -972,6 +987,7 @@ namespace HuynnLib
 #endif
         public bool CheckInternetConnection()
         {
+            
             var internet = false;
             if (Application.internetReachability != NetworkReachability.NotReachable)
             {
