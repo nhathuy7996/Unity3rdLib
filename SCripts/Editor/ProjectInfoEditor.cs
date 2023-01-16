@@ -65,6 +65,12 @@ class ProjectInfoEditor : EditorWindow
         PlayerSettings.bundleVersion = EditorGUILayout.TextField("App Version", PlayerSettings.bundleVersion);
         EditorGUILayout.BeginHorizontal();
         string applicationIdentifier = EditorGUILayout.TextField("Package Name", PlayerSettings.applicationIdentifier);
+
+        if (TextFieldStyles == null)
+        {
+            TextFieldStyles = new GUIStyle(EditorStyles.label);
+            TextFieldStyles.normal.textColor = Color.red;
+        }
         EditorGUILayout.LabelField("Package name should in form \"com.X.Y\" other can cost a build error!", TextFieldStyles);
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, applicationIdentifier);
         EditorGUILayout.EndHorizontal();
