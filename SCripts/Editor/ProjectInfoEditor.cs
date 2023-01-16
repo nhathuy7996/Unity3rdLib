@@ -55,10 +55,12 @@ class ProjectInfoEditor : EditorWindow
         PlayerSettings.productName = EditorGUILayout.TextField("Product Name", PlayerSettings.productName);
         EditorGUILayout.EndHorizontal();
 
-        PlayerSettings.bundleVersion = EditorGUILayout.TextField("App Version", PlayerSettings.bundleVersion); 
-        string applicationIdentifier = EditorGUILayout.TextField("Package Name","Package name should in form \"com.X.Y\" other can cost a build error!",
-            PlayerSettings.applicationIdentifier);
+        PlayerSettings.bundleVersion = EditorGUILayout.TextField("App Version", PlayerSettings.bundleVersion);
+        EditorGUILayout.BeginHorizontal();
+        string applicationIdentifier = EditorGUILayout.TextField("Package Name", PlayerSettings.applicationIdentifier);
+        EditorGUILayout.LabelField("Package name should in form \"com.X.Y\" other can cost a build error!");
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, applicationIdentifier);
+        EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         PlayerSettings.Android.useCustomKeystore = EditorGUILayout.Toggle("Custom KeyStore", PlayerSettings.Android.useCustomKeystore);
