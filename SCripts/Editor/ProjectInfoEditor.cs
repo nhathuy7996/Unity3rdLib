@@ -15,7 +15,7 @@ using System.Linq;
 
 class ProjectInfoEditor : EditorWindow
 {
-
+    Vector2 scrollPos;
     bool isShowKeyStorePass = false, isShowAliasPass = false;
     Adjust adjustGameObject;
 
@@ -31,18 +31,24 @@ class ProjectInfoEditor : EditorWindow
     FacebookSettings facebook;
 
     string fbAppID, fbClientToken,fbKeyStore;
+    static EditorWindow wnd;
+    static GUIStyle TextFieldStyles;
     // Add menu named "My Window" to the Window menu
     [MenuItem("3rdLib/Checklist APERO")]
     public static void InitWindowEditor()
     {
         // This method is called when the user selects the menu item in the Editor
-        EditorWindow wnd = GetWindow<ProjectInfoEditor>();
+        wnd = GetWindow<ProjectInfoEditor>();
         wnd.titleContent = new GUIContent("Huynn 3rdLib - APERO version!");
 
+        TextFieldStyles = new GUIStyle(EditorStyles.label);
+        TextFieldStyles.normal.textColor = Color.red;
     }
 
     void OnGUI()
     {
+        EditorGUILayout.BeginVertical();
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(wnd.position.width), GUILayout.Height(wnd.position.height));
         if (!adManager)
             adManager = GameObject.FindObjectOfType<HuynnLib.AdManager>();
         #region EDITOR
@@ -58,7 +64,7 @@ class ProjectInfoEditor : EditorWindow
         PlayerSettings.bundleVersion = EditorGUILayout.TextField("App Version", PlayerSettings.bundleVersion);
         EditorGUILayout.BeginHorizontal();
         string applicationIdentifier = EditorGUILayout.TextField("Package Name", PlayerSettings.applicationIdentifier);
-        EditorGUILayout.LabelField("Package name should in form \"com.X.Y\" other can cost a build error!");
+        EditorGUILayout.LabelField("Package name should in form \"com.X.Y\" other can cost a build error!", TextFieldStyles);
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, applicationIdentifier);
         EditorGUILayout.EndHorizontal();
 
@@ -318,6 +324,9 @@ class ProjectInfoEditor : EditorWindow
             Close();
             GUIUtility.ExitGUI();
         }
+
+        EditorGUILayout.EndScrollView();
+        EditorGUILayout.EndVertical();
     }
 
     void KeyStoreInfo()
