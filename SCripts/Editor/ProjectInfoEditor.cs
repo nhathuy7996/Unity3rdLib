@@ -12,6 +12,7 @@ using System.IO;
 using NUnit.Framework.Internal;
 using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using System.Collections.Generic;
+using System.Linq;
 
 class ProjectInfoEditor : EditorWindow
 {
@@ -56,7 +57,7 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.EndHorizontal();
 
         PlayerSettings.bundleVersion = EditorGUILayout.TextField("App Version", PlayerSettings.bundleVersion); 
-        string applicationIdentifier = EditorGUILayout.TextField("Package Name","Package name should start with \"com.\" other can cost a build error!",
+        string applicationIdentifier = EditorGUILayout.TextField("Package Name","Package name should in form \"com.X.Y\" other can cost a build error!",
             PlayerSettings.applicationIdentifier);
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, applicationIdentifier);
 
@@ -298,8 +299,15 @@ class ProjectInfoEditor : EditorWindow
             if (!PlayerSettings.applicationIdentifier.StartsWith("com."))
             {
                 EditorUtility.DisplayDialog("Attention Pleas?",
-                   "Your package name not start with \"com.\". This can make you can't build your project, consider change it ASAP!!", "Ok");
+                   "Your package name should in form \"com.\". This can make you can't build your project, consider change it ASAP!!", "Ok");
             }
+
+            if (PlayerSettings.applicationIdentifier.Split('.').Count() < 3)
+            {
+                EditorUtility.DisplayDialog("Attention Pleas?",
+                   "Your package name is not in format 'com.X.Y' . This can make you can't build your project, consider change it ASAP!!", "Ok");
+            }
+
             EditorWindow.GetWindow(Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
         }
         EditorGUILayout.EndHorizontal();
