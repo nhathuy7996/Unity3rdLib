@@ -13,7 +13,9 @@
 #### --> Tự động check missing file google-service.js <--
 
 ## Hướng dẫn sử dụng:
-- Add git remote vào thư mục Assets và pull nhánh production (_develop là các chức năng đang sửa, có thể hoạt động chưa ổn định_)
+- Add git subtree vào thư mục Assets và pull nhánh production (_develop là các chức năng đang sửa, có thể hoạt động chưa ổn định_)
+(Git Add Command: git subtree add --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash    )
+(Git Pull Command: git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash  )
 - Download SDK [tại đây](https://github.com/nhathuy7996/Unity3rdLib/releases) và import vào project 
         (nên xoá toàn bộ plugin và thư viện Ad, IAP ... cũ không còn dùng đễn nữa trước khi import)
 - Reimport All
