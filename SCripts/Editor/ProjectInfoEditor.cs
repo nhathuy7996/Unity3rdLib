@@ -48,7 +48,8 @@ class ProjectInfoEditor : EditorWindow
     void OnGUI()
     {
         EditorGUILayout.BeginVertical();
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(wnd.position.width), GUILayout.Height(wnd.position.height));
+        if(wnd)
+            scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(wnd.position.width), GUILayout.Height(wnd.position.height));
         if (!adManager)
             adManager = GameObject.FindObjectOfType<HuynnLib.AdManager>();
         #region EDITOR
