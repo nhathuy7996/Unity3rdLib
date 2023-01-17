@@ -321,10 +321,12 @@ class ProjectInfoEditor : EditorWindow
             adManager.InterstitialAdUnitID = EditorGUILayout.TextField("Inter ID", adManager.InterstitialAdUnitID);
             adManager.RewardedAdUnitID = EditorGUILayout.TextField("Reward ID", adManager.RewardedAdUnitID);
             adManager.OpenAdUnitID = EditorGUILayout.TextField("AppOpen ID", adManager.OpenAdUnitID);
-
+#if NATIVE_AD
+            adManager.NativeAdID = EditorGUILayout.TextField("NativeAd ID", adManager.NativeAdID);
+#endif
             PrefabUtility.RecordPrefabInstancePropertyModifications(adManager);
         }
-        #endregion
+#endregion
 
         EditorGUILayout.Space(20);
 

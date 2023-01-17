@@ -22,7 +22,7 @@ namespace HuynnLib
             }
         }
        
-        void Awake()
+        protected virtual void Awake()
         {
             if (_instant != null && _instant.GetInstanceID() != this.gameObject.GetInstanceID())
                 Destroy(this.gameObject);

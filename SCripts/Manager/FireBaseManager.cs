@@ -422,7 +422,8 @@ public enum AD_TYPE
     resume,
     banner,
     inter,
-    reward
+    reward,
+    native
 }
 
 public enum AD_STATE
