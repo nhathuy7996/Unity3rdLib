@@ -12,6 +12,8 @@ using System.IO;
 using NUnit.Framework.Internal; 
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.SceneManagement;
+using UnityEditor.SceneManagement;
 
 class ProjectInfoEditor : EditorWindow
 {
@@ -25,14 +27,13 @@ class ProjectInfoEditor : EditorWindow
     HuynnLib.AdManager adManager = null;
     AppLovinSettings max = null;
 
-    BuildPlayerOptions defaultBuildOptions = new BuildPlayerOptions();
     FireBaseManager fireBaseManager;
 
     FacebookSettings facebook;
 
     string fbAppID, fbClientToken,fbKeyStore;
     static EditorWindow wnd;
-    static GUIStyle TextFieldStyles;
+    GUIStyle TextFieldStyles, TextLabelStyles;
     // Add menu named "My Window" to the Window menu
     [MenuItem("3rdLib/Checklist APERO")]
     public static void InitWindowEditor()
@@ -41,18 +42,56 @@ class ProjectInfoEditor : EditorWindow
         wnd = GetWindow<ProjectInfoEditor>();
         wnd.titleContent = new GUIContent("Huynn 3rdLib - APERO version!");
 
-        TextFieldStyles = new GUIStyle(EditorStyles.label);
-        TextFieldStyles.normal.textColor = Color.red;
+        if (EditorBuildSettings.scenes.Count() > 0)
+        {
+            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+            EditorSceneManager.OpenScene(EditorBuildSettings.scenes[0].path);
+        }
     }
 
     void OnGUI()
     {
+        if (TextFieldStyles == null)
+        {
+            TextFieldStyles = new GUIStyle(EditorStyles.label);
+            TextFieldStyles.normal.textColor = Color.red;
+        }
+
+        if (TextLabelStyles == null)
+        {
+            TextLabelStyles = new GUIStyle(EditorStyles.label);
+            TextLabelStyles.normal.textColor = Color.green;
+        }
+
+      
+        if (!wnd)
+        {
+            return;
+        }
         EditorGUILayout.BeginVertical();
+
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Scene:", TextLabelStyles);
+        if(EditorGUILayout.DropdownButton(content: new GUIContent(EditorSceneManager.GetActiveScene().path), FocusType.Passive) && EditorBuildSettings.scenes.Count() > 0)
+        {
+            GenericMenu menu = new GenericMenu();
+
+            foreach (var scene in EditorBuildSettings.scenes)
+            {
+                AddMenuItemForScenes(menu,scene.path , scene, SceneManager.GetActiveScene().path.Equals(scene.path));
+            }
+            
+            
+            menu.ShowAsContext();
+        }
+
+        EditorGUILayout.EndHorizontal();
+
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(wnd.position.width), GUILayout.Height(wnd.position.height));
         if (!adManager)
             adManager = GameObject.FindObjectOfType<HuynnLib.AdManager>();
         #region EDITOR
-        EditorGUILayout.LabelField("Build Version:");
+        EditorGUILayout.LabelField("Build Version:", TextLabelStyles);
 
         PlayerSettings.Android.bundleVersionCode = EditorGUILayout.IntField("Version Code", PlayerSettings.Android.bundleVersionCode);
 
@@ -62,8 +101,10 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.EndHorizontal();
 
         PlayerSettings.bundleVersion = EditorGUILayout.TextField("App Version", PlayerSettings.bundleVersion);
+
         EditorGUILayout.BeginHorizontal();
         string applicationIdentifier = EditorGUILayout.TextField("Package Name", PlayerSettings.applicationIdentifier);
+        
         EditorGUILayout.LabelField("Package name should in form \"com.X.Y\" other can cost a build error!", TextFieldStyles);
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, applicationIdentifier);
         EditorGUILayout.EndHorizontal();
@@ -98,7 +139,7 @@ class ProjectInfoEditor : EditorWindow
         if (adjustGameObject)
         {
             EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("Adjust:");
+            EditorGUILayout.LabelField("Adjust:", TextLabelStyles);
             adjustGameObject.appToken = EditorGUILayout.TextField("Adjust Token", adjustGameObject.appToken);
 
 
@@ -113,9 +154,9 @@ class ProjectInfoEditor : EditorWindow
 
                 GenericMenu menu = new GenericMenu();
 
-                AddMenuItemForColor(menu, AdjustEnvironment.Production.ToString(), AdjustEnvironment.Production,
+                AddMenuItemForAdjust(menu, AdjustEnvironment.Production.ToString(), AdjustEnvironment.Production,
                     adjustGameObject.environment == AdjustEnvironment.Production);
-                AddMenuItemForColor(menu, AdjustEnvironment.Sandbox.ToString(), AdjustEnvironment.Sandbox,
+                AddMenuItemForAdjust(menu, AdjustEnvironment.Sandbox.ToString(), AdjustEnvironment.Sandbox,
                      adjustGameObject.environment == AdjustEnvironment.Sandbox);
                 menu.ShowAsContext();
             }
@@ -146,7 +187,7 @@ class ProjectInfoEditor : EditorWindow
         if (gg)
         {
             EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("Google:");
+            EditorGUILayout.LabelField("Google:", TextLabelStyles);
             gg.GoogleMobileAdsAndroidAppId = EditorGUILayout.TextField("Android AD ID", gg.GoogleMobileAdsAndroidAppId);
             if (adManager)
             {
@@ -176,7 +217,7 @@ class ProjectInfoEditor : EditorWindow
         if (max != null)
         {
             EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("AppLovin:");
+            EditorGUILayout.LabelField("AppLovin:", TextLabelStyles);
             max.SdkKey = EditorGUILayout.TextField("MaxSdk key", max.SdkKey);
             if (adManager)
                 adManager.MaxSdkKey = max.SdkKey;
@@ -226,7 +267,7 @@ class ProjectInfoEditor : EditorWindow
         {
           
             EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("Facebook:");
+            EditorGUILayout.LabelField("Facebook:", TextLabelStyles);
 
             fbAppID = EditorGUILayout.TextField("App ID", fbAppID);
             var appIds = facebook.GetType().GetProperty("AppIds");
@@ -275,7 +316,7 @@ class ProjectInfoEditor : EditorWindow
         if (adManager)
         {
             EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("AD IDs:");
+            EditorGUILayout.LabelField("AD IDs:", TextLabelStyles);
             adManager.BannerAdUnitID = EditorGUILayout.TextField("Banner ID", adManager.BannerAdUnitID);
             adManager.InterstitialAdUnitID = EditorGUILayout.TextField("Inter ID", adManager.InterstitialAdUnitID);
             adManager.RewardedAdUnitID = EditorGUILayout.TextField("Reward ID", adManager.RewardedAdUnitID);
@@ -321,6 +362,7 @@ class ProjectInfoEditor : EditorWindow
 
         if (GUILayout.Button("Close"))
         {
+            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
             Close();
             GUIUtility.ExitGUI();
         }
@@ -349,10 +391,21 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.EndHorizontal();
     }
 
-    void AddMenuItemForColor(GenericMenu menu, string menuPath, AdjustEnvironment value, bool isSelected = false)
+    void AddMenuItemForAdjust(GenericMenu menu, string menuPath, AdjustEnvironment value, bool isSelected = false)
     {
         // the menu item is marked as selected if it matches the current value of m_Color
         menu.AddItem(new GUIContent(menuPath), isSelected, OnDropBoxAdjustItemClick, value);
+    }
+
+    void AddMenuItemForScenes(GenericMenu menu, string menuPath, EditorBuildSettingsScene value, bool isSelected = false)
+    {
+        // the menu item is marked as selected if it matches the current value of m_Color
+        menu.AddItem(new GUIContent(menuPath), isSelected, OnDropBoxSceneItemClick, value);
+    }
+
+    void OnDropBoxSceneItemClick(object item)
+    {
+        EditorSceneManager.OpenScene(((EditorBuildSettingsScene)item).path);
     }
 
     void OnDropBoxAdjustItemClick(object item)

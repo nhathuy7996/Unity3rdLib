@@ -167,7 +167,8 @@ class BuildProcess : IPreprocessBuildWithReport
         }
 
 
-
+        EditorUtility.DisplayDialog("Hi, your captain here!",
+           "google-services.xml: Oke oke", "Ok!");
     }
 
     [MenuItem("3rdLib/Check google-services.json")]
@@ -193,6 +194,9 @@ class BuildProcess : IPreprocessBuildWithReport
 
             return false;
         }
+
+        EditorUtility.DisplayDialog("Ok, Nothing wrong!",
+               "You file google-services.json exist and seem to be oke!", "Close");
 
         return true;
     }
