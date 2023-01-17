@@ -72,10 +72,6 @@ namespace HuynnLib
         [SerializeField]
         private List<string> _keyConfigs = new List<string>();
 
-
-        Firebase.DependencyStatus dependencyStatus = Firebase.DependencyStatus.UnavailableOther;
-
-
         public void Init(Action _onActionDone)
         {
             Debug.Log("==========> Firebase start Init! <==========");

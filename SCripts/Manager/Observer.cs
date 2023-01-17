@@ -6,21 +6,57 @@ using System;
 namespace HuynnLib
 {
 
-    public interface ActionBase
-    {
-        public void CallListener(params object[] objects);
-    }
-
     public class Observer : Singleton<Observer>
     {
-        Dictionary<string, Action<object[]>> Listeners = new Dictionary<string, Action<object[]>>();
+        Dictionary<string, List<Action<object>>> Listeners = new Dictionary<string, List<Action<object>>>();
 
 
-        private void Start()
+        public Observer Subcribe(string key, Action<object> callback)
         {
-           
+            if (!Listeners.ContainsKey(key))
+            {
+                Listeners[key] = new List<Action<object>>();
+            }
+
+            Listeners[key].Add(callback);
+
+            return this;
+        }
+
+        public Observer UnSubcribe(string key, Action<object> callback)
+        {
+            if (!Listeners.ContainsKey(key))
+            {
+                return this;
+            }
+            Listeners[key].Remove(callback);
+
+            return this;
+        }
+
+        public Observer Notify(string key, object value)
+        {
+            if (!Listeners.ContainsKey(key))
+            {
+                return this;
+            }
+            foreach (var callback in Listeners[key])
+            {
+                try
+                {
+                    callback?.Invoke(value);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogErrorFormat("====>Notify action on key {0} error: {1}<====", key, e.ToString());
+                }
+               
+            }
+            return this;
         }
     }
 
-    
+ 
 }
+
+
