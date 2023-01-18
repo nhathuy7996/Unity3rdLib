@@ -15,6 +15,7 @@ namespace HuynnLib
                 if (_instant == null)
                 {
                     Debug.LogError("==> Singleton doesnt exist!!! <==");
+                    _instant = FindObjectOfType<T>();
                     //new GameObject().AddComponent<T>().name = "Singleton_"+  typeof(T).ToString();
                 }
 
