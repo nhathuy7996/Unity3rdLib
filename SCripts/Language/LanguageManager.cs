@@ -56,6 +56,18 @@ namespace HuynnLib
             }
         }
 
+        private void Start()
+        {
+            if (isLanguageSeted)
+            {
+                this.gameObject.SetActive(false);
+            }
+            else
+            {
+
+            }
+        }
+
         public string Translator(string key)
         {
             if (!_languageDict.ContainsKey(key))

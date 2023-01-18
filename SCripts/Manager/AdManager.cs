@@ -178,7 +178,7 @@ namespace HuynnLib
 
 #endregion
 
-        private bool isShowingAd = false, _isSDKInitDone = false;
+        private bool isShowingAd = false, _isSDKInitDone = false, _isBannerInitDone = false;
 
 
         public void Init(Action _onInitDone = null)
@@ -291,7 +291,9 @@ namespace HuynnLib
                 // Set background or background color for banners to be fully functional.
                 MaxSdk.SetBannerBackgroundColor(_BannerAdUnitID, new Color(1, 1, 1, 0));
 
-                if (_isBannerAutoShow) ShowBanner();
+                if (_isBannerAutoShow) _= ShowBanner();
+
+                _isBannerInitDone = true;
             });
         }
 
@@ -843,10 +845,16 @@ namespace HuynnLib
 
         #region ShowAd
 
-        public void ShowBanner()
+        public async Task ShowBanner()
         {
             if (_isOffBanner)
                 return;
+
+            while (!_isBannerInitDone)
+            {
+                await Task.Delay(500);
+            }
+
             Debug.Log("==> show banner <==");
             _isBannerCurrentlyAllow = true;
 
