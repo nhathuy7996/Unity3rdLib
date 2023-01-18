@@ -249,7 +249,7 @@ namespace HuynnLib
 #if NATIVE_AD
             MobileAds.Initialize(initStatus =>
             {
-                RequestNativeAd(NativeAdID);
+                RequestNativeAd(_NativeAdID);
             });
 #endif
         }

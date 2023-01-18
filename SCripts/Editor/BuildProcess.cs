@@ -29,18 +29,18 @@ class BuildProcess : IPreprocessBuildWithReport
                "Your package name is not in format 'com.X.Y' . This can make you can't build your project, consider change it ASAP!!", "Ok");
         }
 
-        if (!CheckFirebaseJson())
+        if (!CheckFirebaseJson(false))
         {
             
             return;
         }
 
-        FixGoogleXml();
+        FixGoogleXml(false);
 
     }
 
     [MenuItem("3rdLib/Check google-services.xml")]
-    public static void FixGoogleXml()
+    public static void FixGoogleXml(bool isShowOk = true)
     {
 
         XmlDocument xmlDoc = new XmlDocument();
@@ -52,7 +52,7 @@ class BuildProcess : IPreprocessBuildWithReport
             return;
         }
 
-        if (!CheckFirebaseJson())
+        if (!CheckFirebaseJson(false))
             return;
 
             using (StreamReader reader = new StreamReader(Directory.GetFiles(Application.dataPath, "*google-services.json", SearchOption.AllDirectories)[0]))
@@ -172,7 +172,7 @@ class BuildProcess : IPreprocessBuildWithReport
     }
 
     [MenuItem("3rdLib/Check google-services.json")]
-    public static bool CheckFirebaseJson()
+    public static bool CheckFirebaseJson(bool isShowOk = true)
     {
 
         string[] files = Directory.GetFiles(Application.dataPath, "*.json*", SearchOption.AllDirectories)
@@ -195,7 +195,8 @@ class BuildProcess : IPreprocessBuildWithReport
             return false;
         }
 
-        EditorUtility.DisplayDialog("Ok, Nothing wrong!",
+        if(isShowOk)
+            EditorUtility.DisplayDialog("Ok, Nothing wrong!",
                "You file google-services.json exist and seem to be oke!", "Close");
 
         return true;
