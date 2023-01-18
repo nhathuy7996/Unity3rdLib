@@ -33,7 +33,7 @@ class ProjectInfoEditor : EditorWindow
 
     string fbAppID = null, fbClientToken = null ,fbKeyStore = null;
     static EditorWindow wnd;
-    GUIStyle TextFieldStyles, TextLabelStyles;
+    GUIStyle TextRedStyles, TextGreenStyles, ButtonTextStyles;
     // Add menu named "My Window" to the Window menu
     [MenuItem("3rdLib/Checklist APERO")]
     public static void InitWindowEditor()
@@ -51,27 +51,35 @@ class ProjectInfoEditor : EditorWindow
 
     void OnGUI()
     {
-        if (TextFieldStyles == null)
+        if (TextRedStyles == null)
         {
-            TextFieldStyles = new GUIStyle(EditorStyles.label);
-            TextFieldStyles.normal.textColor = Color.red;
+            TextRedStyles = new GUIStyle(EditorStyles.label);
+            TextRedStyles.normal.textColor = Color.red;
         }
 
-        if (TextLabelStyles == null)
+        if (TextGreenStyles == null)
         {
-            TextLabelStyles = new GUIStyle(EditorStyles.label);
-            TextLabelStyles.normal.textColor = Color.green;
+            TextGreenStyles = new GUIStyle(EditorStyles.label);
+            TextGreenStyles.normal.textColor = Color.green;
+        }
+
+        if (ButtonTextStyles == null)
+        {
+            ButtonTextStyles = new GUIStyle(GUI.skin.button);
+            ButtonTextStyles.normal.textColor = Color.green;
         }
 
       
         if (!wnd)
         {
+            Close();
+            GUIUtility.ExitGUI();
             return;
         }
-        EditorGUILayout.BeginVertical();
+      
 
         EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("Scene:", TextLabelStyles);
+        EditorGUILayout.LabelField("Scene:", TextGreenStyles);
         if(EditorGUILayout.DropdownButton(content: new GUIContent(EditorSceneManager.GetActiveScene().path), FocusType.Passive) && EditorBuildSettings.scenes.Count() > 0)
         {
             GenericMenu menu = new GenericMenu();
@@ -87,11 +95,12 @@ class ProjectInfoEditor : EditorWindow
 
         EditorGUILayout.EndHorizontal();
 
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(wnd.position.width), GUILayout.Height(wnd.position.height));
+        EditorGUILayout.BeginVertical();
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(wnd.position.width), GUILayout.Height(wnd.position.height-20));
         if (!adManager)
             adManager = GameObject.FindObjectOfType<HuynnLib.AdManager>();
         #region EDITOR
-        EditorGUILayout.LabelField("Build Version:", TextLabelStyles);
+        EditorGUILayout.LabelField("Build Version:", TextGreenStyles);
 
         PlayerSettings.Android.bundleVersionCode = EditorGUILayout.IntField("Version Code", PlayerSettings.Android.bundleVersionCode);
 
@@ -105,7 +114,7 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.BeginHorizontal();
         string applicationIdentifier = EditorGUILayout.TextField("Package Name", PlayerSettings.applicationIdentifier);
         
-        EditorGUILayout.LabelField("Package name should in form \"com.X.Y\" other can cost a build error!", TextFieldStyles);
+        EditorGUILayout.LabelField("Package name should in form \"com.X.Y\" other can cost a build error!", TextRedStyles);
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, applicationIdentifier);
         EditorGUILayout.EndHorizontal();
 
@@ -139,7 +148,7 @@ class ProjectInfoEditor : EditorWindow
         if (adjustGameObject)
         {
             EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("Adjust:", TextLabelStyles);
+            EditorGUILayout.LabelField("Adjust:", TextGreenStyles);
             adjustGameObject.appToken = EditorGUILayout.TextField("Adjust Token", adjustGameObject.appToken);
 
 
@@ -187,7 +196,7 @@ class ProjectInfoEditor : EditorWindow
         if (gg)
         {
             EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("Google:", TextLabelStyles);
+            EditorGUILayout.LabelField("Google:", TextGreenStyles);
             gg.GoogleMobileAdsAndroidAppId = EditorGUILayout.TextField("Android AD ID", gg.GoogleMobileAdsAndroidAppId);
             if (adManager)
             {
@@ -217,7 +226,7 @@ class ProjectInfoEditor : EditorWindow
         if (max != null)
         {
             EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("AppLovin:", TextLabelStyles);
+            EditorGUILayout.LabelField("AppLovin:", TextGreenStyles);
             max.SdkKey = EditorGUILayout.TextField("MaxSdk key", max.SdkKey);
             if (adManager)
                 adManager.MaxSdkKey = max.SdkKey;
@@ -267,7 +276,7 @@ class ProjectInfoEditor : EditorWindow
         {
           
             EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("Facebook:", TextLabelStyles);
+            EditorGUILayout.LabelField("Facebook:", TextGreenStyles);
 
             
             var appIds = facebook.GetType().GetProperty("AppIds");
@@ -318,7 +327,7 @@ class ProjectInfoEditor : EditorWindow
         if (adManager)
         {
             EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("AD IDs:", TextLabelStyles);
+            EditorGUILayout.LabelField("AD IDs:", TextGreenStyles);
             adManager.BannerAdUnitID = EditorGUILayout.TextField("Banner ID", adManager.BannerAdUnitID);
             adManager.InterstitialAdUnitID = EditorGUILayout.TextField("Inter ID", adManager.InterstitialAdUnitID);
             adManager.RewardedAdUnitID = EditorGUILayout.TextField("Reward ID", adManager.RewardedAdUnitID);
