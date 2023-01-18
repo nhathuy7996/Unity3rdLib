@@ -166,9 +166,9 @@ class BuildProcess : IPreprocessBuildWithReport
 
         }
 
-
-        EditorUtility.DisplayDialog("Hi, your captain here!",
-           "google-services.xml: Oke oke", "Ok!");
+        if(isShowOk)
+            EditorUtility.DisplayDialog("Hi, your captain here!",
+               "google-services.xml: Oke oke", "Ok!");
     }
 
     [MenuItem("3rdLib/Check google-services.json")]
