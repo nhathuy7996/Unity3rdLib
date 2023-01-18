@@ -15,6 +15,9 @@ namespace HuynnLib
         [SerializeField] LanguageName _currentLanguage = LanguageName.EN;
         [SerializeField] GameObject _languageBtnManager;
         [SerializeField] Sprite _selectedLan, _normalLan;
+
+        public bool isLanguageSeted => PlayerPrefs.GetInt("LAN", -1) != -1;
+
         List<Button> _languageBtns = new List<Button>();
         Dictionary<string, Dictionary<string, string>> _languageDict = new Dictionary<string, Dictionary<string, string>>();
 
