@@ -186,9 +186,8 @@ namespace HuynnLib
             Debug.Log("==========> Ad start Init! <==========");
 
             InitMAX();
-#if NATIVE_AD
             InitAdMob();
-#endif
+
             AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
 
             _onInitDone?.Invoke();
@@ -247,10 +246,12 @@ namespace HuynnLib
 
         void InitAdMob()
         {
+#if NATIVE_AD
             MobileAds.Initialize(initStatus =>
             {
                 RequestNativeAd(NativeAdID);
             });
+#endif
         }
 
 #region Banner Ad Methods
@@ -696,6 +697,8 @@ namespace HuynnLib
 
         #endregion
 
+#if NATIVE_AD
+
         #region Native Ad Methods
         public void RequestNativeAd(string unitAdID)
         {
@@ -805,7 +808,7 @@ namespace HuynnLib
 
         #endregion
 
-
+#endif
         #region CheckAdLoaded
 
         public bool InterstitialIsLoaded()
@@ -825,15 +828,20 @@ namespace HuynnLib
 
         public bool NativeAdLoaded()
         {
+ 
 #if UNITY_EDITOR
             return true;
-#endif
+#elif NATIVE_AD
             return this.nativeAd != null;
+#else
+            return false;
+#endif
+
         }
 
-#endregion
+        #endregion
 
-#region ShowAd
+        #region ShowAd
 
         public void ShowBanner()
         {

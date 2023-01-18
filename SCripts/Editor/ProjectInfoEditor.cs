@@ -31,7 +31,7 @@ class ProjectInfoEditor : EditorWindow
 
     FacebookSettings facebook;
 
-    string fbAppID, fbClientToken,fbKeyStore;
+    string fbAppID = null, fbClientToken = null ,fbKeyStore = null;
     static EditorWindow wnd;
     GUIStyle TextFieldStyles, TextLabelStyles;
     // Add menu named "My Window" to the Window menu
@@ -269,7 +269,7 @@ class ProjectInfoEditor : EditorWindow
             EditorGUILayout.Space(20);
             EditorGUILayout.LabelField("Facebook:", TextLabelStyles);
 
-            fbAppID = EditorGUILayout.TextField("App ID", fbAppID);
+            
             var appIds = facebook.GetType().GetProperty("AppIds");
 
             if (appIds != null)
@@ -280,12 +280,13 @@ class ProjectInfoEditor : EditorWindow
                     facebookAppIDProp = appIds.GetValue(facebookAppIDProp, null);
                     fbAppID = ((List<string>)facebookAppIDProp)[0];
                 }
+                fbAppID = EditorGUILayout.TextField("App ID", fbAppID);
                 appIds.SetValue(facebook, new List<string>() { fbAppID }, null);
             }
             else
                 Debug.LogError("Can not find FB app ID field!");
 
-            fbClientToken = EditorGUILayout.TextField("Client token", fbClientToken);
+            
             var clientToken = facebook.GetType().GetProperty("ClientTokens");
 
             if (clientToken != null)
@@ -293,9 +294,10 @@ class ProjectInfoEditor : EditorWindow
                 object facebookClientTokenProps = null;
                 if (string.IsNullOrEmpty(fbClientToken))
                 {
-                    facebookClientTokenProps = appIds.GetValue(facebookClientTokenProps, null);
+                    facebookClientTokenProps = clientToken.GetValue(facebookClientTokenProps, null);
                     fbClientToken = ((List<string>)facebookClientTokenProps)[0];
                 }
+                fbClientToken = EditorGUILayout.TextField("Client token", fbClientToken);
                 clientToken.SetValue(facebook, new List<string>() { fbClientToken }, null);
             }
             else
