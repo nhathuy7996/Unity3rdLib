@@ -9,30 +9,40 @@ using com.adjust.sdk;
 using GoogleMobileAds.Editor;
 using HuynnLib;
 using System.IO;
+using Facebook.Unity.Settings;
+using UnityEngine.Networking.Types;
 
 public class BuildDone : IPostprocessBuildWithReport
 {
     public int callbackOrder { get { return 0; } }
     public void OnPostprocessBuild(BuildReport report)
     {
-        string reportContent = string.Format("Time: " + DateTime.Now +
+        //Report(report);
+    }
+
+    public static void Report(BuildReport report)
+    {
+
+        string reportContent = string.Format("Time: " + DateTime.Now + "\n" +
             "Product Name: {0} \n" +
             "App Version: {1} \n" +
             "Version code: {2} \n" +
-            "Package Name: {3} \n",
+            "Package Name: {3} \n" +
+            "Path: {4} \n\n\n",
             PlayerSettings.productName,
             PlayerSettings.bundleVersion,
             PlayerSettings.Android.bundleVersionCode,
-            PlayerSettings.applicationIdentifier);
+            PlayerSettings.applicationIdentifier,
+            report.summary.outputPath);
 
         Adjust adjustObject = GameObject.FindObjectOfType<Adjust>();
         if (adjustObject)
         {
-            string adjust = string.Format("-------------ADJSUT--------------\n" +
+            string adjust = string.Format("               -------------ADJSUT--------------\n" +
               "Token: {0} \n" +
-              "Mode: {1} \n",
-            adjustObject.appToken,
-             adjustObject.environment);
+              "Mode: {1} \n\n\n",
+              adjustObject.appToken,
+              adjustObject.environment);
 
             reportContent += adjust;
         }
@@ -53,11 +63,11 @@ public class BuildDone : IPostprocessBuildWithReport
 
         if (gg && adManagerObject)
         {
-            string googleReport = string.Format("-------------GOOGLE ADMOB--------------\n" +
-                "Android AD ID: {0} \n" +
-                "Event Paid AD: {1} \n",
+            string googleReport = string.Format("               -------------GOOGLE ADMOB--------------\n" +
+                "App ID: {0} \n" +
+                "Event Paid AD: {1} \n\n\n",
                 gg.GoogleMobileAdsAndroidAppId,
-                adManagerObject.paid_ad_revenue );
+                adManagerObject.paid_ad_revenue);
 
             reportContent += googleReport;
         }
@@ -77,18 +87,18 @@ public class BuildDone : IPostprocessBuildWithReport
         if (max != null)
         {
 
-            string adjsutReport = string.Format("-------------MAX--------------\n" +
+            string adjsutReport = string.Format("               -------------MAX--------------\n" +
                 "MaxSdk key: {0} \n" +
-                "Android AD ID: {1} \n",
+                "Android appID: {1} \n\n\n",
                 max.SdkKey,
                 max.AdMobAndroidAppId);
 
             reportContent += adjsutReport;
         }
 
-        if(adManagerObject != null)
+        if (adManagerObject != null)
         {
-            string adReport = string.Format("-------------AD MAX ID--------------\n" +
+            string adReport = string.Format("               -------------AD MAX ID--------------\n" +
                 "Banner ID: {0} \n" +
                 "Inter ID: {1} \n" +
                 "Reward ID: {2} \n" +
@@ -98,10 +108,62 @@ public class BuildDone : IPostprocessBuildWithReport
                 adManagerObject.RewardedAdUnitID,
                 adManagerObject.OpenAdUnitID);
 
+#if NATIVE_AD
+            adReport += "Native ID: "+adManagerObject.NativeAdID +"\n\n\n";
+#endif
+
             reportContent += adReport;
         }
 
-        FileStream stream = new FileStream(Application.dataPath +"/HuynnReportBuild", FileMode.Create);
+
+        FacebookSettings facebook = null;
+        string[] facebookSetting = UnityEditor.AssetDatabase.FindAssets("t:FacebookSettings");
+        if (facebookSetting.Length != 0)
+        {
+            string path = UnityEditor.AssetDatabase.GUIDToAssetPath(facebookSetting[0]);
+            facebook = UnityEditor.AssetDatabase.LoadAssetAtPath<FacebookSettings>(path);
+        }
+        else
+        {
+            Debug.LogError("Can not find MaxSdkSetting!");
+        }
+
+        if (facebook != null)
+        {
+            var appIds = facebook.GetType().GetProperty("AppIds");
+            string fbAppID = "";
+            if (appIds != null)
+            {
+                object facebookAppIDProp = null;
+                facebookAppIDProp = appIds.GetValue(facebookAppIDProp, null);
+                fbAppID = ((List<string>)facebookAppIDProp)[0];
+                
+            }
+            else
+                Debug.LogError("Can not find FB app ID field!");
+
+
+            var clientToken = facebook.GetType().GetProperty("ClientTokens");
+            string fbClientToken = "";
+            if (clientToken != null)
+            {
+                object facebookClientTokenProps = null;
+                facebookClientTokenProps = clientToken.GetValue(facebookClientTokenProps, null);
+                fbClientToken = ((List<string>)facebookClientTokenProps)[0];
+            }
+            else
+                Debug.LogError("Can not find FB client token field!");
+
+            string facebookReport = string.Format("               -------------FACEBOOK--------------\n" +
+                "FB AppID: {0} \n" +
+                "FB ClientToken: {1} \n\n\n",
+                fbAppID,fbClientToken);
+
+            reportContent += facebookReport;
+        }
+
+        string pathReport = report.summary.outputPath.Replace(".apk", "").Replace(".aab", "") + "-buildHuynnReport";
+        FileStream stream = new FileStream(pathReport, FileMode.OpenOrCreate);
         using (StreamWriter writer = new StreamWriter(stream))
         {
             writer.Write(reportContent);

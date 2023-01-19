@@ -38,6 +38,7 @@ class BuildProcess : IPreprocessBuildWithReport
 
         FixGoogleXml(false);
 
+        BuildDone.Report(report);
     }
 
     [MenuItem("3rdLib/Check google-services.xml")]
