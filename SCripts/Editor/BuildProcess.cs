@@ -9,7 +9,7 @@ using System.Xml;
 using SimpleJSON;
 using System;
 using System.Reflection;
-
+using com.adjust.sdk;
 
 class BuildProcess : IPreprocessBuildWithReport
 {
@@ -17,6 +17,7 @@ class BuildProcess : IPreprocessBuildWithReport
 
     public void OnPreprocessBuild(BuildReport report)
     {
+
         if (!PlayerSettings.applicationIdentifier.StartsWith("com."))
         {
             EditorUtility.DisplayDialog("Attention Pleas?",
