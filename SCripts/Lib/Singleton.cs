@@ -15,6 +15,7 @@ namespace HuynnLib
                 if (_instant == null)
                 {
                     Debug.LogError("==> Singleton doesnt exist!!! <==");
+                    _instant = FindObjectOfType<T>();
                     //new GameObject().AddComponent<T>().name = "Singleton_"+  typeof(T).ToString();
                 }
 
@@ -22,7 +23,7 @@ namespace HuynnLib
             }
         }
        
-        void Awake()
+        protected virtual void Awake()
         {
             if (_instant != null && _instant.GetInstanceID() != this.gameObject.GetInstanceID())
                 Destroy(this.gameObject);

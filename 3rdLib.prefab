@@ -1106,6 +1106,8 @@ MonoBehaviour:
   _InterstitialAdUnitID: 3a70c7be99dade7d
   _RewardedAdUnitID: 6b7094c5d21fcfe5
   _OpenAdUnitID: 
+  _NativeAdID: ca-app-pub-3940256099942544/2247696110
+  adNativePanel: {fileID: 0}
 --- !u!1 &375057543647880371
 GameObject:
   m_ObjectHideFlags: 0
@@ -3735,8 +3737,8 @@ GameObject:
   - component: {fileID: 1591984501262375306}
   - component: {fileID: 2062035711624979696}
   - component: {fileID: 3369000014230790961}
-  - component: {fileID: 5781058620746139987}
   - component: {fileID: 4841641621413192685}
+  - component: {fileID: 889614173179433188}
   m_Layer: 0
   m_Name: 3rdLib
   m_TagString: Untagged
@@ -3799,18 +3801,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ad78839527894808817413e8b4f76da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &5781058620746139987
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6596462342938566256}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81a41ffdee64b422f953ec5cb1c59205, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4841641621413192685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3821,6 +3811,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9692f2631958449e8a50c5b0388c0043, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &889614173179433188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6596462342938566256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81a41ffdee64b422f953ec5cb1c59205, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &6670913793342389741

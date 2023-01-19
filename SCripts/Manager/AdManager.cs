@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using static MaxSdkBase;
 using System.Threading.Tasks;
+using System.Linq;
 
 
 namespace HuynnLib
@@ -57,6 +58,8 @@ namespace HuynnLib
 
         [SerializeField] GameObject _popUpNoAd;
 
+   
+
         #region Max
 
         [Header("---ID---")]
@@ -67,7 +70,17 @@ namespace HuynnLib
         private string _BannerAdUnitID = "df980c4d809fc01e",
             _InterstitialAdUnitID = "3a70c7be99dade7d",
             _RewardedAdUnitID = "6b7094c5d21fcfe5",
-            _OpenAdUnitID = "";
+            _OpenAdUnitID = "6b7094c5d21fcfe5";
+
+#if NATIVE_AD
+        [SerializeField]
+        private string _NativeAdID = "ca-app-pub-3940256099942544/2247696110";//ca-app-pub-3940256099942544/2247696110
+        [Header("NativeObject")]
+        [SerializeField] AdNativeObject adNativePanel;
+
+
+        NativeAd nativeAd;
+#endif
 
 #if UNITY_EDITOR
         public string MaxSdkKey
@@ -128,14 +141,28 @@ namespace HuynnLib
                 _OpenAdUnitID = value;
             }
         }
+#if NATIVE_AD
+        public string NativeAdID
+        {
+            get
+            {
+                return _NativeAdID;
+            }
+            set
+            {
+                _NativeAdID = value;
+            }
+        }
+#endif
 #endif
 
         private int bannerRetryAttempt,
             interstitialRetryAttempt,
             rewardedRetryAttempt,
-            AdOpenRetryAttemp = 1;
+            AdOpenRetryAttemp = 1,
+            NativeAdRetryAttemp = 1;
 
-        #region CallBack
+#region CallBack
         private Action<InterVideoState> _callbackInter = null;
         private Action<RewardVideoState> _callbackReward = null;
         private Action<bool> _callbackOpenAD = null;
@@ -145,13 +172,13 @@ namespace HuynnLib
         private Action _rewardClickCallback = null;
         private Action _adOpenClickCallback = null;
 
-        #endregion
+#endregion
 
 
 
-        #endregion
+#endregion
 
-        private bool isShowingAd = false, _isSDKInitDone = false;
+        private bool isShowingAd = false, _isSDKInitDone = false, _isBannerInitDone = false;
 
 
         public void Init(Action _onInitDone = null)
@@ -159,6 +186,7 @@ namespace HuynnLib
             Debug.Log("==========> Ad start Init! <==========");
 
             InitMAX();
+            InitAdMob();
 
             AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
 
@@ -166,7 +194,7 @@ namespace HuynnLib
         }
 
 
-        #region ClickCallBack
+#region ClickCallBack
         public AdManager AssignClickCallBackBanner(Action callback)
         {
             _bannerClickCallback = callback;
@@ -190,10 +218,10 @@ namespace HuynnLib
             _adOpenClickCallback = callback;
             return this;
         }
-        #endregion
+#endregion
 
 
-        #region MAX
+#region MAX
 
         void InitMAX()
         {
@@ -215,7 +243,18 @@ namespace HuynnLib
             MaxSdk.SetSdkKey(_MaxSdkKey);
             MaxSdk.InitializeSdk();
         }
-        #region Banner Ad Methods
+
+        void InitAdMob()
+        {
+#if NATIVE_AD
+            MobileAds.Initialize(initStatus =>
+            {
+                RequestNativeAd(_NativeAdID);
+            });
+#endif
+        }
+
+#region Banner Ad Methods
 
         public async Task InitializeBannerAds()
         {
@@ -252,7 +291,9 @@ namespace HuynnLib
                 // Set background or background color for banners to be fully functional.
                 MaxSdk.SetBannerBackgroundColor(_BannerAdUnitID, new Color(1, 1, 1, 0));
 
-                if (_isBannerAutoShow) ShowBanner();
+                if (_isBannerAutoShow) _= ShowBanner();
+
+                _isBannerInitDone = true;
             });
         }
 
@@ -300,9 +341,9 @@ namespace HuynnLib
         }
 
 
-        #endregion
+#endregion
 
-        #region Interstitial Ad Methods
+#region Interstitial Ad Methods
         private void InitializeInterstitialAds()
         {
             // Attach callbacks
@@ -410,9 +451,9 @@ namespace HuynnLib
         }
 
 
-        #endregion
+#endregion
 
-        #region Reward Ad Methods
+#region Reward Ad Methods
         private void InitializeRewardedAds()
         {
             // Attach callbacks
@@ -531,10 +572,10 @@ namespace HuynnLib
             _callbackReward = null;
             Debug.Log("==> Reward recived!! <==");
         }
-        #endregion
+#endregion
 
 
-        #region AdOpen Methods
+#region AdOpen Methods
         void InitAdOpen()
         {
             Debug.Log("==> Ad open/resume init! <==");
@@ -658,7 +699,118 @@ namespace HuynnLib
 
         #endregion
 
+#if NATIVE_AD
 
+        #region Native Ad Methods
+        public void RequestNativeAd(string unitAdID)
+        {
+
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.native, adState: AD_STATE.load);
+
+            AdLoader adLoader = new AdLoader.Builder(unitAdID)
+                .ForNativeAd()
+                .Build();
+
+            adLoader.OnNativeAdLoaded += this.HandleNativeAdLoaded;
+            adLoader.OnAdFailedToLoad += this.HandleAdFailedToLoad;
+            adLoader.OnNativeAdImpression += this.HandleNativeAdImpression;
+            adLoader.OnNativeAdClicked += this.AdLoader_OnNativeAdClicked;
+
+            adLoader.LoadAd(new AdRequest.Builder().Build());
+
+            Debug.Log("===>Native requested<====");
+
+#if UNITY_EDITOR
+            this.HandleNativeAdLoaded(null, new NativeAdEventArgs());
+#endif
+        }
+
+      
+        public GameObject ShowNativeAd()
+        {
+            Debug.Log("===>set object nativ<e===");
+            FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.show);
+#if UNITY_EDITOR
+            adNativePanel.gameObject.SetActive(true);
+            return adNativePanel.gameObject;
+#endif
+
+
+
+            List<Texture2D> imagetexture = this.nativeAd.GetImageTextures();
+            if (imagetexture.Any())
+            {
+                adNativePanel.adBG.gameObject.SetActive(true);
+                adNativePanel.adBG.texture = this.nativeAd.GetImageTextures().OrderBy(t => UnityEngine.Random.value).First();
+                this.nativeAd.RegisterImageGameObjects(new List<GameObject>() { adNativePanel.adBG.gameObject });
+            }
+            else
+                adNativePanel.adBG.gameObject.SetActive(false);
+
+
+            adNativePanel.adIcon.texture = this.nativeAd.GetIconTexture();
+            adNativePanel.headLine.text = this.nativeAd.GetHeadlineText();
+
+
+            this.nativeAd.RegisterHeadlineTextGameObject(adNativePanel.headLine.gameObject);
+            this.nativeAd.RegisterIconImageGameObject(adNativePanel.adIcon.gameObject);
+
+            adNativePanel.adChoice.texture = this.nativeAd.GetAdChoicesLogoTexture();
+
+            adNativePanel.callToAction.text = this.nativeAd.GetCallToActionText();
+            adNativePanel.advertiser.text = "<color=blue>" + this.nativeAd.GetAdvertiserText() + "</color>\n" + this.nativeAd.GetBodyText();
+
+            this.nativeAd.RegisterAdChoicesLogoGameObject(adNativePanel.adChoice.gameObject);
+
+            this.nativeAd.RegisterCallToActionGameObject(adNativePanel.callToAction.gameObject);
+            this.nativeAd.RegisterAdvertiserTextGameObject(adNativePanel.advertiser.gameObject);
+
+
+            return adNativePanel.gameObject;
+
+        }
+
+        #endregion
+
+        #region HandleNativeAd
+        private void HandleAdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
+        {
+            Debug.LogError("===> NativeAd load Fail! error: " + e.ToString());
+            FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.load_fail);
+        }
+
+        private void HandleNativeAdLoaded(object sender, NativeAdEventArgs e)
+        {
+            Debug.Log("===> Native ad loaded.");
+            this.nativeAd  = e.nativeAd;
+
+            FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.load_done);
+
+
+#if UNITY_EDITOR
+            this.ShowNativeAd().SetActive(true);
+#else
+            this.ShowNativeAd();
+#endif
+
+        }
+
+        private void HandleNativeAdImpression(object sender, EventArgs e)
+        {
+            Debug.Log("===> Handle ad native impression! ");
+        }
+
+
+        private void AdLoader_OnNativeAdClicked(object sender, EventArgs e)
+        {
+            Debug.Log("===> Handle ad native clicked! ");
+            
+        }
+
+
+        #endregion
+
+#endif
         #region CheckAdLoaded
 
         public bool InterstitialIsLoaded()
@@ -676,14 +828,33 @@ namespace HuynnLib
             return MaxSdk.IsAppOpenAdReady(_OpenAdUnitID);
         }
 
+        public bool NativeAdLoaded()
+        {
+ 
+#if UNITY_EDITOR
+            return true;
+#elif NATIVE_AD
+            return this.nativeAd != null;
+#else
+            return false;
+#endif
+
+        }
+
         #endregion
 
         #region ShowAd
 
-        public void ShowBanner()
+        public async Task ShowBanner()
         {
             if (_isOffBanner)
                 return;
+
+            while (!_isBannerInitDone)
+            {
+                await Task.Delay(500);
+            }
+
             Debug.Log("==> show banner <==");
             _isBannerCurrentlyAllow = true;
 
@@ -836,10 +1007,10 @@ namespace HuynnLib
             ShowAdOpen(false, callback);
         }
 
-        #endregion
+#endregion
 
 
-        #region Track Revenue
+#region Track Revenue
 
         private void TrackAdRevenue(MaxSdkBase.AdInfo adInfo)
         {
@@ -869,7 +1040,7 @@ namespace HuynnLib
             Firebase.Analytics.FirebaseAnalytics.LogEvent(_paid_ad_revenue, impressionParameters);
         }
 
-        #endregion
+#endregion
 
 
 #if ADMOB
