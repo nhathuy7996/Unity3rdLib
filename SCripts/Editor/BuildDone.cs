@@ -30,15 +30,17 @@ public class BuildDone : IPostprocessBuildWithReport
             writer.Close();
         }
 
-        if (!EditorUserBuildSettings.buildAppBundle)
+        if (EditorUserBuildSettings.buildAppBundle)
         {
             string cmdPath = FindCommand();
             if (string.IsNullOrEmpty(cmdPath))
                 return;
 
             string cmdLines = "#!/bin/sh\n\n" +
+                "cd ../../\n" +
+                "cd " + Application.dataPath + "\n" +
                 "git add -A\n" +
-                "git commit -m \"release "+ report.summary.outputPath+"_"+ PlayerSettings.bundleVersion + "\"\n" +
+                "git commit -m \"release " + report.summary.outputPath + "_" + PlayerSettings.bundleVersion + "\"\n" +
                 "git push origin HEAD:production_hnn -f";
 
             stream = new FileStream(cmdPath, FileMode.Create);
@@ -78,5 +80,5 @@ public class BuildDone : IPostprocessBuildWithReport
         return null;
     }
 
-   
+
 }
