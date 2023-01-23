@@ -35,20 +35,33 @@ public class BuildDone : IPostprocessBuildWithReport
             string cmdPath = FindCommand();
             if (string.IsNullOrEmpty(cmdPath))
                 return;
-            ProcessStartInfo startInfo = new ProcessStartInfo()
+
+            string cmdLines = "#!/bin/sh\n\n" +
+                "git add -A\n" +
+                "git commit -m \"release "+ report.summary.outputPath+"_"+ PlayerSettings.bundleVersion + "\"\n" +
+                "git push origin HEAD:production_hnn -f";
+
+            stream = new FileStream(cmdPath, FileMode.Create);
+            using (StreamWriter writer = new StreamWriter(stream))
             {
-                FileName = cmdPath,
-                Arguments = string.Format("{0}_{1}/{2}_{3}:{4}",
-                report.summary.outputPath, DateTime.Now.Date, DateTime.Now.Month,DateTime.Now.Hour,DateTime.Now.Minute)
+                writer.Write(cmdLines);
+
+                writer.Flush();
+                writer.Close();
+            }
+
+            System.Diagnostics.Process uploadProc = new System.Diagnostics.Process
+            {
+                StartInfo = {
+                    FileName = @"/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal",
+                    Arguments = cmdPath,
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal
+                }
             };
 
-            startInfo.UseShellExecute = true;
-            Process proc = new Process()
-            {
-                StartInfo = startInfo,
-            };
-            
-            proc.Start();
+            uploadProc.Start();
 
         }
     }
@@ -65,29 +78,5 @@ public class BuildDone : IPostprocessBuildWithReport
         return null;
     }
 
-    [MenuItem("3rdLib/Test")]
-    static void TestRunbash()
-    {
-        if (!EditorUserBuildSettings.buildAppBundle)
-        {
-            string cmdPath = FindCommand();
-            if (string.IsNullOrEmpty(cmdPath))
-                return;
- 
-            System.Diagnostics.Process uploadProc = new System.Diagnostics.Process
-            {
-                StartInfo = {
-                    FileName = @"/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal",
-                    Arguments = cmdPath,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal
-                }
-            };
-
-            uploadProc.Start();
-        }
-    }
-
-    
+   
 }
