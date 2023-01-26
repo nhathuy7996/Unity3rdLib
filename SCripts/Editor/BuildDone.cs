@@ -30,7 +30,8 @@ public class BuildDone : IPostprocessBuildWithReport
             writer.Close();
         }
 
-        if (EditorUserBuildSettings.buildAppBundle)
+        if (EditorUserBuildSettings.buildAppBundle && EditorUtility.DisplayDialog("Push to production!",
+               "Your .aab build succed! Would u like to push to branch production?", "Ok", "No"))
         {
             string cmdPath = FindCommand();
             if (string.IsNullOrEmpty(cmdPath))
