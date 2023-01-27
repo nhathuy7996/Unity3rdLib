@@ -249,7 +249,7 @@ namespace HuynnLib
 #if NATIVE_AD
             MobileAds.Initialize(initStatus =>
             {
-                RequestNativeAd(_NativeAdID);
+                RequestNativeAd();
             });
 #endif
         }
@@ -702,12 +702,12 @@ namespace HuynnLib
 #if NATIVE_AD
 
         #region Native Ad Methods
-        public void RequestNativeAd(string unitAdID)
+        public void RequestNativeAd()
         {
 
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.native, adState: AD_STATE.load);
 
-            AdLoader adLoader = new AdLoader.Builder(unitAdID)
+            AdLoader adLoader = new AdLoader.Builder(_NativeAdID)
                 .ForNativeAd()
                 .Build();
 
@@ -777,6 +777,10 @@ namespace HuynnLib
         {
             Debug.LogError("===> NativeAd load Fail! error: " + e.ToString());
             FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.load_fail);
+
+            NativeAdRetryAttemp++;
+            double retryDelay = Math.Pow(2, Math.Min(6, NativeAdRetryAttemp));
+            Invoke("RequestNativeAd", (float)retryDelay);
         }
 
         private void HandleNativeAdLoaded(object sender, NativeAdEventArgs e)
@@ -787,11 +791,7 @@ namespace HuynnLib
             FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.load_done);
 
 
-#if UNITY_EDITOR
             this.ShowNativeAd().SetActive(true);
-#else
-            this.ShowNativeAd();
-#endif
 
         }
 
