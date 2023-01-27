@@ -35,7 +35,7 @@ class ProjectInfoEditor : EditorWindow
     static EditorWindow wnd;
     GUIStyle TextRedStyles, TextGreenStyles, ButtonTextStyles;
     // Add menu named "My Window" to the Window menu
-    [MenuItem("3rdLib/Checklist APERO")]
+    [MenuItem("3rdLib/Checklist APERO",priority =0)]
     public static void InitWindowEditor()
     {
         // This method is called when the user selects the menu item in the Editor
