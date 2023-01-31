@@ -204,6 +204,7 @@ class ProjectInfoEditor : EditorWindow
                 PrefabUtility.RecordPrefabInstancePropertyModifications(adManager);
             }
             PrefabUtility.RecordPrefabInstancePropertyModifications(gg);
+            EditorUtility.SetDirty(gg);
         }
         else
         {
@@ -240,6 +241,7 @@ class ProjectInfoEditor : EditorWindow
                 max.AdMobAndroidAppId = EditorGUILayout.TextField("Android AD ID", max.AdMobAndroidAppId);
             }
             PrefabUtility.RecordPrefabInstancePropertyModifications(max);
+            EditorUtility.SetDirty(max);
         }
         else
         {
@@ -317,6 +319,8 @@ class ProjectInfoEditor : EditorWindow
             {
                 keyStorePath.SetValue(facebook,  PlayerSettings.Android.keystoreName , null);
             }
+
+            EditorUtility.SetDirty(facebook);
         }
         
         
@@ -334,6 +338,7 @@ class ProjectInfoEditor : EditorWindow
             adManager.OpenAdUnitID = EditorGUILayout.TextField("AppOpen ID", adManager.OpenAdUnitID);
 #if NATIVE_AD
             adManager.NativeAdID = EditorGUILayout.TextField("NativeAd ID", adManager.NativeAdID);
+            EditorGUILayout.LabelField("ID test: ca-app-pub-3940256099942544/224769611", TextRedStyles);
 #endif
             PrefabUtility.RecordPrefabInstancePropertyModifications(adManager);
         }

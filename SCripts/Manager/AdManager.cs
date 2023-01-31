@@ -72,9 +72,10 @@ namespace HuynnLib
             _RewardedAdUnitID = "6b7094c5d21fcfe5",
             _OpenAdUnitID = "6b7094c5d21fcfe5";
 
-#if NATIVE_AD
+
         [SerializeField]
         private string _NativeAdID = "ca-app-pub-3940256099942544/2247696110";//ca-app-pub-3940256099942544/2247696110
+#if NATIVE_AD
         [Header("NativeObject")]
         [SerializeField] AdNativeObject adNativePanel;
 
@@ -141,7 +142,7 @@ namespace HuynnLib
                 _OpenAdUnitID = value;
             }
         }
-#if NATIVE_AD
+ 
         public string NativeAdID
         {
             get
@@ -153,7 +154,7 @@ namespace HuynnLib
                 _NativeAdID = value;
             }
         }
-#endif
+ 
 #endif
 
         private int bannerRetryAttempt,

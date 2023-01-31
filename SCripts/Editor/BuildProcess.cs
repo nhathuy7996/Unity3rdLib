@@ -155,7 +155,7 @@ class BuildProcess : IPreprocessBuildWithReport
                         "<string name=\"google_crash_reporting_api_key\" translatable=\"false\">" + client["api_key"][0]["current_key"] + "</string>\n  " +
                         "<string name=\"google_app_id\" translatable=\"false\">" + client["client_info"]["mobilesdk_app_id"] + "</string>\n  " +
                         "<string name=\"default_web_client_id\" translatable=\"false\">" + default_web_client_id + "</string>\n" +
-                        "</resources>";
+                        "</resources>\n";
 
                     FileStream stream = new FileStream(CheckFirebaseXml(), FileMode.Create);
                     using (StreamWriter writer = new StreamWriter(stream))
