@@ -53,7 +53,7 @@ public class BuildDone : IPostprocessBuildWithReport
             "cd ../../\n" +
             "cd " + Application.dataPath + "\n" +
             "git add -A\n" +
-            "git commit -m \"release " + _report.summary.outputPath + "_" + PlayerSettings.bundleVersion + "\"\n" +
+            "git commit -m \"release " + _report == null? "": _report.summary.outputPath + "_" + PlayerSettings.bundleVersion + "\"\n" +
         "git push origin HEAD:production_hnn -f";
 
         FileStream stream = new FileStream(cmdPath, FileMode.Create);
