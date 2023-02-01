@@ -34,6 +34,9 @@ class ProjectInfoEditor : EditorWindow
     string fbAppID = null, fbClientToken = null ,fbKeyStore = null;
     static EditorWindow wnd;
     GUIStyle TextRedStyles, TextGreenStyles, ButtonTextStyles;
+
+    int numberNativeADID = 0;
+
     // Add menu named "My Window" to the Window menu
     [MenuItem("3rdLib/Checklist APERO",priority =0)]
     public static void InitWindowEditor()
@@ -98,7 +101,10 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.BeginVertical();
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(wnd.position.width), GUILayout.Height(wnd.position.height-20));
         if (!adManager)
+        {
             adManager = GameObject.FindObjectOfType<HuynnLib.AdManager>();
+            numberNativeADID = adManager.NativeAdID.Count;
+        }
         #region EDITOR
         EditorGUILayout.LabelField("Build Version:", TextGreenStyles);
 
@@ -337,8 +343,43 @@ class ProjectInfoEditor : EditorWindow
             adManager.RewardedAdUnitID = EditorGUILayout.TextField("Reward ID", adManager.RewardedAdUnitID);
             adManager.OpenAdUnitID = EditorGUILayout.TextField("AppOpen ID", adManager.OpenAdUnitID);
 #if NATIVE_AD
-            adManager.NativeAdID = EditorGUILayout.TextField("NativeAd ID", adManager.NativeAdID);
-            EditorGUILayout.LabelField("ID test: ca-app-pub-3940256099942544/224769611", TextRedStyles);
+            EditorGUILayout.Space(20);
+            EditorGUILayout.BeginHorizontal();
+            numberNativeADID = EditorGUILayout.IntField("NativeAd ID number", numberNativeADID);
+
+
+            if (numberNativeADID > adManager.NativeAdID.Count)
+            {
+                adManager.NativeAdID.AddRange(new string[numberNativeADID - adManager.NativeAdID.Count]);
+                adManager.adNativePanel.AddRange(new AdNativeObject[numberNativeADID - adManager.adNativePanel.Count]);
+            }
+
+            if (numberNativeADID < adManager.NativeAdID.Count)
+            {
+                int numberRemove = adManager.NativeAdID.Count - numberNativeADID;
+                adManager.NativeAdID.RemoveRange(numberNativeADID, numberRemove);
+                adManager.adNativePanel.RemoveRange(numberNativeADID, adManager.adNativePanel.Count - numberNativeADID);
+            }
+
+
+            EditorGUILayout.BeginVertical();
+            for (int i = 0; i< adManager.NativeAdID.Count; i++)
+            {
+                adManager.NativeAdID[i] = EditorGUILayout.TextField("Ad ID "+(i+1), adManager.NativeAdID[i]);
+            }
+
+            if( EditorGUILayout.LinkButton("ID test: ca-app-pub-3940256099942544/2247696110"))
+            {
+                for (int i = 0; i < adManager.NativeAdID.Count; i++)
+                {
+                    if (adManager.NativeAdID[i].Equals("ca-app-pub-3940256099942544/2247696110"))
+                        continue;
+                    adManager.NativeAdID[i] = "ca-app-pub-3940256099942544/2247696110";
+                }
+            }
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.EndHorizontal();
 #endif
             PrefabUtility.RecordPrefabInstancePropertyModifications(adManager);
         }

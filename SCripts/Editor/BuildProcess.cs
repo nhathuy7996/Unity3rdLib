@@ -300,18 +300,22 @@ class BuildProcess : IPreprocessBuildWithReport
 
         if (adManagerObject != null)
         {
-            string adReport = string.Format("               -------------AD MAX ID--------------\n" +
+            string adReport = string.Format("               -------------AD ID--------------\n" +
                 "Banner ID: {0} \n" +
                 "Inter ID: {1} \n" +
                 "Reward ID: {2} \n" +
-                "AppOpen ID: {3} \n",
+                "AppOpen ID: {3} \n\n",
                 adManagerObject.BannerAdUnitID,
                 adManagerObject.InterstitialAdUnitID,
                 adManagerObject.RewardedAdUnitID,
                 adManagerObject.OpenAdUnitID);
 
 #if NATIVE_AD
-            adReport += "Native ID: " + adManagerObject.NativeAdID + "\n\n\n";
+            for (int i = 0; i< adManagerObject.NativeAdID.Count; i++)
+            {
+                adReport += string.Format("Native ID {0}: {1}",(i+1), adManagerObject.NativeAdID) + "\n\n\n";
+            }
+            
 #endif
 
             reportContent += adReport;
