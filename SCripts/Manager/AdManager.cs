@@ -83,7 +83,7 @@ namespace HuynnLib
 
         List<NativeAd> nativeAd = new List<NativeAd>();
 
-        int adNativeID = 0, appOpenAdID = 0;
+        int adNativeID = 0;
 #endif
 
 #if UNITY_EDITOR
@@ -178,8 +178,9 @@ namespace HuynnLib
         private int bannerRetryAttempt,
             interstitialRetryAttempt,
             rewardedRetryAttempt,
-            AdOpenRetryAttemp = 1,
             NativeAdRetryAttemp = 1;
+
+        List<int> AdOpenRetryAttemp = new List<int>();
 
         #region CallBack
         private Action<InterVideoState> _callbackInter = null;
@@ -244,6 +245,9 @@ namespace HuynnLib
 
         void InitMAX()
         {
+
+            AdOpenRetryAttemp = new List<int>(new int[_OpenAdUnitIDs.Count]);
+
             MaxSdkCallbacks.OnSdkInitializedEvent += sdkConfiguration =>
             {
                 // AppLovin SDK is initialized, configure and start loading ads.
@@ -267,7 +271,7 @@ namespace HuynnLib
         {
 #if NATIVE_AD
 
-            nativeAd = new List<NativeAd>(new NativeAd[NativeAdID.Count]);
+            nativeAd = new List<NativeAd>(new NativeAd[_NativeAdID.Count]);
 
             MobileAds.Initialize(initStatus =>
             {
@@ -616,20 +620,24 @@ namespace HuynnLib
                 TrackAdRevenue(adInfo);
             };
 
-            LoadAdOpen();
+            LoadAdOpen(0);
         }
 
+        IEnumerator waitLoadAdOpen(float time, int ID)
+        {
+            yield return new WaitForSeconds(time);
+            LoadAdOpen(ID);
+        }
 
-
-        void LoadAdOpen()
+        public void LoadAdOpen(int ID = 0)
         {
             Debug.Log("==> Start load ad open/resume! <==");
 
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load);
 
-            if (!MaxSdk.IsAppOpenAdReady(_OpenAdUnitIDs[appOpenAdID]))
+            if (!MaxSdk.IsAppOpenAdReady(_OpenAdUnitIDs[ID]))
             {
-                MaxSdk.LoadAppOpenAd(_OpenAdUnitIDs[appOpenAdID]);
+                MaxSdk.LoadAppOpenAd(_OpenAdUnitIDs[ID]);
             }
         }
 
@@ -640,7 +648,10 @@ namespace HuynnLib
 
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load_done, adNetwork: arg2.NetworkName);
 
-            AdOpenRetryAttemp = 0;
+            int ID = _OpenAdUnitIDs.IndexOf(arg1);
+            if (ID < 0)
+                return;
+            AdOpenRetryAttemp[ID] = 0;
         }
 
         private void AppOpen_OnAdDisplayedEvent(string arg1, AdInfo arg2)
@@ -682,10 +693,15 @@ namespace HuynnLib
             }
 
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show_fail);
-            AdOpenRetryAttemp++;
-            double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp));
+
+            int ID = _OpenAdUnitIDs.IndexOf(arg1);
+            if (ID < 0)
+                return;
+            AdOpenRetryAttemp[ID]++;
+            double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
             isShowingAd = false;
-            Invoke("LoadAdOpen", (float)retryDelay);
+
+            waitLoadAdOpen((float)retryDelay, ID); 
 
         }
 
@@ -693,9 +709,14 @@ namespace HuynnLib
         {
             Debug.LogError("==> Load ad open/resume failed, code: " + arg2.Code + " <==");
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load_fail);
-            AdOpenRetryAttemp++;
-            double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp));
-            Invoke("LoadAdOpen", (float)retryDelay);
+            int ID = _OpenAdUnitIDs.IndexOf(arg1);
+            if (ID < 0)
+                return;
+            AdOpenRetryAttemp[ID]++;
+            double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
+            isShowingAd = false;
+
+            waitLoadAdOpen((float)retryDelay, ID);
         }
 
 
@@ -712,11 +733,14 @@ namespace HuynnLib
                 Debug.LogError("==>Callback ad open error: " + e.ToString() + "<==");
             }
             isShowingAd = false;
-            if(appOpenAdID == 0)
-            {
-                appOpenAdID = 1;
-            }
-            LoadAdOpen();
+            int ID = _OpenAdUnitIDs.IndexOf(adUnitId);
+            if (ID < 0)
+                return;
+            AdOpenRetryAttemp[ID]++;
+            double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
+            isShowingAd = false;
+ 
+            LoadAdOpen(ID);
         }
 
 
@@ -987,7 +1011,7 @@ namespace HuynnLib
         /// </summary>
         /// <param name="isAdOpen">Is Ads treated as an open AD</param>
         /// <param name="callback">Callback when adopen show done or fail pass true if ad show success and false if ad fail</param>
-        public void ShowAdOpen(bool isAdOpen = false, Action<bool> callback = null)
+        public void ShowAdOpen(int ID = 0, bool isAdOpen = false, Action<bool> callback = null)
         {
             if (isAdOpen && _isOffAdsOpen)
                 return;
@@ -1001,10 +1025,10 @@ namespace HuynnLib
                 return;
             }
 
-            if (CheckInternetConnection() && AdsOpenIsLoaded(appOpenAdID))
+            if (CheckInternetConnection() && AdsOpenIsLoaded(ID))
             {
                 FireBaseManager.Instant.adTypeShow = isAdOpen ? AD_TYPE.open : AD_TYPE.resume;
-                MaxSdk.ShowAppOpenAd(_OpenAdUnitIDs[appOpenAdID]);
+                MaxSdk.ShowAppOpenAd(_OpenAdUnitIDs[ID]);
                 _callbackOpenAD = callback;
             }
             else
@@ -1036,7 +1060,10 @@ namespace HuynnLib
         /// <param name="callback">Callback when adopen show done or fail pass true if ad show success and false if ad fail</param>
         public void ShowAdOpen(Action<bool> callback = null)
         {
-            ShowAdOpen(false, callback);
+            int ID = OpenAdUnitIDs.Count - 1;
+            if (ID < 0)
+                return;
+            ShowAdOpen(ID,false, callback);
         }
 
 #if NATIVE_AD
@@ -1235,7 +1262,7 @@ namespace HuynnLib
         {
             if (!focus)
             {
-                this.ShowAdOpen(false);
+                this.ShowAdOpen(1);
             }
         }
 #endif
@@ -1247,7 +1274,7 @@ namespace HuynnLib
             // Display the app open ad when the app is foregrounded. 
             if (state == AppState.Foreground)
             {
-                this.ShowAdOpen(false);
+                this.ShowAdOpen(1);
             }
 
 

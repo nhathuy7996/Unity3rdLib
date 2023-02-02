@@ -104,6 +104,7 @@ class ProjectInfoEditor : EditorWindow
         {
             adManager = GameObject.FindObjectOfType<HuynnLib.AdManager>();
             numberNativeADID = adManager.NativeAdID.Count;
+            numberAddOpenAdID = adManager.OpenAdUnitIDs.Count;
         }
         #region EDITOR
         EditorGUILayout.LabelField("Build Version:", TextGreenStyles);
