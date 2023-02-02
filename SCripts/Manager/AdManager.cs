@@ -757,6 +757,12 @@ namespace HuynnLib
             FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.show);
             _adNativePanel[adNativeID].gameObject.SetActive(true);
 
+#if UNITY_EDITOR
+
+            _adNativePanel[adNativeID].advertiser.text = "<color=blue>" + this.NativeAdID[adNativeID] + "</color>\n";
+            return;
+#endif
+
             List<Texture2D> imagetexture = this.nativeAd[adNativeID].GetImageTextures();
             if (imagetexture.Any())
             {
@@ -995,7 +1001,7 @@ namespace HuynnLib
                 return;
             }
 
-            if (CheckInternetConnection() && AdsOpenIsLoaded())
+            if (CheckInternetConnection() && AdsOpenIsLoaded(appOpenAdID))
             {
                 FireBaseManager.Instant.adTypeShow = isAdOpen ? AD_TYPE.open : AD_TYPE.resume;
                 MaxSdk.ShowAppOpenAd(_OpenAdUnitIDs[appOpenAdID]);
