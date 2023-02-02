@@ -303,17 +303,19 @@ class BuildProcess : IPreprocessBuildWithReport
             string adReport = string.Format("               -------------AD ID--------------\n" +
                 "Banner ID: {0} \n" +
                 "Inter ID: {1} \n" +
-                "Reward ID: {2} \n" +
-                "AppOpen ID: {3} \n\n",
+                "Reward ID: {2} \n\n" ,
                 adManagerObject.BannerAdUnitID,
                 adManagerObject.InterstitialAdUnitID,
-                adManagerObject.RewardedAdUnitID,
-                adManagerObject.OpenAdUnitID);
+                adManagerObject.RewardedAdUnitID );
 
+            for (int i = 0; i < adManagerObject.OpenAdUnitIDs.Count; i++)
+            {
+                adReport += string.Format("AppOpen AD ID {0}: {1}", (i + 1), adManagerObject.OpenAdUnitIDs[i]) + "\n\n\n";
+            }
 #if NATIVE_AD
             for (int i = 0; i< adManagerObject.NativeAdID.Count; i++)
             {
-                adReport += string.Format("Native ID {0}: {1}",(i+1), adManagerObject.NativeAdID) + "\n\n\n";
+                adReport += string.Format("Native ID {0}: {1}",(i+1), adManagerObject.NativeAdID[i]) + "\n\n\n";
             }
             
 #endif

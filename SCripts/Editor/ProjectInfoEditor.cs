@@ -35,7 +35,7 @@ class ProjectInfoEditor : EditorWindow
     static EditorWindow wnd;
     GUIStyle TextRedStyles, TextGreenStyles, ButtonTextStyles;
 
-    int numberNativeADID = 0;
+    int numberNativeADID = 0, numberAddOpenAdID = 0;
 
     // Add menu named "My Window" to the Window menu
     [MenuItem("3rdLib/Checklist APERO",priority =0)]
@@ -341,7 +341,34 @@ class ProjectInfoEditor : EditorWindow
             adManager.BannerAdUnitID = EditorGUILayout.TextField("Banner ID", adManager.BannerAdUnitID);
             adManager.InterstitialAdUnitID = EditorGUILayout.TextField("Inter ID", adManager.InterstitialAdUnitID);
             adManager.RewardedAdUnitID = EditorGUILayout.TextField("Reward ID", adManager.RewardedAdUnitID);
-            adManager.OpenAdUnitID = EditorGUILayout.TextField("AppOpen ID", adManager.OpenAdUnitID);
+
+
+            EditorGUILayout.BeginHorizontal();
+            numberAddOpenAdID = EditorGUILayout.IntField("AppOpen AD ID number", numberAddOpenAdID);
+
+
+            if (numberAddOpenAdID > adManager.OpenAdUnitIDs.Count)
+            {
+                adManager.OpenAdUnitIDs.AddRange(new string[numberAddOpenAdID - adManager.OpenAdUnitIDs.Count]); 
+            }
+
+            if (numberAddOpenAdID < adManager.OpenAdUnitIDs.Count)
+            {
+                int numberRemove = adManager.OpenAdUnitIDs.Count - numberAddOpenAdID;
+                adManager.OpenAdUnitIDs.RemoveRange(numberAddOpenAdID, numberRemove); 
+            }
+
+
+            EditorGUILayout.BeginVertical();
+            for (int i = 0; i < adManager.OpenAdUnitIDs.Count; i++)
+            {
+                adManager.OpenAdUnitIDs[i] = EditorGUILayout.TextField("Ad ID " + (i + 1), adManager.OpenAdUnitIDs[i]);
+            }
+
+             
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.EndHorizontal(); 
 #if NATIVE_AD
             EditorGUILayout.Space(20);
             EditorGUILayout.BeginHorizontal();

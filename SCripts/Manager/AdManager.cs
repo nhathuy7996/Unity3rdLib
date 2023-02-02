@@ -69,8 +69,9 @@ namespace HuynnLib
         [SerializeField]
         private string _BannerAdUnitID = "df980c4d809fc01e",
             _InterstitialAdUnitID = "3a70c7be99dade7d",
-            _RewardedAdUnitID = "6b7094c5d21fcfe5",
-            _OpenAdUnitID = "6b7094c5d21fcfe5";
+            _RewardedAdUnitID = "6b7094c5d21fcfe5";
+
+        [SerializeField] List<string> _OpenAdUnitIDs = new List<string>();
 
 
         [SerializeField]
@@ -82,7 +83,7 @@ namespace HuynnLib
 
         List<NativeAd> nativeAd = new List<NativeAd>();
 
-        int adNativeID = 0;
+        int adNativeID = 0, appOpenAdID = 0;
 #endif
 
 #if UNITY_EDITOR
@@ -133,15 +134,15 @@ namespace HuynnLib
             }
         }
 
-        public string OpenAdUnitID
+        public List<string> OpenAdUnitIDs
         {
             get
             {
-                return _OpenAdUnitID;
+                return _OpenAdUnitIDs;
             }
             set
             {
-                _OpenAdUnitID = value;
+                _OpenAdUnitIDs = value;
             }
         }
 
@@ -156,6 +157,8 @@ namespace HuynnLib
                 _NativeAdID = value;
             }
         }
+
+#if NATIVE_AD
         public List<AdNativeObject> adNativePanel
         {
             get
@@ -168,6 +171,7 @@ namespace HuynnLib
                 _adNativePanel = value;
             }
         }
+#endif
 
 #endif
 
@@ -623,9 +627,9 @@ namespace HuynnLib
 
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load);
 
-            if (!MaxSdk.IsAppOpenAdReady(_OpenAdUnitID))
+            if (!MaxSdk.IsAppOpenAdReady(_OpenAdUnitIDs[appOpenAdID]))
             {
-                MaxSdk.LoadAppOpenAd(_OpenAdUnitID);
+                MaxSdk.LoadAppOpenAd(_OpenAdUnitIDs[appOpenAdID]);
             }
         }
 
@@ -637,7 +641,6 @@ namespace HuynnLib
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load_done, adNetwork: arg2.NetworkName);
 
             AdOpenRetryAttemp = 0;
-
         }
 
         private void AppOpen_OnAdDisplayedEvent(string arg1, AdInfo arg2)
@@ -709,6 +712,10 @@ namespace HuynnLib
                 Debug.LogError("==>Callback ad open error: " + e.ToString() + "<==");
             }
             isShowingAd = false;
+            if(appOpenAdID == 0)
+            {
+                appOpenAdID = 1;
+            }
             LoadAdOpen();
         }
 
@@ -842,9 +849,9 @@ namespace HuynnLib
             return MaxSdk.IsRewardedAdReady(_RewardedAdUnitID);
         }
 
-        public bool AdsOpenIsLoaded()
+        public bool AdsOpenIsLoaded(int ID = 0)
         {
-            return MaxSdk.IsAppOpenAdReady(_OpenAdUnitID);
+            return MaxSdk.IsAppOpenAdReady(_OpenAdUnitIDs[ID]);
         }
 
         public bool NativeAdLoaded(int ID)
@@ -991,7 +998,7 @@ namespace HuynnLib
             if (CheckInternetConnection() && AdsOpenIsLoaded())
             {
                 FireBaseManager.Instant.adTypeShow = isAdOpen ? AD_TYPE.open : AD_TYPE.resume;
-                MaxSdk.ShowAppOpenAd(_OpenAdUnitID);
+                MaxSdk.ShowAppOpenAd(_OpenAdUnitIDs[appOpenAdID]);
                 _callbackOpenAD = callback;
             }
             else
@@ -1026,6 +1033,7 @@ namespace HuynnLib
             ShowAdOpen(false, callback);
         }
 
+#if NATIVE_AD
         public async Task ShowNative(int ID, Action<GameObject> callBack)
         {
             if (ID >= _adNativePanel.Count || ID >= nativeAd.Count)
@@ -1049,8 +1057,9 @@ namespace HuynnLib
             }
            
         }
+#endif
 
-        #endregion
+#endregion
 
 
         #region Track Revenue
