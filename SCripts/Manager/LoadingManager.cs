@@ -63,7 +63,7 @@ namespace HuynnLib
             {
                 if (value == 100)
                 {
-                    Debug.Log("==>Loading Done!<==");
+                    Debug.Log("[Huynn3rdLib]==>Loading Done!<==");
                     _loadingPopUp.SetActive(false);
 
                     try
@@ -72,7 +72,7 @@ namespace HuynnLib
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError("==> callback ondone loading error: " + e.ToString() + " <==");
+                        Debug.LogError("[Huynn3rdLib]==> callback ondone loading error: " + e.ToString() + " <==");
                     }
 
                     _loading.onValueChanged.RemoveAllListeners();
@@ -97,7 +97,7 @@ namespace HuynnLib
            
             if (_maxTimeLoading == 0.2f)
                 return;
-            Debug.Log("==> Force stop loading! <==");
+            Debug.Log("[Huynn3rdLib]==> Force stop loading! <==");
             _loadingMaxvalue = _loading.maxValue - _loading.value;
             _maxTimeLoading = 0.2f;
 
@@ -118,20 +118,20 @@ namespace HuynnLib
         {
             if (id >= _conditionDone.Count)
             {
-                Debug.LogError("==> ID condition not exist, check number of conditon on inspector! <==");
+                Debug.LogError("[Huynn3rdLib]==> ID condition not exist, check number of conditon on inspector! <==");
                 return this;
             }
 
             if (_loading.value >= 99f)
             {
-                Debug.LogWarning("==> Loading already stop, maybe check your game flow! <==");
+                Debug.LogWarning("[Huynn3rdLib]==> Loading already stop, maybe check your game flow! <==");
                 return this;
             }
 
             _conditionDone[id] = true;
             if (_conditionDone.Where(c => c == false).Count() == 0)
             {
-                Debug.Log("==> All condition is done! stop loading! <==");
+                Debug.Log("[Huynn3rdLib]==> All condition is done! stop loading! <==");
                 StopLoading();
             }
 

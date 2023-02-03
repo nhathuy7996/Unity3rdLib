@@ -39,7 +39,7 @@ namespace HuynnLib
 
         public void Init(Action onInitDone)
         {
-            Debug.Log("==========> IAP start Init! <==========");
+            Debug.Log("[Huynn3rdLib]==========> IAP start Init! <==========");
             _onInitDone = onInitDone;
             InitializePurchasing();
         }
@@ -109,7 +109,7 @@ namespace HuynnLib
                 if(isTimeOut)
                     if (countTime >= 360000f)
                     {
-                        Debug.LogError(string.Format("==>Restored product {0} fail, becuz time out! Check your network please!<==", productID));
+                        Debug.LogError(string.Format("[Huynn3rdLib]==>Restored product {0} fail, becuz time out! Check your network please!<==", productID));
                         return false;
                     }
                 await Task.Delay(500);
@@ -121,7 +121,7 @@ namespace HuynnLib
                 return true;
             }
 
-            Debug.LogError(string.Format("==>Restored product {0} fail, Check product ID!<==", productID));
+            Debug.LogError(string.Format("[Huynn3rdLib]==>Restored product {0} fail, Check product ID!<==", productID));
             return false;
         }
 
@@ -150,7 +150,7 @@ namespace HuynnLib
             _onBuyFail = onBuyFail;
 
             if (!string.IsNullOrEmpty(productId))
-                Debug.Log("==> buy productId : " + productId+" <==");
+                Debug.Log("[Huynn3rdLib]==> buy productId : " + productId+" <==");
             // If Purchasing has been initialized ...
             if (IsInitialized())
             {
@@ -170,7 +170,7 @@ namespace HuynnLib
 
                 _isBuying = false;
                 // ... report the product look-up failure situation  
-                Debug.LogError("==> BuyProductID: FAIL. Not purchasing product, either is not found or is not available for purchase <==");
+                Debug.LogError("[Huynn3rdLib]==> BuyProductID: FAIL. Not purchasing product, either is not found or is not available for purchase <==");
 
                 return;
             }
@@ -178,7 +178,7 @@ namespace HuynnLib
             // ... report the fact Purchasing has not succeeded initializing yet. Consider waiting longer or 
             // retrying initiailization.
             _isBuying = false;
-            Debug.LogError("==> BuyProductID FAIL. Not initialized <==");
+            Debug.LogError("[Huynn3rdLib]==> BuyProductID FAIL. Not initialized <==");
             //NoticeManager.Instance.LogNotice("BuyProductID FAIL. Not initialized.");
 
         }
@@ -192,7 +192,7 @@ namespace HuynnLib
             if (!IsInitialized())
             {
                 // ... report the situation and stop restoring. Consider either waiting longer, or retrying initialization.
-                Debug.LogError("==> RestorePurchases FAIL. Not initialized <==");
+                Debug.LogError("[Huynn3rdLib]==> RestorePurchases FAIL. Not initialized <==");
                 //NoticeManager.Instance.LogNotice("RestorePurchases FAIL. Not initialized.");
                 return;
             }
@@ -202,7 +202,7 @@ namespace HuynnLib
                 Application.platform == RuntimePlatform.OSXPlayer)
             {
                 // ... begin restoring purchases
-                Debug.Log("==> RestorePurchases started ...<==");
+                Debug.Log("[Huynn3rdLib]==> RestorePurchases started ...<==");
 
                 // Fetch the Apple store-specific subsystem.
                 var apple = m_StoreExtensionProvider.GetExtension<IAppleExtensions>();
@@ -212,14 +212,14 @@ namespace HuynnLib
                 {
                     // The first phase of restoration. If no more responses are received on ProcessPurchase then 
                     // no purchases are available to be restored.
-                    Debug.Log("==> RestorePurchases continuing: " + result + ". If no further messages, no purchases available to restore <==");
+                    Debug.Log("[Huynn3rdLib]==> RestorePurchases continuing: " + result + ". If no further messages, no purchases available to restore <==");
                 });
             }
             // Otherwise ...
             else
             {
                 // We are not running on an Apple device. No work is necessary to restore purchases.
-                Debug.LogError("==> RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform+" <==");
+                Debug.LogError("[Huynn3rdLib]==> RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform+" <==");
             }
         }
 
@@ -244,7 +244,7 @@ namespace HuynnLib
         public void OnInitializeFailed(InitializationFailureReason error)
         {
             // Purchasing set-up has not succeeded. Check error for reason. Consider sharing this reason with the user.
-            Debug.LogError("==> OnInitializeFailed InitializationFailureReason:" + error+" <==");
+            Debug.LogError("[Huynn3rdLib]==> OnInitializeFailed InitializationFailureReason:" + error+" <==");
             _onInitDone?.Invoke();
         }
 
@@ -258,7 +258,7 @@ namespace HuynnLib
 
                 if (String.Equals(args.purchasedProduct.definition.id, product.id, StringComparison.Ordinal))
                 {
-                    Debug.Log(string.Format("==> ProcessPurchase: PASS. Product: '{0}' <==", args.purchasedProduct.definition.id));
+                    Debug.Log(string.Format("[Huynn3rdLib]==> ProcessPurchase: PASS. Product: '{0}' <==", args.purchasedProduct.definition.id));
                     //NoticeManager.Instance.LogNotice(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));
                     //#if  UNITY_EDITOR
                      
@@ -296,7 +296,7 @@ namespace HuynnLib
                 _onBuyFail = null;
             }
 
-            Debug.LogError(string.Format("==> OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1} <==", product.definition.storeSpecificId, failureReason));
+            Debug.LogError(string.Format("[Huynn3rdLib]==> OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1} <==", product.definition.storeSpecificId, failureReason));
 
         }
     }

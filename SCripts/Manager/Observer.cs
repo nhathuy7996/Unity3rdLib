@@ -48,7 +48,7 @@ namespace HuynnLib
                 }
                 catch (Exception e)
                 {
-                    Debug.LogErrorFormat("====>Notify action on key {0} error: {1}<====", key, e.ToString());
+                    Debug.LogErrorFormat("[Huynn3rdLib]====>Notify action on key {0} error: {1}<====", key, e.ToString());
                 }
                
             }

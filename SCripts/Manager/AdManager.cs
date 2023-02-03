@@ -203,7 +203,7 @@ namespace HuynnLib
 
         public void Init(Action _onInitDone = null)
         {
-            Debug.Log("==========> Ad start Init! <==========");
+            Debug.Log("[Huynn3rdLib]==========> Ad start Init! <==========");
 
             InitMAX();
             InitAdMob();
@@ -251,7 +251,7 @@ namespace HuynnLib
             MaxSdkCallbacks.OnSdkInitializedEvent += sdkConfiguration =>
             {
                 // AppLovin SDK is initialized, configure and start loading ads.
-                Debug.Log("==> MAX SDK Initialized <==");
+                Debug.Log("[Huynn3rdLib]==> MAX SDK Initialized <==");
                 _isSDKInitDone = true;
                 InitAdOpen();
                 if (!_isOffInter)
@@ -286,7 +286,7 @@ namespace HuynnLib
         {
             while (!_isSDKInitDone)
             {
-                Debug.LogWarning("==>Waiting Max SDK init done!<==");
+                Debug.LogWarning("[Huynn3rdLib]==>Waiting Max SDK init done!<==");
                 await Task.Delay(500);
             }
 
@@ -296,7 +296,7 @@ namespace HuynnLib
                     return;
                 if (string.IsNullOrWhiteSpace(_BannerAdUnitID))
                     return;
-                Debug.Log("==> Init banner <==");
+                Debug.Log("[Huynn3rdLib]==> Init banner <==");
                 FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load);
                 // Attach Callbacks
                 MaxSdkCallbacks.Banner.OnAdLoadedEvent += OnBannerAdLoadedEvent;
@@ -306,7 +306,7 @@ namespace HuynnLib
 
                 MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent += (adUnit, adInfo) =>
                 {
-                    Debug.Log("==> Banner ad revenue paid <==");
+                    Debug.Log("[Huynn3rdLib]==> Banner ad revenue paid <==");
                     TrackAdRevenue(adInfo);
                 };
 
@@ -332,8 +332,8 @@ namespace HuynnLib
         private void OnBannerAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             if (_isBannerCurrentlyAllow)
-                this.ShowBanner();
-            Debug.Log("==> Banner ad loaded <==");
+                _= this.ShowBanner();
+            Debug.Log("[Huynn3rdLib]==> Banner ad loaded "+adUnitId+" <==");
             MaxSdk.StartBannerAutoRefresh(_BannerAdUnitID);
 
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load_done, adNetwork: adInfo.NetworkName);
@@ -343,7 +343,7 @@ namespace HuynnLib
         private void OnBannerAdFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo)
         {
             // Banner ad failed to load. MAX will automatically try loading a new ad internally.
-            Debug.LogError("==>Banner ad failed to load with error code: " + errorInfo.Code + " <==");
+            Debug.LogError("[Huynn3rdLib]==>Banner ad failed to load with error code: " + errorInfo.Code + " <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load_fail);
             bannerRetryAttempt++;
             double retryDelay = Math.Pow(2, Math.Min(6, bannerRetryAttempt));
@@ -353,7 +353,7 @@ namespace HuynnLib
 
         private void OnBannerAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-            Debug.Log("==> Banner ad clicked <==");
+            Debug.Log("[Huynn3rdLib]==> Banner ad clicked <==");
             FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.banner, adNetwork: adInfo.NetworkName);
             try
             {
@@ -361,7 +361,7 @@ namespace HuynnLib
             }
             catch (Exception e)
             {
-                Debug.LogError("==> invoke banner click callback error: " + e.ToString() + " <==");
+                Debug.LogError("[Huynn3rdLib]==> invoke banner click callback error: " + e.ToString() + " <==");
             }
             _bannerClickCallback = null;
         }
@@ -382,7 +382,7 @@ namespace HuynnLib
             MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
             MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += (adUnit, adInfo) =>
             {
-                Debug.Log("==> Interstitial revenue paid <==");
+                Debug.Log("[Huynn3rdLib]==> Interstitial revenue paid <==");
                 TrackAdRevenue(adInfo);
             };
 
@@ -394,6 +394,7 @@ namespace HuynnLib
 
         void LoadInterstitial()
         {
+            Debug.Log("[Huynn3rdLib]==>Start load Interstitial "+_InterstitialAdUnitID+" <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load);
             MaxSdk.LoadInterstitial(_InterstitialAdUnitID);
         }
@@ -401,7 +402,7 @@ namespace HuynnLib
         private void OnInterstitialLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             // Interstitial ad is ready to be shown. MaxSdk.IsInterstitialReady(interstitialAdUnitId) will now return 'true'
-            Debug.Log("==> Interstitial loaded <==");
+            Debug.Log("[Huynn3rdLib]==> Interstitial loaded <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load_done, adNetwork: adInfo.NetworkName);
             // Reset retry attempt
             interstitialRetryAttempt = 0;
@@ -413,7 +414,7 @@ namespace HuynnLib
             interstitialRetryAttempt++;
             double retryDelay = Math.Pow(2, Math.Min(6, interstitialRetryAttempt));
 
-            Debug.LogError("==> Interstitial failed to load with error code: " + errorInfo.Code + " <==");
+            Debug.LogError("[Huynn3rdLib]==> Interstitial failed to load with error code: " + errorInfo.Code + " <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load_fail);
 
             Invoke("LoadInterstitial", (float)retryDelay);
@@ -421,14 +422,14 @@ namespace HuynnLib
 
         private void Interstitial_OnAdDisplayedEvent(string arg1, AdInfo adInfo)
         {
-            Debug.Log("==> Interstitial show! <==");
+            Debug.Log("[Huynn3rdLib]==> Interstitial show! <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.show, adNetwork: adInfo.NetworkName);
         }
 
         private void InterstitialFailedToDisplayEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo, MaxSdkBase.AdInfo adInfo)
         {
             // Interstitial ad failed to display. We recommend loading the next ad
-            Debug.LogError("==> Interstitial failed to display with error code: " + errorInfo.Code + " <==");
+            Debug.LogError("[Huynn3rdLib]==> Interstitial failed to display with error code: " + errorInfo.Code + " <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.show_fail, adNetwork: adInfo.NetworkName);
             LoadInterstitial();
 
@@ -438,7 +439,7 @@ namespace HuynnLib
             }
             catch (Exception e)
             {
-                Debug.LogError("==> Faild invoke callback inter, error: " + e.ToString() + " <==");
+                Debug.LogError("[Huynn3rdLib]==> Faild invoke callback inter, error: " + e.ToString() + " <==");
             }
 
             _callbackInter = null;
@@ -447,7 +448,7 @@ namespace HuynnLib
 
         private void Interstitial_OnAdClickedEvent(string arg1, AdInfo adInfo)
         {
-            Debug.Log("==> Inter ad clicked <==");
+            Debug.Log("[Huynn3rdLib]==> Inter ad clicked <==");
             FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.inter, adNetwork: adInfo.NetworkName);
             try
             {
@@ -455,21 +456,21 @@ namespace HuynnLib
             }
             catch (Exception e)
             {
-                Debug.LogError("==> Faild invoke click inter callback, error: " + e.ToString() + " <==");
+                Debug.LogError("[Huynn3rdLib]==> Faild invoke click inter callback, error: " + e.ToString() + " <==");
             }
             _interClickCallback = null;
         }
 
         private void OnInterstitialDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-            Debug.Log("==> Interstitial dismissed <==");
+            Debug.Log("[Huynn3rdLib]==> Interstitial dismissed <==");
             try
             {
                 _callbackInter?.Invoke(InterVideoState.None);
             }
             catch (Exception e)
             {
-                Debug.LogError("==> Faild invoke callback inter, error: " + e.ToString() + " <==");
+                Debug.LogError("[Huynn3rdLib]==> Faild invoke callback inter, error: " + e.ToString() + " <==");
             }
             _callbackInter = null;
             LoadInterstitial();
@@ -494,7 +495,7 @@ namespace HuynnLib
 
             MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent += (adUnitId, adInfo) =>
             {
-                Debug.Log("==> Reward paid event! <==");
+                Debug.Log("[Huynn3rdLib]==> Reward paid event! <==");
                 TrackAdRevenue(adInfo);
             };
 
@@ -505,6 +506,7 @@ namespace HuynnLib
 
         private void LoadRewardedAd()
         {
+            Debug.Log("[Huynn3rdLib]==> Load reward Ad "+_RewardedAdUnitID+" ! <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.load);
             MaxSdk.LoadRewardedAd(_RewardedAdUnitID);
         }
@@ -525,7 +527,7 @@ namespace HuynnLib
             rewardedRetryAttempt++;
             double retryDelay = Math.Pow(2, Math.Min(6, rewardedRetryAttempt));
 
-            Debug.LogError("==> Rewarded ad failed to load with error code: " + errorInfo.Code + " <==");
+            Debug.LogError("[Huynn3rdLib]==> Rewarded ad failed to load with error code: " + errorInfo.Code + " <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.load_fail);
             Invoke("LoadRewardedAd", (float)retryDelay);
 
@@ -535,7 +537,7 @@ namespace HuynnLib
         {
             // Rewarded ad failed to display. We recommend loading the next ad
 
-            Debug.LogError("==> Rewarded ad failed to display with error code: " + errorInfo.Code + " <==");
+            Debug.LogError("[Huynn3rdLib]==> Rewarded ad failed to display with error code: " + errorInfo.Code + " <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.show_fail, adInfo.NetworkName);
             LoadRewardedAd();
             try
@@ -545,7 +547,7 @@ namespace HuynnLib
             }
             catch (Exception e)
             {
-                Debug.LogError("==> Faild invoke callback reward, error: " + e.ToString() + " <==");
+                Debug.LogError("[Huynn3rdLib]==> Faild invoke callback reward, error: " + e.ToString() + " <==");
             }
 
             _callbackReward = null;
@@ -553,13 +555,13 @@ namespace HuynnLib
 
         private void OnRewardedAdDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-            Debug.Log("==> Reward display success! <==");
+            Debug.Log("[Huynn3rdLib]==> Reward display success! <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.show, adInfo.NetworkName);
         }
 
         private void OnRewardedAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-            Debug.Log("==> Reward clicked! <==");
+            Debug.Log("[Huynn3rdLib]==> Reward clicked! <==");
             FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.reward, adNetwork: adInfo.NetworkName);
             try
             {
@@ -568,7 +570,7 @@ namespace HuynnLib
             }
             catch (Exception e)
             {
-                Debug.LogError("==> Faild invoke reward click callback, error: " + e.ToString() + " <==");
+                Debug.LogError("[Huynn3rdLib]==> Faild invoke reward click callback, error: " + e.ToString() + " <==");
             }
 
             _rewardClickCallback = null;
@@ -579,7 +581,7 @@ namespace HuynnLib
             LoadRewardedAd();
             isShowingAd = false;
             _callbackReward = null;
-            Debug.Log("==> Reward closed! <==");
+            Debug.Log("[Huynn3rdLib]==> Reward closed! <==");
         }
 
         private void OnRewardedAdReceivedRewardEvent(string adUnitId, MaxSdk.Reward reward, MaxSdkBase.AdInfo adInfo)
@@ -592,11 +594,11 @@ namespace HuynnLib
             }
             catch (Exception e)
             {
-                Debug.LogError("==> Faild invoke callback reward, error: " + e.ToString() + " <==");
+                Debug.LogError("[Huynn3rdLib]==> Faild invoke callback reward, error: " + e.ToString() + " <==");
             }
 
             _callbackReward = null;
-            Debug.Log("==> Reward recived!! <==");
+            Debug.Log("[Huynn3rdLib]==> Reward recived!! <==");
         }
         #endregion
 
@@ -604,7 +606,7 @@ namespace HuynnLib
         #region AdOpen Methods
         void InitAdOpen()
         {
-            Debug.Log("==> Ad open/resume init! <==");
+            Debug.Log("[Huynn3rdLib]==> Ad open/resume init! <==");
 
 
             MaxSdkCallbacks.AppOpen.OnAdLoadedEvent += AppOpen_OnAdLoadedEvent;
@@ -616,7 +618,7 @@ namespace HuynnLib
             MaxSdkCallbacks.AppOpen.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
             MaxSdkCallbacks.AppOpen.OnAdRevenuePaidEvent += (adUnit, adInfo) =>
             {
-                Debug.Log("==> Ad open/resume paid event! <==");
+                Debug.Log("[Huynn3rdLib]==> Ad open/resume paid event! <==");
                 TrackAdRevenue(adInfo);
             };
 
@@ -631,7 +633,7 @@ namespace HuynnLib
 
         public void LoadAdOpen(int ID = 0)
         {
-            Debug.Log("==> Start load ad open/resume! <==");
+            Debug.Log("[Huynn3rdLib]==> Start load ad open/resume! ID:"+ _OpenAdUnitIDs[ID] + " <==");
 
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load);
 
@@ -644,7 +646,7 @@ namespace HuynnLib
 
         private void AppOpen_OnAdLoadedEvent(string arg1, AdInfo arg2)
         {
-            Debug.Log("==>Load ad open/resume success! <==");
+            Debug.Log("[Huynn3rdLib]==>Load ad open/resume success! <==");
 
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load_done, adNetwork: arg2.NetworkName);
 
@@ -656,7 +658,7 @@ namespace HuynnLib
 
         private void AppOpen_OnAdDisplayedEvent(string arg1, AdInfo arg2)
         {
-            Debug.Log("==> Show ad open/resume success! <==");
+            Debug.Log("[Huynn3rdLib]==> Show ad open/resume success! <==");
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show, adNetwork: arg2.NetworkName);
             isShowingAd = true;
 
@@ -664,7 +666,7 @@ namespace HuynnLib
 
         private void AppOpen_OnAdClickedEvent(string arg1, AdInfo adInfo)
         {
-            Debug.Log("==>Click open/resume success! <==");
+            Debug.Log("[Huynn3rdLib]==>Click open/resume success! <==");
             FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.open, adNetwork: adInfo.NetworkName);
             try
             {
@@ -672,7 +674,7 @@ namespace HuynnLib
             }
             catch (Exception e)
             {
-                Debug.LogError("==>Callback click ad open error: " + e.ToString() + "<==");
+                Debug.LogError("[Huynn3rdLib]==>Callback click ad open error: " + e.ToString() + "<==");
             }
 
             _adOpenClickCallback = null;
@@ -680,7 +682,7 @@ namespace HuynnLib
 
         private void AppOpen_OnAdDisplayFailedEvent(string arg1, ErrorInfo arg2, AdInfo arg3)
         {
-            Debug.LogError("==> Show ad open/resume failed, code: " + arg2.Code + " <==");
+            Debug.LogError("[Huynn3rdLib]==> Show ad open/resume failed, code: " + arg2.Code + " <==");
 
             try
             {
@@ -689,7 +691,7 @@ namespace HuynnLib
             }
             catch (Exception e)
             {
-                Debug.LogError("==>Callback ad open error: " + e.ToString() + "<==");
+                Debug.LogError("[Huynn3rdLib]==>Callback ad open error: " + e.ToString() + "<==");
             }
 
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show_fail);
@@ -707,7 +709,7 @@ namespace HuynnLib
 
         private void AppOpenOnAdLoadFailedEvent(string arg1, ErrorInfo arg2)
         {
-            Debug.LogError("==> Load ad open/resume failed, code: " + arg2.Code + " <==");
+            Debug.LogError("[Huynn3rdLib]==> Load ad open/resume failed, code: " + arg2.Code + " <==");
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load_fail);
             int ID = _OpenAdUnitIDs.IndexOf(arg1);
             if (ID < 0)
@@ -722,7 +724,7 @@ namespace HuynnLib
 
         public void OnAppOpenDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
-            Debug.Log("==> Ad open/resume close! <==");
+            Debug.Log("[Huynn3rdLib]==> Ad open/resume close! <==");
             try
             {
                 _callbackOpenAD?.Invoke(true);
@@ -730,7 +732,7 @@ namespace HuynnLib
             }
             catch (Exception e)
             {
-                Debug.LogError("==>Callback ad open error: " + e.ToString() + "<==");
+                Debug.LogError("[Huynn3rdLib]==>Callback ad open error: " + e.ToString() + "<==");
             }
             isShowingAd = false;
             int ID = _OpenAdUnitIDs.IndexOf(adUnitId);
@@ -767,7 +769,7 @@ namespace HuynnLib
 
             adLoader.LoadAd(new AdRequest.Builder().Build());
 
-            Debug.Log("===>Native requested<====");
+            Debug.Log("[Huynn3rdLib]===>Start load Native "+ _NativeAdID[adNativeID] + " <====");
 
 #if UNITY_EDITOR
             this.HandleNativeAdLoaded(null, new NativeAdEventArgs());
@@ -777,7 +779,7 @@ namespace HuynnLib
       
         public void CreateNativeAd()
         {
-            Debug.Log("===>set object nativ<e===");
+            Debug.Log("[Huynn3rdLib]===>set object nativ<e===");
             FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.show);
             _adNativePanel[adNativeID].gameObject.SetActive(true);
 
@@ -823,7 +825,7 @@ namespace HuynnLib
         #region HandleNativeAd
         private void HandleAdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
         {
-            Debug.LogError("===> NativeAd load Fail! error: " + e.ToString());
+            Debug.LogError("[Huynn3rdLib]===> NativeAd load Fail! error: " + e.ToString());
             FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.load_fail);
 
             NativeAdRetryAttemp++;
@@ -833,7 +835,7 @@ namespace HuynnLib
 
         private void HandleNativeAdLoaded(object sender, NativeAdEventArgs e)
         {
-            Debug.Log("===> Native ad loaded.");
+            Debug.Log("[Huynn3rdLib]===> Native ad loaded.");
             this.nativeAd[adNativeID] = e.nativeAd;
 
             FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.load_done);
@@ -853,13 +855,13 @@ namespace HuynnLib
 
         private void HandleNativeAdImpression(object sender, EventArgs e)
         {
-            Debug.Log("===> Handle ad native impression! ");
+            Debug.Log("[Huynn3rdLib]===> Handle ad native impression! ");
         }
 
 
         private void AdLoader_OnNativeAdClicked(object sender, EventArgs e)
         {
-            Debug.Log("===> Handle ad native clicked! ");
+            Debug.Log("[Huynn3rdLib]===> Handle ad native clicked! ");
             
         }
 
@@ -911,7 +913,7 @@ namespace HuynnLib
                 await Task.Delay(500);
             }
 
-            Debug.Log("==> show banner <==");
+            Debug.Log("[Huynn3rdLib]==> show banner <==");
             _isBannerCurrentlyAllow = true;
 
             if (!string.IsNullOrWhiteSpace(_BannerAdUnitID))
@@ -921,7 +923,7 @@ namespace HuynnLib
 
         public void DestroyBanner()
         {
-            Debug.Log("==> destroy banner <==");
+            Debug.Log("[Huynn3rdLib]==> destroy banner <==");
             _isBannerCurrentlyAllow = false;
 
             if (!string.IsNullOrWhiteSpace(_BannerAdUnitID))
@@ -956,7 +958,7 @@ namespace HuynnLib
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("==> Faild invoke callback inter, error: " + e.ToString() + " <==");
+                    Debug.LogError("[Huynn3rdLib]==> Faild invoke callback inter, error: " + e.ToString() + " <==");
                 }
                 if (_popUpNoAd && showNoAds) _popUpNoAd.SetActive(true);
             }
@@ -991,7 +993,7 @@ namespace HuynnLib
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("==> Faild invoke callback reward, error: " + e.ToString() + " <==");
+                    Debug.LogError("[Huynn3rdLib]==> Faild invoke callback reward, error: " + e.ToString() + " <==");
                 }
                 if (_popUpNoAd && showNoAds) _popUpNoAd.SetActive(true);
             }
@@ -1040,7 +1042,7 @@ namespace HuynnLib
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("==> Faild invoke callback adopen/resume, error: " + e.ToString() + " <==");
+                    Debug.LogError("[Huynn3rdLib]==> Faild invoke callback adopen/resume, error: " + e.ToString() + " <==");
                 }
             }
         }
@@ -1086,7 +1088,7 @@ namespace HuynnLib
             }
             catch (Exception e)
             {
-                Debug.LogError("===>Error on callback show native! error: "+e.ToString()+"<====");
+                Debug.LogError("[Huynn3rdLib]===>Error on callback show native! error: " + e.ToString()+"<====");
             }
            
         }
@@ -1127,120 +1129,6 @@ namespace HuynnLib
 
         #endregion
 
-
-#if ADMOB
-        //app open
-        public void LoadAdOpen()
-        {
-
-            if (!_isAdsOpen)
-                return;
-
-            AdRequest request = new AdRequest.Builder().Build();
-
-            // Load an app open ad for portrait orientation
-            AppOpenAd.LoadAd(AD_UNIT_ID, ScreenOrientation.Portrait, request, ((appOpenAd, error) =>
-                {
-
-                    if (error != null)
-                    {
-                        // Handle the error.
-                        Debug.LogFormat("Failed to load the ad. (reason: {0})", error.LoadAdError.GetMessage());
-                        return;
-                    }
-
-                    // App open ad is loaded.
-                    ad = appOpenAd;
-                    loadTime = DateTime.UtcNow;
-
-                }));
-        }
-        private bool IsAdAvailable
-        {
-            get
-            {
-                return ad != null && (System.DateTime.UtcNow - loadTime).TotalHours < 4;
-            }
-        }
-        public void ShowAdIfAvailable()
-        {
-
-            if (!CheckInternetConnection())
-            {
-                return;
-            }
-            if (!IsAdAvailable)
-            {
-                LoadAdOpen();
-            }
-            if (!IsAdAvailable || isShowingAd)
-            {
-                return;
-            }
-            ad.OnAdDidDismissFullScreenContent += HandleAdDidDismissFullScreenContent;
-            ad.OnAdFailedToPresentFullScreenContent += HandleAdFailedToPresentFullScreenContent;
-            ad.OnAdDidPresentFullScreenContent += HandleAdDidPresentFullScreenContent;
-            ad.OnAdDidRecordImpression += HandleAdDidRecordImpression;
-            ad.OnPaidEvent += HandlePaidEvent;
-            ad.OnPaidEvent += OnAdResumeRevenuePaidEvent;
-            ad.Show();
-
-        }
-
-
-
-        private void HandleAdDidDismissFullScreenContent(object sender, EventArgs args)
-        {
-            // Set the ad to null to indicate that AppOpenAdManager no longer has another ad to show.
-            ad = null;
-            isShowingAd = false;
-            LoadAdOpen();
-        }
-
-        private void HandleAdFailedToPresentFullScreenContent(object sender, AdErrorEventArgs args)
-        {
-            Debug.LogFormat("Failed to present the ad (reason: {0})", args.AdError.GetMessage());
-            // Set the ad to null to indicate that AppOpenAdManager no longer has another ad to show.
-            ad = null;
-            LoadAdOpen();
-        }
-
-        private void HandleAdDidPresentFullScreenContent(object sender, EventArgs args)
-        {
-            isShowingAd = true;
-        }
-
-        private void HandleAdDidRecordImpression(object sender, EventArgs args)
-        {
-        }
-
-
-        private void HandlePaidEvent(object sender, AdValueEventArgs args)
-        {
-            Debug.LogFormat("Received paid event. (currency: {0}, value: {1}",
-                    args.AdValue.CurrencyCode, args.AdValue.Value);
-
-            AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AdjustAdRevenueSourceAppLovinMAX);
-
-            adjustAdRevenue.setRevenue(args.AdValue.Value/1000000f, "USD");
-            adjustAdRevenue.setAdRevenueNetwork("Admob");
-
-            Adjust.trackAdRevenue(adjustAdRevenue);
-        }
-
-        private void OnAdResumeRevenuePaidEvent(object sender, AdValueEventArgs args)
-        {
-            double revenue = args.AdValue.Value / 1000000f;
-                var impressionParameters = new[] {
-                new Firebase.Analytics.Parameter("ad_platform", "Admob"),
-                new Firebase.Analytics.Parameter("ad_format", "APPRESUME"),
-                new Firebase.Analytics.Parameter("value", revenue),
-                new Firebase.Analytics.Parameter("currency", "USD"), // All AppLovin revenue is sent in USD
-            };
-            Firebase.Analytics.FirebaseAnalytics.LogEvent("paid_ad_impression_value", impressionParameters);
-        }
-
-#endif
         public bool CheckInternetConnection()
         {
 

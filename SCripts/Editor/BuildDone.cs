@@ -23,7 +23,7 @@ public class BuildDone : IPostprocessBuildWithReport
     public int callbackOrder { get { return 0; } }
     public void OnPostprocessBuild(BuildReport report)
     {
-        _report = report;
+         
         string pathReport = report.summary.outputPath.Replace(".apk", "").Replace(".aab", "") + "-buildHuynnReport";
         FileStream stream = new FileStream(pathReport, FileMode.Create);
         using (StreamWriter writer = new StreamWriter(stream))
@@ -38,69 +38,10 @@ public class BuildDone : IPostprocessBuildWithReport
                "Your .aab build succed! Would u like to push to branch production?", "Ok", "No"))
         {
 
-            PushGit();
+            MenuEditor.PushGit(report);
         }
     }
 
-    [MenuItem("3rdLib/Push production",priority =1)]
-    static void PushGit()
-    {
-        string cmdPath = FindCommand();
-        if (string.IsNullOrEmpty(cmdPath))
-            return;
-
-        string cmdLines = "#!/bin/sh\n\n" +
-            "cd ../../\n" +
-            "cd " + Application.dataPath + "\n" +
-            "git add -A\n" +
-            "git commit -m \"release " + _report == null? "": _report.summary.outputPath + "_" + PlayerSettings.bundleVersion + "\"\n" +
-        "git push origin HEAD:production_hnn -f";
-
-        FileStream stream = new FileStream(cmdPath, FileMode.Create);
-        using (StreamWriter writer = new StreamWriter(stream))
-        {
-            writer.Write(cmdLines);
-
-            writer.Flush();
-            writer.Close();
-        }
-
-        string terminal = @"cmd.exe";
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            terminal = @"/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal";
-        }
-
-        else
-        {
-            terminal = @"cmd.exe";
-        }
-
-        System.Diagnostics.Process uploadProc = new System.Diagnostics.Process
-        {
-            StartInfo = {
-                FileName = terminal,
-                    Arguments = cmdPath,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal
-                }
-        };
-
-        uploadProc.Start();
-    }
-
-    static string FindCommand()
-    {
-        string[] files = Directory.GetFiles(Application.dataPath, "*push_git_cmd.sh", SearchOption.AllDirectories).ToArray();
-        if (files.Length == 1)
-        {
-            return files[0];
-        }
-
-        Debug.LogError("==>Project dont have require .sh file. Can't auto push git!!!!!<==");
-        return null;
-    }
-
+    
 
 }

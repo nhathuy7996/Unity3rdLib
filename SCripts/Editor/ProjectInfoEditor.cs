@@ -38,7 +38,7 @@ class ProjectInfoEditor : EditorWindow
     int numberNativeADID = 0, numberAddOpenAdID = 0;
 
     // Add menu named "My Window" to the Window menu
-    [MenuItem("3rdLib/Checklist APERO",priority =0)]
+    [MenuItem("3rdLib/Checklist APERO",priority = 0)]
     public static void InitWindowEditor()
     {
         // This method is called when the user selects the menu item in the Editor
@@ -73,13 +73,12 @@ class ProjectInfoEditor : EditorWindow
         }
 
       
-        if (!wnd)
+        if (!wnd || EditorApplication.isPlaying)
         {
             Close();
             GUIUtility.ExitGUI();
             return;
         }
-      
 
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Scene:", TextGreenStyles);
@@ -103,8 +102,11 @@ class ProjectInfoEditor : EditorWindow
         if (!adManager)
         {
             adManager = GameObject.FindObjectOfType<HuynnLib.AdManager>();
-            numberNativeADID = adManager.NativeAdID.Count;
-            numberAddOpenAdID = adManager.OpenAdUnitIDs.Count;
+            if (adManager)
+            {
+                numberNativeADID = adManager.NativeAdID.Count;
+                numberAddOpenAdID = adManager.OpenAdUnitIDs.Count;
+            }
         }
         #region EDITOR
         EditorGUILayout.LabelField("Build Version:", TextGreenStyles);
@@ -260,7 +262,7 @@ class ProjectInfoEditor : EditorWindow
             }
             else
             {
-                Debug.LogError("Can not find MaxSdkSetting!");
+                Debug.LogError("[Huynn3rdLib]:Can not find MaxSdkSetting!");
             }
         }
 
@@ -278,7 +280,7 @@ class ProjectInfoEditor : EditorWindow
             }
             else
             {
-                Debug.LogError("Can not find MaxSdkSetting!");
+                Debug.LogError("[Huynn3rdLib]:Can not find MaxSdkSetting!");
             }
         }
         else
@@ -302,7 +304,7 @@ class ProjectInfoEditor : EditorWindow
                 appIds.SetValue(facebook, new List<string>() { fbAppID }, null);
             }
             else
-                Debug.LogError("Can not find FB app ID field!");
+                Debug.LogError("[Huynn3rdLib]:Can not find FB app ID field!");
 
             
             var clientToken = facebook.GetType().GetProperty("ClientTokens");
@@ -319,7 +321,7 @@ class ProjectInfoEditor : EditorWindow
                 clientToken.SetValue(facebook, new List<string>() { fbClientToken }, null);
             }
             else
-                Debug.LogError("Can not find FB client token field!");
+                Debug.LogError("[Huynn3rdLib]:Can not find FB client token field!");
 
             var keyStorePath = facebook.GetType().GetProperty("AndroidKeystorePath");
             if (keyStorePath != null)
@@ -337,6 +339,7 @@ class ProjectInfoEditor : EditorWindow
         #region AD ID SETTING
         if (adManager)
         {
+    
             EditorGUILayout.Space(20);
             EditorGUILayout.LabelField("AD IDs:", TextGreenStyles);
             adManager.BannerAdUnitID = EditorGUILayout.TextField("Banner ID", adManager.BannerAdUnitID);
@@ -418,11 +421,11 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Check google-services.json"))
         {
-            BuildProcess.CheckFirebaseJson();
+            MenuEditor.CheckFirebaseJson();
         }
         if (GUILayout.Button("Check google-services.xml"))
         {
-            BuildProcess.FixGoogleXml();
+            MenuEditor.FixGoogleXml();
         }
         EditorGUILayout.EndHorizontal();
 
