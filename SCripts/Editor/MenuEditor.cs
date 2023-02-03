@@ -18,24 +18,35 @@ using UnityEditor.SceneManagement;
 
 public class MenuEditor 
 {
+    [MenuItem("3rdLib/Play")]
+    public static void PlayGame()
+    {
+        if (EditorBuildSettings.scenes.Count() == 0)
+        {
+            EditorUtility.DisplayDialog("Error", "You must start at add a scene to build setting!", "Got it!");
+            return;
+        }
+
+        EditorSceneManager.OpenScene(EditorBuildSettings.scenes[0].path);
+        UnityEditor.EditorApplication.isPlaying = true;
+    }
+
+    [MenuItem("3rdLib/Clear PlayerPrefs")]
+    public static void ClearPlayerPrefs()
+    {
+        if(!EditorUtility.DisplayDialog("Attention", "Clear all player prefb!", "Ok!","Cancel"))
+            return;
+
+        PlayerPrefs.DeleteAll();
+    }
+
     [MenuItem("3rdLib/Push production" )]
     public static void MenuPushGit()
     {
         PushGit(null);
     }
 
-    [MenuItem("3rdLib/Play")]
-    public static void PlayGame()
-    {
-        if (EditorBuildSettings.scenes.Count() == 0)
-        {
-            EditorUtility.DisplayDialog("Error","You must start at add a scene to build setting!", "Got it!");
-            return;
-        }
-         
-        EditorSceneManager.OpenScene(EditorBuildSettings.scenes[0].path);
-        UnityEditor.EditorApplication.isPlaying = true;
-    }
+  
 
     public static void PushGit(BuildReport _report)
     {
