@@ -1060,7 +1060,7 @@ namespace HuynnLib
         /// <param name="callback">Callback when adopen show done or fail pass true if ad show success and false if ad fail</param>
         public void ShowAdOpen(Action<bool> callback = null)
         {
-            int ID = OpenAdUnitIDs.Count - 1;
+            int ID = _OpenAdUnitIDs.Count - 1;
             if (ID < 0)
                 return;
             ShowAdOpen(ID,false, callback);

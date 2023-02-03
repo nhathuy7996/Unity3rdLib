@@ -25,14 +25,21 @@ class BuildProcess : IPreprocessBuildWithReport
 
         if (!PlayerSettings.applicationIdentifier.StartsWith("com."))
         {
-            EditorUtility.DisplayDialog("Attention Pleas?",
-               "Your package name not start with \"com.\". This can make you can't build your project, consider change it ASAP!!", "Ok");
+            if(!EditorUtility.DisplayDialog("Attention Pleas?",
+               "Your package name not start with \"com.\". This can make your project not working correctly!", "Continue Build!","Stop build!"))
+            {
+                StopBuildWithMessage("package name not start with \"com.\"!"); 
+            }
+
         }
 
         if (PlayerSettings.applicationIdentifier.Split('.').Count() < 3)
         {
-            EditorUtility.DisplayDialog("Attention Pleas?",
-               "Your package name is not in format 'com.X.Y' . This can make you can't build your project, consider change it ASAP!!", "Ok");
+            if(!EditorUtility.DisplayDialog("Attention Pleas?",
+               "Your package name is not in format 'com.X.Y' . This can make your project not working correctly!", "Continue Build!", "Stop build!"))
+            {
+                StopBuildWithMessage("package name not correct format!");
+            }
         }
 
         if (!CheckFirebaseJson(false))
@@ -54,8 +61,11 @@ class BuildProcess : IPreprocessBuildWithReport
         string googleServiceXmlPath = CheckFirebaseXml();
         if (string.IsNullOrEmpty(googleServiceXmlPath))
         {
-            EditorUtility.DisplayDialog("Oop, something wrong?",
-                "Missing google-service.xml. All firebase services may not work?", "Ok!");
+            if(!EditorUtility.DisplayDialog("Oop, something wrong?",
+                "Missing google-service.xml. All firebase services may not work?", "Continue","Stop"))
+            {
+                StopBuildWithMessage("Missing google-service.xml");
+            }
             return;
         }
 
@@ -187,8 +197,11 @@ class BuildProcess : IPreprocessBuildWithReport
         if (files.Length == 0)
         {
             Debug.LogError("==>Project doesnt contain google-services.json. Firebase may not work!!!!!<==");
-            EditorUtility.DisplayDialog("Oop, something wrong?",
-                "Missing google-service.js. All firebase services may not work?", "Ok!");
+            if(!EditorUtility.DisplayDialog("Oop, something wrong?",
+                "Missing google-service.js. All firebase services may not work?", "Continue","Stop"))
+            {
+                StopBuildWithMessage("Missing google-service.js");
+            }
 
             return false;
         }
@@ -196,9 +209,11 @@ class BuildProcess : IPreprocessBuildWithReport
         if (files.Length > 1)
         {
             Debug.LogError("==>Project contain more than one file google-services.json. Firebase may not work wrong!!!!!<==");
-            EditorUtility.DisplayDialog("Oop, something wrong?",
-                "Too many google-service.js. All firebase services may not work?", "Ok!");
-
+            if(!EditorUtility.DisplayDialog("Oop, something wrong?",
+                "Too many google-service.js. All firebase services may not work?", "Continue", "Stop"))
+            {
+                StopBuildWithMessage("Too many google-service.js");
+            }
             return false;
         }
 
@@ -217,7 +232,7 @@ class BuildProcess : IPreprocessBuildWithReport
             return files[0];
         }
 
-        Debug.LogError("==>Project error google-services.xml. Firebase may not work wrong!!!!!<==");
+        Debug.LogError("[Huynn3rdLib]==>Project error google-services.xml. Firebase may not work wrong!!!!!<==");
         return null;
     }
 
@@ -371,6 +386,16 @@ class BuildProcess : IPreprocessBuildWithReport
         }
 
        
+    }
+
+    private static void StopBuildWithMessage(string message)
+    {
+        string prefix = "[Huynn3rdLib]";
+#if UNITY_2017_1_OR_NEWER
+        throw new BuildFailedException(prefix + message);
+#else
+        throw new OperationCanceledException(prefix + message);
+#endif
     }
 
 }
