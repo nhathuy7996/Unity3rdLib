@@ -47,10 +47,12 @@ namespace HuynnLib
 #endif
         [SerializeField]
         bool _isBannerAutoShow = false;
+
+        #region control AD is Allow
         bool _isBannerCurrentlyAllow = false, _isOffBanner = false, _isOffInter = false,
             _isOffReward = false, _isOffAdsOpen = false, _isOffAdsResume = false;
         public bool isAdBanner => _isBannerCurrentlyAllow;
-
+        #endregion
 
         [SerializeField]
         MaxSdkBase.BannerPosition _bannerPosition = MaxSdkBase.BannerPosition.BottomCenter;
@@ -59,8 +61,6 @@ namespace HuynnLib
         [SerializeField] GameObject _popUpNoAd;
 
 
-
-        #region Max
 
         [Header("---ID---")]
         [Space(10)]
@@ -196,7 +196,6 @@ namespace HuynnLib
 
 
 
-        #endregion
 
         private bool isShowingAd = false, _isSDKInitDone = false, _isBannerInitDone = false;
 
@@ -239,9 +238,6 @@ namespace HuynnLib
             return this;
         }
         #endregion
-
-
-        #region MAX
 
         void InitMAX()
         {
@@ -748,7 +744,7 @@ namespace HuynnLib
 
         #endregion
 
-        #endregion
+     
 
 #if NATIVE_AD
 
@@ -776,7 +772,7 @@ namespace HuynnLib
 #endif
         }
 
-      
+
         public void CreateNativeAd()
         {
             Debug.Log("[Huynn3rdLib]===>set object nativ<e===");
@@ -800,29 +796,56 @@ namespace HuynnLib
                 _adNativePanel[adNativeID].adBG.gameObject.SetActive(false);
 
 
-            _adNativePanel[adNativeID].adIcon.texture = this.nativeAd[adNativeID].GetIconTexture();
+            Texture2D iconTexture = this.nativeAd[adNativeID].GetIconTexture();
+            if (iconTexture)
+            {
+                _adNativePanel[adNativeID].adIcon.texture = iconTexture;
+
+                if (!this.nativeAd[adNativeID].RegisterIconImageGameObject(_adNativePanel[adNativeID].adIcon.gameObject))
+                {
+                    Debug.LogError("[Huynn3rdLib]===> Native Ad register adIcon error <====");
+
+                }
+
+            }
+
             _adNativePanel[adNativeID].headLine.text = this.nativeAd[adNativeID].GetHeadlineText();
+            if (!string.IsNullOrEmpty(_adNativePanel[adNativeID].headLine.text))
+                if (!this.nativeAd[adNativeID].RegisterHeadlineTextGameObject(_adNativePanel[adNativeID].headLine.gameObject))
+                {
+                    Debug.LogError("[Huynn3rdLib]===> Native Ad register adHeadline error <====");
+                }
 
 
-            this.nativeAd[adNativeID].RegisterHeadlineTextGameObject(_adNativePanel[adNativeID].headLine.gameObject);
-            this.nativeAd[adNativeID].RegisterIconImageGameObject(_adNativePanel[adNativeID].adIcon.gameObject);
-
-            _adNativePanel[adNativeID].adChoice.texture = this.nativeAd[adNativeID].GetAdChoicesLogoTexture();
+            Texture2D iconChoice = this.nativeAd[adNativeID].GetAdChoicesLogoTexture();
+            if (iconChoice)
+            {
+                _adNativePanel[adNativeID].adChoice.texture = iconChoice;
+                if (!this.nativeAd[adNativeID].RegisterAdChoicesLogoGameObject(_adNativePanel[adNativeID].adChoice.gameObject))
+                {
+                    Debug.LogError("[Huynn3rdLib]===> Native Ad register adChoiceIcon error <====");
+                }
+            }
 
             _adNativePanel[adNativeID].callToAction.text = this.nativeAd[adNativeID].GetCallToActionText();
-            _adNativePanel[adNativeID].advertiser.text = "<color=blue>" + this.nativeAd[adNativeID].GetAdvertiserText() + "</color>\n" + this.nativeAd[adNativeID].GetBodyText();
-
-            this.nativeAd[adNativeID].RegisterAdChoicesLogoGameObject(_adNativePanel[adNativeID].adChoice.gameObject);
-
             this.nativeAd[adNativeID].RegisterCallToActionGameObject(_adNativePanel[adNativeID].callToAction.gameObject);
-            this.nativeAd[adNativeID].RegisterAdvertiserTextGameObject(_adNativePanel[adNativeID].advertiser.gameObject);
 
- 
+            string advertiseText = this.nativeAd[adNativeID].GetAdvertiserText();
+            if (!string.IsNullOrEmpty(advertiseText))
+            {
+                _adNativePanel[adNativeID].advertiser.text = advertiseText;
+                if (!this.nativeAd[adNativeID].RegisterAdvertiserTextGameObject(_adNativePanel[adNativeID].advertiser.gameObject))
+                {
+                    Debug.LogError("[Huynn3rdLib]===> Native Ad register advertise text error!<====");
+                }
+
+            }
+
+            _adNativePanel[adNativeID].body.text = this.nativeAd[adNativeID].GetBodyText();
+
         }
 
-        #endregion
 
-        #region HandleNativeAd
         private void HandleAdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
         {
             Debug.LogError("[Huynn3rdLib]===> NativeAd load Fail! error: " + e.ToString());
