@@ -28,6 +28,7 @@ namespace HuynnLib
 
     public class AdManager : Singleton<AdManager>, IChildLib
     {
+        #region Lib Properties
 
         [SerializeField]
         string _paid_ad_revenue = "paid_ad_impression_value";
@@ -199,6 +200,14 @@ namespace HuynnLib
 
         private bool isShowingAd = false, _isSDKInitDone = false, _isBannerInitDone = false;
 
+        #endregion
+
+
+        #region CUSTOM PROPERTIES
+        #endregion
+
+
+        #region Lib Method
 
         public void Init(Action _onInitDone = null)
         {
@@ -1228,6 +1237,11 @@ namespace HuynnLib
                 this.ShowAdOpen(_NativeAdID.Count - 1);
             }
         }
+
+        #endregion
+
+        #region CUSTOM LIB
+        #endregion
     }
 }
 
