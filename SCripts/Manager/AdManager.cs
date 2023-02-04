@@ -283,8 +283,11 @@ namespace HuynnLib
                 for (int i = 0; i< _NativeAdID.Count; i++)
                 {
                     _nativeAdLoader[i] = RequestNativeAd(_NativeAdID[i]);
+#if UNITY_EDITOR
+                    this.HandleNativeAdLoaded(_nativeAdLoader[i], new NativeAdEventArgs());
+#endif
                 }
-               
+
             });
 #endif
         }
@@ -780,10 +783,6 @@ namespace HuynnLib
 
             Debug.Log("[Huynn3rdLib]===>Start load Native "+ AdID + " <====");
 
-#if UNITY_EDITOR
-            this.HandleNativeAdLoaded(adLoader, new NativeAdEventArgs());
-#endif
-
             return adLoader;
         }
 
@@ -1219,9 +1218,9 @@ namespace HuynnLib
         {
             if (!focus)
             {
-                if (_NativeAdID.Count == 0)
+                if (_OpenAdUnitIDs.Count == 0)
                     return;
-                this.ShowAdOpen(_NativeAdID.Count - 1);
+                this.ShowAdOpen(_OpenAdUnitIDs.Count - 1);
             }
         }
 #endif
@@ -1232,9 +1231,9 @@ namespace HuynnLib
             // Display the app open ad when the app is foregrounded. 
             if (state == AppState.Foreground)
             {
-                if (_NativeAdID.Count == 0)
+                if (_OpenAdUnitIDs.Count == 0)
                     return;
-                this.ShowAdOpen(_NativeAdID.Count - 1);
+                this.ShowAdOpen(_OpenAdUnitIDs.Count - 1);
             }
         }
 
