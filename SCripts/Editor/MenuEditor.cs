@@ -15,6 +15,8 @@ using UnityEditor.Build.Reporting;
 using UnityEngine;
 using static UnityEditor.Progress;
 using UnityEditor.SceneManagement;
+using System.Runtime.Remoting.Lifetime;
+using System.Diagnostics;
 
 public class MenuEditor 
 {
@@ -43,6 +45,12 @@ public class MenuEditor
     [MenuItem("3rdLib/Push production" )]
     public static void MenuPushGit()
     {
+        if (!EditorUtility.DisplayDialog("Attention Please!", "It will commit all change then push to branch production_hnn on remote. " +
+           "You can check and merge to Production later!", "Got it!", "Stop"))
+        {
+            return;
+        }
+
         PushGit(null);
     }
 
@@ -50,56 +58,57 @@ public class MenuEditor
 
     public static void PushGit(BuildReport _report)
     {
-
-        if (!EditorUtility.DisplayDialog("Attention Please!", "It will commit all change then push to branch production_hnn on remote. " +
-            "You can check and merge to Production later!", "Got it!","Stop"))
-        {
-            return;
-        }
-
         string cmdPath = FindCommand();
         if (string.IsNullOrEmpty(cmdPath))
             return;
 
-        string cmdLines = "#!/bin/sh\n\n" +
+        string cmdLines = "";
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            cmdLines = "#!/bin/sh\n\n" +
             "cd ../../\n" +
             "cd " + Application.dataPath + "\n" +
             "git add -A\n" +
-            "git commit -m \"release " + _report == null ? DateTime.Now.ToString() : _report.summary.outputPath + "_" + PlayerSettings.bundleVersion + "\"\n" +
-        "git push origin HEAD:production_hnn -f";
-
-        FileStream stream = new FileStream(cmdPath, FileMode.Create);
-        using (StreamWriter writer = new StreamWriter(stream))
+            "git commit -m \"release_" + PlayerSettings.bundleVersion + "\"\n" +
+            "git push origin HEAD:production_hnn -f";
+        }
+        else
         {
-            writer.Write(cmdLines);
-
-            writer.Flush();
-            writer.Close();
+            cmdLines = "/C git add -A&" +
+            "git commit -m \"release _" + PlayerSettings.bundleVersion + "\"&" +
+            "git push origin HEAD:production_hnn -f";
         }
 
         string terminal = @"cmd.exe";
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
             terminal = @"/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal";
-        }
+            FileStream stream = new FileStream(cmdPath, FileMode.Create);
+            using (StreamWriter writer = new StreamWriter(stream))
+            {
+                writer.Write(cmdLines);
 
+                writer.Flush();
+                writer.Close();
+            }
+
+            System.Diagnostics.Process uploadProc = new System.Diagnostics.Process();
+            uploadProc.StartInfo.FileName = terminal;
+            uploadProc.StartInfo.Arguments = cmdPath;
+            uploadProc.StartInfo.UseShellExecute = false;
+            uploadProc.StartInfo.CreateNoWindow = false;
+            uploadProc.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+
+            uploadProc.Start();
+        }
         else
         {
-            terminal = @"cmd.exe";
+            terminal = @"C:\Windows\system32\cmd.exe";
+            Process.Start(terminal, cmdLines);
         }
 
-        System.Diagnostics.Process uploadProc = new System.Diagnostics.Process
-        {
-            StartInfo = {
-                FileName = terminal,
-                    Arguments = cmdPath,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal
-                }
-        };
-
-        uploadProc.Start();
+       
     }
 
   
