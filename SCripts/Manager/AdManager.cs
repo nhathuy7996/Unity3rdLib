@@ -9,7 +9,7 @@ using UnityEngine.Events;
 using static MaxSdkBase;
 using System.Threading.Tasks;
 using System.Linq;
-
+using UnityEngine.UI;
 
 namespace HuynnLib
 {
@@ -790,24 +790,44 @@ namespace HuynnLib
         public bool CreateNativeAd(int adNativeID)
         {
             Debug.Log("[Huynn3rdLib]===>set object nativ<e===");
-            FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.show);
             _adNativePanel[adNativeID].gameObject.SetActive(true);
+
+            if (!LanguageManager.Instant.gameObject.activeSelf)
+            {
+                _ = FireBaseManager.Instant.LogEventWithParameter("Native_show_fail", new Hashtable()
+                {
+                    {"error","language_popup_closed" }
+                });
+            }
 
 #if UNITY_EDITOR
 
             _adNativePanel[adNativeID].advertiser.text = "<color=blue>" + this.NativeAdID[adNativeID] + "</color>\n";
+            for (int i = 0; i < 3; i++)
+            {
+                RawImage bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
+                   Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent);
+
+                bg.gameObject.SetActive(true);
+            }
             return true;
 #endif
 
             List<Texture2D> imagetexture = this._nativeAd[adNativeID].GetImageTextures();
             if (imagetexture.Any())
             {
-                _adNativePanel[adNativeID].adBG.gameObject.SetActive(true);
-                _adNativePanel[adNativeID].adBG.texture = this._nativeAd[adNativeID].GetImageTextures().OrderBy(t => UnityEngine.Random.value).First();
-                this._nativeAd[adNativeID].RegisterImageGameObjects(new List<GameObject>() { _adNativePanel[adNativeID].adBG.gameObject });
+                List<GameObject> Bgs = new List<GameObject>();
+                foreach (Texture2D texture2D in imagetexture)
+                {
+                    RawImage bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
+                       Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent);
+
+                    bg.texture = texture2D;
+                    bg.gameObject.SetActive(true);
+                }
+
+                this._nativeAd[adNativeID].RegisterImageGameObjects(Bgs);
             }
-            else
-                _adNativePanel[adNativeID].adBG.gameObject.SetActive(false);
 
 
             Texture2D iconTexture = this._nativeAd[adNativeID].GetIconTexture();
@@ -822,29 +842,70 @@ namespace HuynnLib
                 }
 
             }
+            else
+            {
+                _adNativePanel[adNativeID].adIcon.gameObject.SetActive(false);
+            }
 
-            _adNativePanel[adNativeID].headLine.text = this._nativeAd[adNativeID].GetHeadlineText();
-            if (!string.IsNullOrEmpty(_adNativePanel[adNativeID].headLine.text))
+            string headLineText = this._nativeAd[adNativeID].GetHeadlineText();
+            if (!string.IsNullOrEmpty(headLineText))
+            {
+                _adNativePanel[adNativeID].headLine.text = headLineText;
                 if (!this._nativeAd[adNativeID].RegisterHeadlineTextGameObject(_adNativePanel[adNativeID].headLine.gameObject))
                 {
                     Debug.LogError("[Huynn3rdLib]===> Native Ad register adHeadline error <====");
+                    _ = FireBaseManager.Instant.LogEventWithParameter("Native_show_fail", new Hashtable()
+                    {
+                        {
+                            "position", "adHeadline"
+                        }
+                    });
                     return false;
                 }
+            }
+            else
+            {
+                _adNativePanel[adNativeID].headLine.gameObject.SetActive(false);
+            }
 
 
             Texture2D iconChoice = this._nativeAd[adNativeID].GetAdChoicesLogoTexture();
-            if (iconChoice)
+            if (iconChoice != null)
             {
                 _adNativePanel[adNativeID].adChoice.texture = iconChoice;
                 if (!this._nativeAd[adNativeID].RegisterAdChoicesLogoGameObject(_adNativePanel[adNativeID].adChoice.gameObject))
                 {
                     Debug.LogError("[Huynn3rdLib]===> Native Ad register adChoiceIcon error <====");
+                    _ = FireBaseManager.Instant.LogEventWithParameter("Native_show_fail", new Hashtable()
+                    {
+                        {
+                            "position", "adChoiceIcon"
+                        }
+                    });
                     return false;
                 }
             }
+            else
+            {
+                _adNativePanel[adNativeID].adChoice.gameObject.SetActive(false);
+            }
 
-            _adNativePanel[adNativeID].callToAction.text = this._nativeAd[adNativeID].GetCallToActionText();
-            this._nativeAd[adNativeID].RegisterCallToActionGameObject(_adNativePanel[adNativeID].callToAction.gameObject);
+            string CTAText = this._nativeAd[adNativeID].GetCallToActionText();
+            if (!string.IsNullOrEmpty(CTAText))
+            {
+                _adNativePanel[adNativeID].callToAction.text = CTAText;
+                if (!this._nativeAd[adNativeID].RegisterCallToActionGameObject(_adNativePanel[adNativeID].callToAction.gameObject))
+                {
+                    Debug.LogError("[Huynn3rdLib]===> Native Ad register CTA error <====");
+                    _ = FireBaseManager.Instant.LogEventWithParameter("Native_show_fail", new Hashtable()
+                    {
+                        {
+                            "position", "CTA"
+                        }
+                    });
+                    return false;
+                }
+            }
 
             string advertiseText = this._nativeAd[adNativeID].GetAdvertiserText();
             if (!string.IsNullOrEmpty(advertiseText))
@@ -853,12 +914,89 @@ namespace HuynnLib
                 if (!this._nativeAd[adNativeID].RegisterAdvertiserTextGameObject(_adNativePanel[adNativeID].advertiser.gameObject))
                 {
                     Debug.LogError("[Huynn3rdLib]===> Native Ad register advertise text error!<====");
+                    _ = FireBaseManager.Instant.LogEventWithParameter("Native_show_fail", new Hashtable()
+                    {
+                        {
+                            "position", "advertise"
+                        }
+                    });
                     return false;
                 }
 
             }
+            else
+            {
+                _adNativePanel[adNativeID].advertiser.gameObject.SetActive(false);
+            }
 
-            _adNativePanel[adNativeID].body.text = this._nativeAd[adNativeID].GetBodyText();
+            string bodyText = this._nativeAd[adNativeID].GetBodyText();
+            if (!string.IsNullOrEmpty(bodyText))
+            {
+                _adNativePanel[adNativeID].body.text = bodyText;
+                if (!this._nativeAd[adNativeID].RegisterBodyTextGameObject(_adNativePanel[adNativeID].body.gameObject))
+                {
+                    Debug.LogError("[Huynn3rdLib]===> Native Ad register body text error!<====");
+                    _ = FireBaseManager.Instant.LogEventWithParameter("Native_show_fail", new Hashtable()
+                    {
+                        {
+                            "position", "body"
+                        }
+                    });
+                    return false;
+                }
+            }
+            else
+            {
+                _adNativePanel[adNativeID].body.gameObject.SetActive(false);
+            }
+
+            string priceText = this._nativeAd[adNativeID].GetPrice();
+            if (!string.IsNullOrEmpty(priceText))
+            {
+                _adNativePanel[adNativeID].price.text = priceText;
+                if (!this._nativeAd[adNativeID].RegisterPriceGameObject(_adNativePanel[adNativeID].price.gameObject))
+                {
+                    Debug.LogError("[Huynn3rdLib]===> Native Ad register price text error!<====");
+                    _adNativePanel[adNativeID].price.gameObject.SetActive(false);
+                    _ = FireBaseManager.Instant.LogEventWithParameter("Native_show_fail", new Hashtable()
+                    {
+                        {
+                            "position", "price"
+                        }
+                    });
+
+                    return false;
+                }
+            }
+            else
+            {
+                _adNativePanel[adNativeID].price.gameObject.SetActive(false);
+            }
+
+            string storeText = this._nativeAd[adNativeID].GetStore();
+            if (!string.IsNullOrEmpty(storeText))
+            {
+                _adNativePanel[adNativeID].store.text = storeText;
+                if (!this._nativeAd[adNativeID].RegisterStoreGameObject(_adNativePanel[adNativeID].store.gameObject))
+                {
+                    Debug.LogError("[Huynn3rdLib]===> Native Ad register store text error!<====");
+                    _adNativePanel[adNativeID].store.gameObject.SetActive(false);
+                    _ = FireBaseManager.Instant.LogEventWithParameter("Native_show_fail", new Hashtable()
+                    {
+                        {
+                            "position", "store"
+                        }
+                    });
+
+                    return false;
+                }
+            }
+            else
+            {
+                _adNativePanel[adNativeID].store.gameObject.SetActive(false);
+            }
+
+
             return true;
         }
 
