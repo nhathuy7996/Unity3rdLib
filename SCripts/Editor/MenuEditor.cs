@@ -54,7 +54,71 @@ public class MenuEditor
         PushGit(null);
     }
 
-  
+    [MenuItem("3rdLib/Update Lib")]
+    public static void UpdateLib()
+    {
+        if (!EditorUtility.DisplayDialog("Attention Please!", "Before update, all change will be commit (not push yet)!", "Got it!", "Stop"))
+        {
+            return;
+        }
+
+        UpdateLibCommand();
+    }
+
+    public static void UpdateLibCommand()
+    {
+        string cmdPath = FindCommand();
+        if (string.IsNullOrEmpty(cmdPath))
+            return;
+
+        string cmdLines = "";
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            cmdLines = "#!/bin/sh\n\n" +
+            "cd ../../\n" +
+            "cd " + Application.dataPath + "\n" +
+            "git add -A\n" +
+            "git commit -m \"prepare update lib!!!!!!\"\n" +
+            "git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash";
+        }
+        else
+        {
+            cmdLines = "/C git add -A&" +
+            "git commit -m \"prepare update lib!!!!!!\"&" +
+            "git push origin HEAD:production_hnn -f&" +
+            "git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash";
+        }
+
+        string terminal = @"cmd.exe";
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            terminal = @"/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal";
+            FileStream stream = new FileStream(cmdPath, FileMode.Create);
+            using (StreamWriter writer = new StreamWriter(stream))
+            {
+                writer.Write(cmdLines);
+
+                writer.Flush();
+                writer.Close();
+            }
+
+            System.Diagnostics.Process uploadProc = new System.Diagnostics.Process();
+            uploadProc.StartInfo.FileName = terminal;
+            uploadProc.StartInfo.Arguments = cmdPath;
+            uploadProc.StartInfo.UseShellExecute = false;
+            uploadProc.StartInfo.CreateNoWindow = false;
+            uploadProc.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+
+            uploadProc.Start();
+        }
+        else
+        {
+            terminal = @"C:\Windows\system32\cmd.exe";
+            Process.Start(terminal, cmdLines);
+        }
+
+    }
 
     public static void PushGit(BuildReport _report)
     {
