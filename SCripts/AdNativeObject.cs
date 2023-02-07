@@ -9,7 +9,7 @@ namespace HuynnLib
     {
         public GameObject textConnect;
         public RawImage adIcon, adChoice, adBG;
-        public Text callToAction, advertiser, headLine;
+        public Text callToAction, advertiser, headLine, body, price, store;
         // Start is called before the first frame update
 
     }

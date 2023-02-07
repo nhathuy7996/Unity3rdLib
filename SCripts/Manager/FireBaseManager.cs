@@ -74,7 +74,7 @@ namespace HuynnLib
 
         public void Init(Action _onActionDone)
         {
-            Debug.Log("==========> Firebase start Init! <==========");
+            Debug.Log("[Huynn3rdLib]==========> Firebase start Init! <==========");
 
             Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
             {
@@ -92,7 +92,7 @@ namespace HuynnLib
                 else
                 {
                     UnityEngine.Debug.LogError(System.String.Format(
-                      "==> Could not resolve all Firebase dependencies: {0} <==", dependencyStatus));
+                      "[Huynn3rdLib]==> Could not resolve all Firebase dependencies: {0} <==", dependencyStatus));
                     // Firebase Unity SDK is not safe to use here.
 
                     _onActionDone?.Invoke();
@@ -130,13 +130,13 @@ namespace HuynnLib
 
             if (countTime >= 360000f)
             {
-                Debug.LogError(string.Format("==>Fetch data {0} fail, becuz time out! Check your network please!<==", key));
+                Debug.LogError(string.Format("[Huynn3rdLib]==>Fetch data {0} fail, becuz time out! Check your network please!<==", key));
                 return;
             }
 
             if (!_keyConfigs.Contains(key))
             {
-                Debug.LogError(string.Format("==>Remote dont have key {0} !<==", key));
+                Debug.LogError(string.Format("[Huynn3rdLib]==>Remote dont have key {0} !<==", key));
                 return;
             }
 
@@ -162,15 +162,15 @@ namespace HuynnLib
         {
             if (fetchTask.IsCanceled)
             {
-                Debug.Log("==> Fetch canceled. <==");
+                Debug.Log("[Huynn3rdLib]==> Fetch canceled. <==");
             }
             else if (fetchTask.IsFaulted)
             {
-                Debug.Log("==> Fetch encountered an error <==");
+                Debug.Log("[Huynn3rdLib]==> Fetch encountered an error <==");
             }
             else if (fetchTask.IsCompleted)
             {
-                Debug.Log("==> Fetch completed successfully! <==");
+                Debug.Log("[Huynn3rdLib]==> Fetch completed successfully! <==");
             }
 
             var info = Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance.Info;
@@ -181,7 +181,7 @@ namespace HuynnLib
                     _isFetchDone = true;
 
                     _keyConfigs = FirebaseRemoteConfig.DefaultInstance.AllValues.Keys.ToList();
-                    Debug.Log(String.Format("==> Remote data loaded and ready (last fetch time {0}).<==",
+                    Debug.Log(String.Format("[Huynn3rdLib]==> Remote data loaded and ready (last fetch time {0}).<==",
                         info.FetchTime));
 
                     break;
@@ -189,15 +189,15 @@ namespace HuynnLib
                     switch (info.LastFetchFailureReason)
                     {
                         case Firebase.RemoteConfig.FetchFailureReason.Error:
-                            Debug.Log("==> Fetch failed for unknown reason <==");
+                            Debug.Log("[Huynn3rdLib]==> Fetch failed for unknown reason <==");
                             break;
                         case Firebase.RemoteConfig.FetchFailureReason.Throttled:
-                            Debug.Log("==> Fetch throttled until " + info.ThrottledEndTime+" <==");
+                            Debug.Log("[Huynn3rdLib]==> Fetch throttled until " + info.ThrottledEndTime+" <==");
                             break;
                     }
                     break;
                 case Firebase.RemoteConfig.LastFetchStatus.Pending:
-                    Debug.Log("==> Latest Fetch call still pending. <==");
+                    Debug.Log("[Huynn3rdLib]==> Latest Fetch call still pending. <==");
                     break;
             }
         }
@@ -212,7 +212,7 @@ namespace HuynnLib
 
         public void LogEventWithOneParam(string eventName)
         {
-            Debug.Log("==> LogEvent " + eventName+" <==");
+            Debug.Log("[Huynn3rdLib]==> LogEvent " + eventName+" <==");
             _= this.LogEventWithParameter(eventName, new Hashtable() { { "value", 1 } });
 
         }
@@ -233,7 +233,7 @@ namespace HuynnLib
 
             if (countTime >= 360000f)
             {
-                Debug.LogError(string.Format("==>Logevent {0} fail, becuz time out! Check your network please!<==", event_name));
+                Debug.LogError(string.Format("[Huynn3rdLib]==>Logevent {0} fail, becuz time out! Check your network please!<==", event_name));
                 return;
             }
 
@@ -249,7 +249,7 @@ namespace HuynnLib
                     string value = this.Checker(item.Value.ToString());
 
                     parameter[i] = (new Firebase.Analytics.Parameter(key, value));
-                    Debug.Log("==> LogEvent " + event_name.ToString() + "- Key = " + key + " -  Value =" + value + " <==");
+                    Debug.Log("[Huynn3rdLib]==> LogEvent " + event_name.ToString() + "- Key = " + key + " -  Value =" + value + " <==");
                     i++;
                 }
 

@@ -34,8 +34,11 @@ class ProjectInfoEditor : EditorWindow
     string fbAppID = null, fbClientToken = null ,fbKeyStore = null;
     static EditorWindow wnd;
     GUIStyle TextRedStyles, TextGreenStyles, ButtonTextStyles;
+
+    int numberNativeADID = 0, numberAddOpenAdID = 0;
+
     // Add menu named "My Window" to the Window menu
-    [MenuItem("3rdLib/Checklist APERO")]
+    [MenuItem("3rdLib/Checklist APERO",priority = 0)]
     public static void InitWindowEditor()
     {
         // This method is called when the user selects the menu item in the Editor
@@ -70,13 +73,12 @@ class ProjectInfoEditor : EditorWindow
         }
 
       
-        if (!wnd)
+        if (!wnd || EditorApplication.isPlaying)
         {
             Close();
             GUIUtility.ExitGUI();
             return;
         }
-      
 
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Scene:", TextGreenStyles);
@@ -98,7 +100,14 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.BeginVertical();
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(wnd.position.width), GUILayout.Height(wnd.position.height-20));
         if (!adManager)
+        {
             adManager = GameObject.FindObjectOfType<HuynnLib.AdManager>();
+            if (adManager)
+            {
+                numberNativeADID = adManager.NativeAdID.Count;
+                numberAddOpenAdID = adManager.OpenAdUnitIDs.Count;
+            }
+        }
         #region EDITOR
         EditorGUILayout.LabelField("Build Version:", TextGreenStyles);
 
@@ -204,6 +213,7 @@ class ProjectInfoEditor : EditorWindow
                 PrefabUtility.RecordPrefabInstancePropertyModifications(adManager);
             }
             PrefabUtility.RecordPrefabInstancePropertyModifications(gg);
+            EditorUtility.SetDirty(gg);
         }
         else
         {
@@ -240,6 +250,7 @@ class ProjectInfoEditor : EditorWindow
                 max.AdMobAndroidAppId = EditorGUILayout.TextField("Android AD ID", max.AdMobAndroidAppId);
             }
             PrefabUtility.RecordPrefabInstancePropertyModifications(max);
+            EditorUtility.SetDirty(max);
         }
         else
         {
@@ -251,7 +262,7 @@ class ProjectInfoEditor : EditorWindow
             }
             else
             {
-                Debug.LogError("Can not find MaxSdkSetting!");
+                Debug.LogError("[Huynn3rdLib]:Can not find MaxSdkSetting!");
             }
         }
 
@@ -269,7 +280,7 @@ class ProjectInfoEditor : EditorWindow
             }
             else
             {
-                Debug.LogError("Can not find MaxSdkSetting!");
+                Debug.LogError("[Huynn3rdLib]:Can not find MaxSdkSetting!");
             }
         }
         else
@@ -293,7 +304,7 @@ class ProjectInfoEditor : EditorWindow
                 appIds.SetValue(facebook, new List<string>() { fbAppID }, null);
             }
             else
-                Debug.LogError("Can not find FB app ID field!");
+                Debug.LogError("[Huynn3rdLib]:Can not find FB app ID field!");
 
             
             var clientToken = facebook.GetType().GetProperty("ClientTokens");
@@ -310,13 +321,15 @@ class ProjectInfoEditor : EditorWindow
                 clientToken.SetValue(facebook, new List<string>() { fbClientToken }, null);
             }
             else
-                Debug.LogError("Can not find FB client token field!");
+                Debug.LogError("[Huynn3rdLib]:Can not find FB client token field!");
 
             var keyStorePath = facebook.GetType().GetProperty("AndroidKeystorePath");
             if (keyStorePath != null)
             {
                 keyStorePath.SetValue(facebook,  PlayerSettings.Android.keystoreName , null);
             }
+
+            EditorUtility.SetDirty(facebook);
         }
         
         
@@ -326,14 +339,78 @@ class ProjectInfoEditor : EditorWindow
         #region AD ID SETTING
         if (adManager)
         {
+    
             EditorGUILayout.Space(20);
             EditorGUILayout.LabelField("AD IDs:", TextGreenStyles);
             adManager.BannerAdUnitID = EditorGUILayout.TextField("Banner ID", adManager.BannerAdUnitID);
             adManager.InterstitialAdUnitID = EditorGUILayout.TextField("Inter ID", adManager.InterstitialAdUnitID);
             adManager.RewardedAdUnitID = EditorGUILayout.TextField("Reward ID", adManager.RewardedAdUnitID);
-            adManager.OpenAdUnitID = EditorGUILayout.TextField("AppOpen ID", adManager.OpenAdUnitID);
+
+
+            EditorGUILayout.BeginHorizontal();
+            numberAddOpenAdID = EditorGUILayout.IntField("AppOpen AD ID number", numberAddOpenAdID);
+
+
+            if (numberAddOpenAdID > adManager.OpenAdUnitIDs.Count)
+            {
+                adManager.OpenAdUnitIDs.AddRange(new string[numberAddOpenAdID - adManager.OpenAdUnitIDs.Count]); 
+            }
+
+            if (numberAddOpenAdID < adManager.OpenAdUnitIDs.Count)
+            {
+                int numberRemove = adManager.OpenAdUnitIDs.Count - numberAddOpenAdID;
+                adManager.OpenAdUnitIDs.RemoveRange(numberAddOpenAdID, numberRemove); 
+            }
+
+
+            EditorGUILayout.BeginVertical();
+            for (int i = 0; i < adManager.OpenAdUnitIDs.Count; i++)
+            {
+                adManager.OpenAdUnitIDs[i] = EditorGUILayout.TextField("Ad ID " + (i + 1), adManager.OpenAdUnitIDs[i]);
+            }
+
+             
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.EndHorizontal(); 
 #if NATIVE_AD
-            adManager.NativeAdID = EditorGUILayout.TextField("NativeAd ID", adManager.NativeAdID);
+            EditorGUILayout.Space(20);
+            EditorGUILayout.BeginHorizontal();
+            numberNativeADID = EditorGUILayout.IntField("NativeAd ID number", numberNativeADID);
+
+
+            if (numberNativeADID > adManager.NativeAdID.Count)
+            {
+                adManager.NativeAdID.AddRange(new string[numberNativeADID - adManager.NativeAdID.Count]);
+                adManager.adNativePanel.AddRange(new AdNativeObject[numberNativeADID - adManager.adNativePanel.Count]);
+            }
+
+            if (numberNativeADID < adManager.NativeAdID.Count)
+            {
+                int numberRemove = adManager.NativeAdID.Count - numberNativeADID;
+                adManager.NativeAdID.RemoveRange(numberNativeADID, numberRemove);
+                adManager.adNativePanel.RemoveRange(numberNativeADID, adManager.adNativePanel.Count - numberNativeADID);
+            }
+
+
+            EditorGUILayout.BeginVertical();
+            for (int i = 0; i< adManager.NativeAdID.Count; i++)
+            {
+                adManager.NativeAdID[i] = EditorGUILayout.TextField("Ad ID "+(i+1), adManager.NativeAdID[i]);
+            }
+
+            if( EditorGUILayout.LinkButton("ID test: ca-app-pub-3940256099942544/2247696110"))
+            {
+                for (int i = 0; i < adManager.NativeAdID.Count; i++)
+                {
+                    if (adManager.NativeAdID[i].Equals("ca-app-pub-3940256099942544/2247696110"))
+                        continue;
+                    adManager.NativeAdID[i] = "ca-app-pub-3940256099942544/2247696110";
+                }
+            }
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.EndHorizontal();
 #endif
             PrefabUtility.RecordPrefabInstancePropertyModifications(adManager);
         }
@@ -344,11 +421,11 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Check google-services.json"))
         {
-            BuildProcess.CheckFirebaseJson();
+            MenuEditor.CheckFirebaseJson();
         }
         if (GUILayout.Button("Check google-services.xml"))
         {
-            BuildProcess.FixGoogleXml();
+            MenuEditor.FixGoogleXml();
         }
         EditorGUILayout.EndHorizontal();
 
