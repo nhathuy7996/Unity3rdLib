@@ -427,6 +427,14 @@ class ProjectInfoEditor : EditorWindow
         {
             MenuEditor.FixGoogleXml();
         }
+
+        if (GUILayout.Button("Fix AndroidManifest FbID"))
+        {
+            EditorUtility.DisplayDialog("Attention Pleas?",
+                  "This will change your AndroidManifest for match FBID!!", "Ok");
+            MenuEditor.FixAndroidManifestFB();
+        }
+         
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

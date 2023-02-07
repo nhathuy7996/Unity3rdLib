@@ -48,6 +48,8 @@ class BuildProcess : IPreprocessBuildWithReport
             return;
         }
 
+        MenuEditor.FixAndroidManifestFB();
+
         MenuEditor.FixGoogleXml(false);
 
         MenuEditor.Report(report);
