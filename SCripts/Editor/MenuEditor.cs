@@ -17,6 +17,8 @@ using static UnityEditor.Progress;
 using UnityEditor.SceneManagement;
 using System.Runtime.Remoting.Lifetime;
 using System.Diagnostics;
+using static UnityEditor.PlayerSettings;
+using UnityEngine.Networking.Types;
 
 public class MenuEditor 
 {
@@ -175,7 +177,67 @@ public class MenuEditor
        
     }
 
-  
+    public static void FixAndroidManifestFB()
+    {
+
+        string[] facebookSetting = UnityEditor.AssetDatabase.FindAssets("t:FacebookSettings");
+        if (facebookSetting.Length == 0)
+        {
+            return;
+        }
+
+        string path = UnityEditor.AssetDatabase.GUIDToAssetPath(facebookSetting[0]);
+        FacebookSettings facebook = UnityEditor.AssetDatabase.LoadAssetAtPath<FacebookSettings>(path);
+
+        var appIds = facebook.GetType().GetProperty("AppIds");
+        object facebookAppIDProp = null;
+        facebookAppIDProp  = appIds.GetValue(facebookAppIDProp, null);
+        string fbAppID = ((List<string>)facebookAppIDProp)[0];
+
+
+
+        string[] files = Directory.GetFiles(Application.dataPath, "AndroidManifest.xml", SearchOption.AllDirectories).ToArray();
+        if (files.Length == 0)
+        {
+            return;
+        }
+        Debug.LogError(files[0]);
+        XmlDocument xmlDoc = new XmlDocument();
+        xmlDoc.Load(files[0]);
+        
+
+        foreach (XmlNode e in xmlDoc.GetElementsByTagName("meta-data"))
+        {
+            if (!e.Attributes["android:name"].Value.Equals("com.facebook.sdk.ApplicationId"))
+            {
+                continue;
+            }
+
+            if (e.Attributes["android:value"].Value.Equals("fb"+fbAppID))
+            {
+                break;
+            }
+
+            e.Attributes["android:value"].Value = ("fb" + fbAppID);
+        }
+
+
+        foreach (XmlNode e in xmlDoc.GetElementsByTagName("provider"))
+        {
+            
+            if (e.Attributes["android:authorities"].Value.Equals("com.facebook.app.FacebookContentProvider" + fbAppID))
+            {
+                continue;
+            }
+
+            e.Attributes["android:authorities"].Value = ("com.facebook.app.FacebookContentProvider" + fbAppID);
+        }
+
+        FileStream stream = new FileStream(files[0], FileMode.Create);
+         
+        xmlDoc.Save(stream);
+    }
+
     public static void FixGoogleXml(bool isShowOk = true)
     {
 
