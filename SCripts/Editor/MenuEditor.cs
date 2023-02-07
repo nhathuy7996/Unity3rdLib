@@ -421,7 +421,7 @@ public class MenuEditor
     }
 
 
-    public static void Report(BuildReport report)
+    public static string Report(BuildReport report)
     {
 
         string reportContent = string.Format("Time: " + DateTime.Now + "\n" +
@@ -567,9 +567,10 @@ public class MenuEditor
                 fbAppID, fbClientToken);
 
             reportContent += facebookReport;
+
         }
 
-
+        return reportContent;
     }
 
     public static void StopBuildWithMessage(string message)
