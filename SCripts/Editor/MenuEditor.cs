@@ -77,6 +77,7 @@ public class MenuEditor
             cmdLines = "#!/bin/sh\n\n" +
             "cd ../../\n" +
             "cd " + Application.dataPath + "\n" +
+            "cd ../\n" +
             "git add -A\n" +
             "git commit -m \"prepare update lib!!!!!!\"\n" +
             "git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash";
@@ -84,8 +85,7 @@ public class MenuEditor
         else
         {
             cmdLines = "/C git add -A&" +
-            "git commit -m \"prepare update lib!!!!!!\"&" +
-            "git push origin HEAD:production_hnn -f&" +
+            "git commit -m \"prepare update lib!!!!!!\"&" + 
             "git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash";
         }
 
