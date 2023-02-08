@@ -198,7 +198,7 @@ namespace HuynnLib
 
 
 
-        private bool isShowingAd = false, _isSDKInitDone = false, _isBannerInitDone = false;
+        private bool isShowingAd = false, _isSDKMaxInitDone = false, _isSDKAdMobInitDone = false, _isBannerInitDone = false;
 
         #endregion
 
@@ -257,7 +257,7 @@ namespace HuynnLib
             {
                 // AppLovin SDK is initialized, configure and start loading ads.
                 Debug.Log("[Huynn3rdLib]==> MAX SDK Initialized <==");
-                _isSDKInitDone = true;
+                _isSDKMaxInitDone = true;
                 InitAdOpen();
                 if (!_isOffInter)
                     InitializeInterstitialAds();
@@ -280,13 +280,8 @@ namespace HuynnLib
             _nativeAdLoader = new List<AdLoader>(new AdLoader[_NativeAdID.Count]);
             MobileAds.Initialize(initStatus =>
             {
-                for (int i = 0; i< _NativeAdID.Count; i++)
-                {
-                    _nativeAdLoader[i] = RequestNativeAd(_NativeAdID[i]);
-#if UNITY_EDITOR
-                    this.HandleNativeAdLoaded(_nativeAdLoader[i], new NativeAdEventArgs());
-#endif
-                }
+                _isSDKAdMobInitDone = true;
+                _ = LoadNativeADs(new List<int>() {0});
 
             });
 #endif
@@ -296,7 +291,7 @@ namespace HuynnLib
 
         public async Task InitializeBannerAds()
         {
-            while (!_isSDKInitDone)
+            while (!_isSDKMaxInitDone)
             {
                 Debug.LogWarning("[Huynn3rdLib]==>Waiting Max SDK init done!<==");
                 await Task.Delay(500);
@@ -765,6 +760,24 @@ namespace HuynnLib
 #if NATIVE_AD
 
         #region Native Ad Methods
+
+        public async Task LoadNativeADs(List<int> IDs)
+        {
+            while (!_isSDKAdMobInitDone)
+            {
+                await Task.Delay(50);
+            }
+
+            foreach (int id in IDs)
+            {
+                _nativeAdLoader[id] = RequestNativeAd(_NativeAdID[id]);
+#if UNITY_EDITOR
+                this.HandleNativeAdLoaded(_nativeAdLoader[id], new NativeAdEventArgs());
+#endif
+            }
+
+        }
+
         public AdLoader RequestNativeAd(string AdID)
         {
 
