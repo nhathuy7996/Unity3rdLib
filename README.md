@@ -1,3 +1,5 @@
+ * A simple helper for APERO checklist\n * ------------------------------\n * Written by Huynn7996\n * 2022-09-07\n * \n * \n * The MIT License (MIT)\n * \n * Copyright (c) Huy Nguyen Nhat (Huynn7996)\n * 
+ v.1.3.2
 # Unity3rdLib
 ## tích hợp sẵn các thư viện bên thứ 3 của unity:
 - [x] AD apploving (MAX)
