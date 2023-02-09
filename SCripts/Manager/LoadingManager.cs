@@ -33,7 +33,7 @@ namespace DVAH
         [SerializeField]
         Text _loadingText;
 
-        Action _onDone = null;
+        Action<List<bool>> _onDone = null;
 
         float _loadingMaxvalue;
 
@@ -46,7 +46,7 @@ namespace DVAH
                 Init(); 
         }
 
-        public LoadingManager Init(Action onDone = null)
+        public LoadingManager Init(Action<List<bool>> onDone = null)
         {
             _conditionDone.Clear();
             for (int i = 0; i < _numberCondition; i++)
@@ -68,7 +68,7 @@ namespace DVAH
 
                     try
                     {
-                        _onDone?.Invoke();
+                        _onDone?.Invoke(_conditionDone);
                     }
                     catch (Exception e)
                     {
@@ -103,11 +103,11 @@ namespace DVAH
 
         }
 
-        public LoadingManager AddOnDoneLoading(Action callback)
+        public LoadingManager AddOnDoneLoading(Action<List<bool>> callback)
         {
             if (_loading.value >= 99f)
             {
-                callback?.Invoke();
+                callback?.Invoke(_conditionDone);
                 return this;
             }
             _onDone += (callback);

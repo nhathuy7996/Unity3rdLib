@@ -85,13 +85,13 @@ public class MenuEditor
             "cd ../\n" +
             "git add -A\n" +
             "git commit -m \"prepare update lib!!!!!!\"\n" +
-            "git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash";
+            "git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
         }
         else
         {
             cmdLines = "/C git add -A&" +
-            "git commit -m \"prepare update lib!!!!!!\"&" + 
-            "git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash";
+            "git commit -m \"prepare update lib!!!!!!\"&" +
+            "git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
         }
 
         string terminal = @"cmd.exe";
@@ -573,7 +573,7 @@ public class MenuEditor
             reportContent += facebookReport;
 
         }
-        CheckFilemanifestF.gjksjdfsldkfj();
+        CheckFilemanifestF.Chkeck();
         return reportContent;
     }
 
