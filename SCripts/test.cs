@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using HuynnLib;
+using DVAH;
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Common;
 using System.Text.RegularExpressions;
@@ -12,7 +12,7 @@ public class test : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-     
+        LanguageManager.Instant.Translator("Waiii!");
     }
 
     

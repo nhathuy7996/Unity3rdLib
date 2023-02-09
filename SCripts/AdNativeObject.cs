@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace HuynnLib
+namespace DVAH
 {
     public class AdNativeObject : MonoBehaviour
     {

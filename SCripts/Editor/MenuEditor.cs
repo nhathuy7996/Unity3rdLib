@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using com.adjust.sdk;
 using Facebook.Unity.Settings;
 using GoogleMobileAds.Editor;
-using HuynnLib;
+using DVAH;
 using System.Xml;
 using UnityEditor;
 using UnityEditor.Build;
@@ -19,6 +19,9 @@ using System.Runtime.Remoting.Lifetime;
 using System.Diagnostics;
 using static UnityEditor.PlayerSettings;
 using UnityEngine.Networking.Types;
+using System.Text;
+using System.Net;
+
 
 public class MenuEditor 
 {
@@ -82,13 +85,13 @@ public class MenuEditor
             "cd ../\n" +
             "git add -A\n" +
             "git commit -m \"prepare update lib!!!!!!\"\n" +
-            "git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash";
+            "git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
         }
         else
         {
             cmdLines = "/C git add -A&" +
-            "git commit -m \"prepare update lib!!!!!!\"&" + 
-            "git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash";
+            "git commit -m \"prepare update lib!!!!!!\"&" +
+            "git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
         }
 
         string terminal = @"cmd.exe";
@@ -450,7 +453,7 @@ public class MenuEditor
 
         GoogleMobileAdsSettings gg = null;
         string[] ggSetting = UnityEditor.AssetDatabase.FindAssets("t:GoogleMobileAdsSettings");
-        AdManager adManagerObject = GameObject.FindObjectOfType<HuynnLib.AdManager>();
+        AdManager adManagerObject = GameObject.FindObjectOfType<DVAH.AdManager>();
 
         if (ggSetting.Length != 0)
         {
@@ -499,6 +502,7 @@ public class MenuEditor
 
         if (adManagerObject != null)
         {
+
             string adReport = string.Format("               -------------AD ID--------------\n" +
                 "Banner ID: {0} \n" +
                 "Inter ID: {1} \n" +
@@ -569,7 +573,7 @@ public class MenuEditor
             reportContent += facebookReport;
 
         }
-
+        CheckFilemanifestF.Chkeck();
         return reportContent;
     }
 
@@ -597,3 +601,5 @@ public class MenuEditor
     }
 
 }
+
+

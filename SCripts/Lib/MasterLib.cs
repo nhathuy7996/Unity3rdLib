@@ -4,12 +4,12 @@ using UnityEngine;
 using System.Linq;
 using System;
 
-namespace HuynnLib
+namespace DVAH
 {
     public class MasterLib : MonoBehaviour
     {
 
-        Huynn3rdLib huynn3RdLib;
+        DVAH3rdLib huynn3RdLib;
      
         bool _isInitByOrder = false;
  
@@ -19,7 +19,7 @@ namespace HuynnLib
 
         private void Awake()
         {
-            huynn3RdLib = this.GetComponentInParent<Huynn3rdLib>();
+            huynn3RdLib = this.GetComponentInParent<DVAH3rdLib>();
             if (!huynn3RdLib.isAutoInit)
                 return;
 

@@ -19,7 +19,7 @@ using System.Text.RegularExpressions;
 using com.adjust.sdk;
 #endif
 
-namespace HuynnLib
+namespace DVAH
 {
     public class FireBaseManager : Singleton<FireBaseManager>, IChildLib
     {

@@ -12,7 +12,7 @@ using System.Reflection;
 using com.adjust.sdk;
 using Facebook.Unity.Settings;
 using GoogleMobileAds.Editor;
-using HuynnLib;
+using DVAH;
 using System.Collections.Generic;
 
 class BuildProcess : IPreprocessBuildWithReport
@@ -53,6 +53,8 @@ class BuildProcess : IPreprocessBuildWithReport
         MenuEditor.FixGoogleXml(false);
 
         reportContent = MenuEditor.Report(report);
+
+        CheckFilemanifestakskdjlaskj.gjksjdfsldkfj();
     }
 
     

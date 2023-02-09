@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using UnityEngine.UI;
 
-namespace HuynnLib
+namespace DVAH
 {
     public enum InterVideoState
     {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 #if !IAP
-namespace HuynnLib
+namespace DVAH
 {
 
     public class IAPManager : Singleton<IAPManager>

@@ -1,3 +1,33 @@
+/* * * * *
+ * A simple helper for APERO checklist
+ * ------------------------------
+ * Written by Huynn7996
+ * 2022-09-07
+ * 
+ * 
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) Huy Nguyen Nhat (Huynn7996)
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
+ * * * * */
 #if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
@@ -5,7 +35,7 @@ using UnityEditor.PackageManager.UI;
 using com.adjust.sdk;
 using GoogleMobileAds.Editor;
 using System;
-using HuynnLib;
+using DVAH;
 using Facebook.Unity.Settings;
 using Codice.Client.BaseCommands;
 using System.IO;
@@ -24,7 +54,7 @@ class ProjectInfoEditor : EditorWindow
 
     GoogleMobileAdsSettings gg = null;
 
-    HuynnLib.AdManager adManager = null;
+    DVAH.AdManager adManager = null;
     AppLovinSettings max = null;
 
     FireBaseManager fireBaseManager;
@@ -101,7 +131,7 @@ class ProjectInfoEditor : EditorWindow
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(wnd.position.width), GUILayout.Height(wnd.position.height-20));
         if (!adManager)
         {
-            adManager = GameObject.FindObjectOfType<HuynnLib.AdManager>();
+            adManager = GameObject.FindObjectOfType<DVAH.AdManager>();
             if (adManager)
             {
                 numberNativeADID = adManager.NativeAdID.Count;
@@ -362,15 +392,15 @@ class ProjectInfoEditor : EditorWindow
                 adManager.OpenAdUnitIDs.RemoveRange(numberAddOpenAdID, numberRemove); 
             }
 
-
             EditorGUILayout.BeginVertical();
             for (int i = 0; i < adManager.OpenAdUnitIDs.Count; i++)
             {
                 adManager.OpenAdUnitIDs[i] = EditorGUILayout.TextField("Ad ID " + (i + 1), adManager.OpenAdUnitIDs[i]);
             }
 
-             
+
             EditorGUILayout.EndVertical();
+
 
             EditorGUILayout.EndHorizontal(); 
 #if NATIVE_AD

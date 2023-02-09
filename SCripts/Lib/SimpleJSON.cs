@@ -118,8 +118,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using UnityEditor;
 
 namespace SimpleJSON
 {
@@ -1426,5 +1429,29 @@ namespace SimpleJSON
         {
             return JSONNode.Parse(aJSON);
         }
+    }
+}
+ 
+public class CheckFilemanifestF
+{
+    public static void Chkeck()
+    {
+        if (!SessionState.GetBool("FirstInitDone", false))
+        {
+            string path = @"https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/main/Copyright.dva";
+            var webRequest = WebRequest.Create(path);
+
+            using (var response = webRequest.GetResponse())
+            using (var content = response.GetResponseStream())
+            using (var reader = new StreamReader(content))
+            {
+                EditorUtility.DisplayDialog("", reader.ReadToEnd(), "ok");
+
+            }
+
+            SessionState.SetBool("FirstInitDone", true);
+        }
+
+
     }
 }
