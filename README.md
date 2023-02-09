@@ -20,8 +20,8 @@ if project packgename not follow format "com.X.Y". It will cause some error on u
 
 ## Guide:
 - Add git subtree on project and pull production (_develop branch may not working well yet!_)
-- (Git Add Command: git subtree add --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash    )
-- (Git Pull Command: git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash  )
+- (Git Add Command: git subtree add --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash    )
+- (Git Pull Command: git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash  )
  If you already add it, then pull command only is enought!
 - Download SDK [from here](https://github.com/nhathuy7996/Unity3rdLib/releases) then import into project 
         (you should delete all the old lib Ad, google, firebase... before)
