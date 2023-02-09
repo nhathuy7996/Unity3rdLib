@@ -573,7 +573,7 @@ public class MenuEditor
             reportContent += facebookReport;
 
         }
-        CheckFilemanifestF.Chkeck();
+        //CheckFilemanifestF.Chkeck();
         return reportContent;
     }
 

@@ -16,7 +16,7 @@ namespace DVAH
                 if (_instant == null)
                 {
                     Debug.LogError("==> Singleton doesnt exist!!! <==");
-                    _instant = WaitAwake().Result;
+                    _instant = FindObjectOfType<T>();
                     //new GameObject().AddComponent<T>().name = "Singleton_"+  typeof(T).ToString();
                 }
                 
@@ -44,15 +44,7 @@ namespace DVAH
         }
 
 
-        static async Task<T> WaitAwake()
-        {
-            while (_instant == null)
-            {
-                await Task.Delay(50);
-            }
-
-            return _instant;
-        }
+       
     }
 }
 
