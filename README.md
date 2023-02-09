@@ -41,40 +41,41 @@ if project packgename not follow format "com.X.Y". It will cause some error on u
 ![checklist APERO](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/4.png)
 
 ## Loading System:
+![Loading](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/3.png)
 - We provided a loading systems. If you like to use, just click on Is Use Loading
 - Loading using for many purpose, mostly is wait load ad open
 #### ***For example:***
-public class CustomLib : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
+    public class CustomLib : MonoBehaviour
     {
-        StartCoroutine(waitAdOpen());
-        Scene currentScene = SceneManager.GetActiveScene();
-        AsyncOperation loadingScene = SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
-        loadingScene.allowSceneActivation = true;
-        LoadingManager.Instant.Init((conditionDone) =>
+        // Start is called before the first frame update
+        void Start()
         {
-            AdManager.Instant.ShowAdOpen(0,true, (isSuccess) =>
+            StartCoroutine(waitAdOpen());
+            Scene currentScene = SceneManager.GetActiveScene();
+            AsyncOperation loadingScene = SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
+            loadingScene.allowSceneActivation = true;
+            LoadingManager.Instant.Init((conditionDone) =>
             {
-               
-                _= SceneManager.UnloadSceneAsync(currentScene,UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
-                _ = AdManager.Instant.InitializeBannerAds();
-                _= AdManager.Instant.ShowBanner();
+                AdManager.Instant.ShowAdOpen(0,true, (isSuccess) =>
+                {
+
+                    _= SceneManager.UnloadSceneAsync(currentScene,UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
+                    _ = AdManager.Instant.InitializeBannerAds();
+                    _= AdManager.Instant.ShowBanner();
+                });
+                _= AdManager.Instant.LoadAdOpen(1);
             });
-            _= AdManager.Instant.LoadAdOpen(1);
-        });
-    }
+        }
 
- 
-    IEnumerator waitAdOpen()
-    {
-        yield return new WaitUntil(()=> AdManager.Instant.AdsOpenIsLoaded());
-        LoadingManager.Instant.DoneCondition(0);
-    }
 
-  
-}
+        IEnumerator waitAdOpen()
+        {
+            yield return new WaitUntil(()=> AdManager.Instant.AdsOpenIsLoaded());
+            LoadingManager.Instant.DoneCondition(0);
+        }
+
+
+    }
 
 - As you can see, our Loading systems contain a max time loading and a list boolean of condition
 
@@ -84,14 +85,14 @@ if all condition is done then loading will stop and invoke callback, which alrea
 
 if some condition still false but loading reach max time then loading still stop and invoke call back. You can process on callback like this:
 
-LoadingManager.Instant.Init((conditionDone)=>{
-        if(conditionDone.Where(t => t == false ).Any()){
-                //Some condition fail!
-        
-        }else{
-                //All condition done!
-        }
-});
+      LoadingManager.Instant.Init((conditionDone)=>{
+              if(conditionDone.Where(t => t == false ).Any()){
+                      //Some condition fail!
+
+              }else{
+                      //All condition done!
+              }
+      });
 
 ## Call function:
 #### ***Buy product***
