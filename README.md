@@ -79,9 +79,9 @@ if project packgename not follow format "com.X.Y". It will cause some error on u
 
 - As you can see, our Loading systems contain a max time loading and a list boolean of condition
 
-Call LoadingManager.Instant.DoneCondition(ID); for set a condition is success
+Call ***LoadingManager.Instant.DoneCondition(ID);*** for set a condition is success
 
-if all condition is done then loading will stop and invoke callback, which already define in  LoadingManager.Instant.Init(callbackDone);
+if all condition is done then loading will stop and invoke callback, which already define in  ***LoadingManager.Instant.Init(callbackDone);***
 
 if some condition still false but loading reach max time then loading still stop and invoke call back. You can process on callback like this:
 
@@ -188,13 +188,15 @@ if some condition still false but loading reach max time then loading still stop
         }, showNoAds: true);
         // showNoAds: true ==> if you wanna show popup "AD not avaiable" - flase or just leave it blank if you dont need popup
         
-        Some game have more than one ad open then, you must pass ID for loading/showing
+        //Some game have more than one ad open then, you must pass ID for loading/showing
+        //If game have more than one ad open then Ad ID 0 will auto use for open game and the last one use for resume game
          _= AdManager.Instant.LoadAdOpen(ID); 
 
             AdManager.Instant.ShowAdOpen(ID,true, (isSuccess) =>
             {
                 
-            }); // true then lib will know AdOpen treated as Ad open when open game, or as an AD when user return game.
+            }); 
+            // true then lib will know AdOpen treated as Ad open when open game, or as an AD when user return game.
             //You call check on callback Ad show success or not using isSuccess
             
         ![enter ID adopen](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/5.png)
