@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 
-namespace HuynnLib
+namespace DVAH
 {
     public class Singleton<T> : MonoBehaviour where T : MonoBehaviour 
     {
@@ -15,10 +16,10 @@ namespace HuynnLib
                 if (_instant == null)
                 {
                     Debug.LogError("==> Singleton doesnt exist!!! <==");
-                    _instant = FindObjectOfType<T>();
+                    _instant = WaitAwake().Result;
                     //new GameObject().AddComponent<T>().name = "Singleton_"+  typeof(T).ToString();
                 }
-
+                
                 return _instant;
             }
         }
@@ -43,6 +44,15 @@ namespace HuynnLib
         }
 
 
+        static async Task<T> WaitAwake()
+        {
+            while (_instant == null)
+            {
+                await Task.Delay(50);
+            }
+
+            return _instant;
+        }
     }
 }
 

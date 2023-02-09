@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-namespace HuynnLib
+namespace DVAH
 {
     internal class UnityMainThread : MonoBehaviour
     {

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-namespace HuynnLib
+namespace DVAH
 {
     public class NotiManager : MonoBehaviour
     {

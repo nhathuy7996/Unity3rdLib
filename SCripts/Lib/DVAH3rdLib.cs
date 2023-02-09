@@ -9,9 +9,9 @@ using SimpleJSON;
 using System;
 using UnityEngine.UI;
 
-namespace HuynnLib
+namespace DVAH
 {
-    public class Huynn3rdLib : Singleton<Huynn3rdLib>
+    public class DVAH3rdLib : Singleton<DVAH3rdLib>
     {
         [SerializeField] bool _isShowDebug = false, _isDontDestroyOnLoad = false;
         [SerializeField] GameObject _notiDebug, _noInternetDebug;

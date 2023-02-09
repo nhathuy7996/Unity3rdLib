@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using HuynnLib;
+using DVAH;
 using System;
 using SimpleJSON;
 using UnityEngine.UI;
 using System.Linq;
 
-namespace HuynnLib
+namespace DVAH
 {
     public class LanguageManager : Singleton<LanguageManager>
     {

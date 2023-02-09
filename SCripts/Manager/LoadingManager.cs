@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using System;
 using System.Linq;
 
-namespace HuynnLib
+namespace DVAH
 {
     public class LoadingManager : Singleton<LoadingManager>
     {
