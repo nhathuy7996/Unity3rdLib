@@ -60,12 +60,22 @@ namespace DVAH
         {
             if (isLanguageSeted)
             {
-                this.gameObject.SetActive(false);
+                ClosePopUp();
+
             }
             else
             {
-
+                 
             }
+
+            ChangeLanguage((LanguageName)PlayerPrefs.GetInt("LAN"));
+        }
+
+        public void ClosePopUp()
+        {
+
+            this.gameObject.SetActive(false);
+            _ = AdManager.Instant.ShowBanner();
         }
 
         public string Translator(string key)
