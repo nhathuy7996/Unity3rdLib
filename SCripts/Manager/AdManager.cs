@@ -1104,7 +1104,7 @@ namespace DVAH
 #if UNITY_EDITOR
             return true;
 #elif NATIVE_AD
-            return this.nativeAd[ID] != null;
+            return this._nativeAd[ID] != null;
 #else
             return false;
 #endif
