@@ -139,13 +139,13 @@ public class MenuEditor
             "cd " + Application.dataPath + "\n" +
             "git add -A\n" +
             "git commit -m \"release_" + PlayerSettings.bundleVersion + "\"\n" +
-            "git push origin HEAD:production_hnn -f";
+            "git push origin HEAD:production_doNotCreateBranchFromHere -f";
         }
         else
         {
             cmdLines = "/C git add -A&" +
             "git commit -m \"release _" + PlayerSettings.bundleVersion + "\"&" +
-            "git push origin HEAD:production_hnn -f";
+            "git push origin HEAD:production_doNotCreateBranchFromHere -f";
         }
 
         string terminal = @"cmd.exe";
