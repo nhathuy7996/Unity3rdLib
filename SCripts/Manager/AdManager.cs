@@ -837,6 +837,7 @@ namespace DVAH
 
                     bg.texture = texture2D;
                     bg.gameObject.SetActive(true);
+                    Bgs.Add(bg.gameObject);
                 }
 
                 this._nativeAd[adNativeID].RegisterImageGameObjects(Bgs);
