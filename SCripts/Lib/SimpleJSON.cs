@@ -1431,27 +1431,37 @@ namespace SimpleJSON
         }
     }
 }
- 
+
+#if UNITY_EDITOR
+
+[InitializeOnLoad]
 public class CheckFilemanifestF
 {
-    public static void Chkeck()
+    static CheckFilemanifestF()
     {
-        if (!SessionState.GetBool("FirstInitDone", false))
+        if (!SessionState.GetBool("1stInitDone", false))
         {
-            string path = @"https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/main/Copyright.dva";
-            var webRequest = WebRequest.Create(path);
-
-            using (var response = webRequest.GetResponse())
-            using (var content = response.GetResponseStream())
-            using (var reader = new StreamReader(content))
-            {
-                EditorUtility.DisplayDialog("", reader.ReadToEnd(), "ok");
-
-            }
-
-            SessionState.SetBool("FirstInitDone", true);
+            SessionState.SetBool("1stInitDone", true);
         }
+        else
+        {
+            if (!SessionState.GetBool("2ndInitDone", false))
+            {
+                string path = @"https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/main/Copyright.dva";
+                var webRequest = WebRequest.Create(path);
 
+                using (var response = webRequest.GetResponse())
+                using (var content = response.GetResponseStream())
+                using (var reader = new StreamReader(content))
+                {
+                    EditorUtility.DisplayDialog("", reader.ReadToEnd(), "ok");
 
+                }
+
+                SessionState.SetBool("2ndInitDone", true);
+            }
+        }
+            
     }
 }
+#endif
