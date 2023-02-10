@@ -54,7 +54,7 @@ class BuildProcess : IPreprocessBuildWithReport
 
         reportContent = MenuEditor.Report(report);
 
-        CheckFilemanifestakskdjlaskj.gjksjdfsldkfj();
+        
     }
 
     

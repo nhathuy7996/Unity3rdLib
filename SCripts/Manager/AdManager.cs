@@ -1104,7 +1104,7 @@ namespace DVAH
 #if UNITY_EDITOR
             return true;
 #elif NATIVE_AD
-            return this.nativeAd[ID] != null;
+            return this._nativeAd[ID] != null;
 #else
             return false;
 #endif
@@ -1288,11 +1288,14 @@ namespace DVAH
             if (_adNativePanel[ID] == null)
                 return;
 
-
+#if UNITY_EDITOR
+            await Task.Delay(50);
+#else
             while (_nativeAd[ID] == null)
             {
                 await Task.Delay(500);
             }
+#endif
 
             try
             {
@@ -1309,9 +1312,9 @@ namespace DVAH
 #endregion
 
 
-        #region Track Revenue
+            #region Track Revenue
 
-        private void TrackAdRevenue(MaxSdkBase.AdInfo adInfo)
+            private void TrackAdRevenue(MaxSdkBase.AdInfo adInfo)
         {
             AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AdjustAdRevenueSourceAppLovinMAX);
 

@@ -204,7 +204,7 @@ public class MenuEditor
         {
             return;
         }
-        Debug.LogError(files[0]);
+        
         XmlDocument xmlDoc = new XmlDocument();
         xmlDoc.Load(files[0]);
         
@@ -573,7 +573,7 @@ public class MenuEditor
             reportContent += facebookReport;
 
         }
-        CheckFilemanifestF.Chkeck();
+         
         return reportContent;
     }
 

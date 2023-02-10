@@ -10,12 +10,12 @@ public class LanguageChild : MonoBehaviour
     Text _text;
 
 
-    private void Start()
+    private void Awake()
     {
         if (_text == null)
             _text = this.GetComponent<Text>();
 
-        LanguageManager.Instant.AddListener(changeLan);
+        StartCoroutine(WaitLanguageManager());
     }
 
     private void OnEnable()
@@ -33,6 +33,13 @@ public class LanguageChild : MonoBehaviour
 
     private void OnDestroy()
     {
-        LanguageManager.Instant.RemoveListener(changeLan);
+        if(LanguageManager.Instant != null)
+            LanguageManager.Instant.RemoveListener(changeLan);
+    }
+
+    IEnumerator WaitLanguageManager()
+    {
+        yield return new WaitUntil(()=> LanguageManager.Instant != null);
+        LanguageManager.Instant.AddListener(changeLan);
     }
 }
