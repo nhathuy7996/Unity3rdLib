@@ -815,7 +815,7 @@ namespace DVAH
 
 #if UNITY_EDITOR
 
-            _adNativePanel[adNativeID].advertiser.text = "<color=blue>" + this.NativeAdID[adNativeID] + "</color>\n";
+            _adNativePanel[adNativeID].body.text = "<color=blue>" + this.NativeAdID[adNativeID] + "</color>\n";
             for (int i = 0; i < 3; i++)
             {
                 RawImage bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
@@ -837,6 +837,7 @@ namespace DVAH
 
                     bg.texture = texture2D;
                     bg.gameObject.SetActive(true);
+                    Bgs.Add(bg.gameObject);
                 }
 
                 this._nativeAd[adNativeID].RegisterImageGameObjects(Bgs);
