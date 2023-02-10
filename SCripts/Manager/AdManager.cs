@@ -1115,6 +1115,12 @@ namespace DVAH
 
         #region ShowAd
 
+        /// <summary>
+        /// Show AD Banner, It doesn't matter SDK init done or not
+        /// <code>
+        /// _= AdManager.Instant.ShowBanner();
+        /// </code>
+        /// </summary>
         public async Task ShowBanner()
         {
             if (_isOffBanner)
@@ -1133,6 +1139,12 @@ namespace DVAH
 
         }
 
+        /// <summary>
+        /// Hide AD Banner, It doesn't matter SDK init done or not
+        /// <code>
+        /// AdManager.Instant.DestroyBanner();
+        /// </code>
+        /// </summary>
         public void DestroyBanner()
         {
             Debug.Log("[Huynn3rdLib]==> destroy banner <==");
@@ -1281,6 +1293,21 @@ namespace DVAH
         }
 
 #if NATIVE_AD
+        /// <summary>
+        /// ID is index of ID native AD
+        /// Actually, Native AD object already create right when native AD success!
+        /// Show function using for assign Native AD object into right canvas
+        /// <code>
+        /// _= AdManager.Instant.ShowNative(0,(nativePanel)=>{
+        ///       nativePanel.transform.SetParent(canvas.transform);
+        ///       nativePanel.transform.localScale = Vector3.one;
+        ///       nativePanel.transform.localPosition = Vector3.zero;
+        ///       nativePanel.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
+        ///       nativePanel.GetComponent<RectTransform>().anchorMax = new Vector2(1, 0.4f);
+        /// })
+        /// </code>
+        /// </summary> 
+        /// <param name="callback">Callback using for assign Native AD object into right canvas</param>
         public async Task ShowNative(int ID, Action<GameObject> callBack)
         {
             if (ID >= _adNativePanel.Count || ID >= _nativeAd.Count)
