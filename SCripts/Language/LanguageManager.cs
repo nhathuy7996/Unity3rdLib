@@ -102,7 +102,7 @@ namespace DVAH
             for (int i = 0; i <= (int)LanguageName.SP; i++)
             {
 
-                if (language.Equals(((LanguageName)i).ToString()))
+                if (language.ToString().Equals(((LanguageName)i).ToString()))
                 {
                     PlayerPrefs.SetInt("LAN", i);
                     break;
