@@ -803,24 +803,24 @@ namespace DVAH
         public bool CreateNativeAd(int adNativeID)
         {
             Debug.Log("[Huynn3rdLib]===>set object nativ<e===");
-            _adNativePanel[adNativeID].gameObject.SetActive(true);
 
-            if (!LanguageManager.Instant.gameObject.activeSelf)
-            {
-                _ = FireBaseManager.Instant.LogEventWithParameter("Native_show_fail", new Hashtable()
-                {
-                    {"error","language_popup_closed" }
-                });
-            }
 
 #if UNITY_EDITOR
-
+      
             _adNativePanel[adNativeID].body.text = "<color=blue>" + this.NativeAdID[adNativeID] + "</color>\n";
             for (int i = 0; i < 3; i++)
             {
-                RawImage bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
-                   Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent);
+                RawImage bg;
+                if (i >= _adNativePanel[adNativeID].adBG.transform.parent.childCount)
+                {
 
+                    bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
+                       Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent);
+                }
+                else
+                {
+                    bg = _adNativePanel[adNativeID].adBG.transform.parent.GetChild(i).GetComponent<RawImage>();
+                }
                 bg.gameObject.SetActive(true);
             }
             return true;
@@ -830,11 +830,18 @@ namespace DVAH
             if (imagetexture.Any())
             {
                 List<GameObject> Bgs = new List<GameObject>();
+                int i = 0;
                 foreach (Texture2D texture2D in imagetexture)
                 {
-                    RawImage bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
+                    RawImage bg;
+                    if (i >= _adNativePanel[adNativeID].adBG.transform.parent.childCount) {
+                        bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
                        Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent);
-
+                    }
+                    else
+                    {
+                        bg = _adNativePanel[adNativeID].adBG.transform.parent.GetChild(i).GetComponent<RawImage>();
+                    }
                     bg.texture = texture2D;
                     bg.gameObject.SetActive(true);
                     Bgs.Add(bg.gameObject);
@@ -1303,13 +1310,15 @@ namespace DVAH
         ///       nativePanel.transform.SetParent(canvas.transform);
         ///       nativePanel.transform.localScale = Vector3.one;
         ///       nativePanel.transform.localPosition = Vector3.zero;
-        ///       nativePanel.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
-        ///       nativePanel.GetComponent<RectTransform>().anchorMax = new Vector2(1, 0.4f);
+        ///       nativePanel.rectTransform.sizeDelta = Vector2.zero;
+        ///       nativePanel.rectTransform.anchorMax = new Vector2(1, 0.4f);
+        ///
+        ///       nativePanel.FitCollider(); //important, must call for boxcollider 2D fit with object Image
         /// })
         /// </code>
         /// </summary> 
         /// <param name="callback">Callback using for assign Native AD object into right canvas</param>
-        public async Task ShowNative(int ID, Action<GameObject> callBack)
+        public async Task ShowNative(int ID, Action<AdNativeObject> callBack)
         {
             if (ID >= _adNativePanel.Count || ID >= _nativeAd.Count)
                 return;
@@ -1324,10 +1333,10 @@ namespace DVAH
                 await Task.Delay(500);
             }
 #endif
-
+            _adNativePanel[ID].gameObject.SetActive(true);
             try
             {
-                callBack?.Invoke(_adNativePanel[ID].gameObject);
+                callBack?.Invoke(_adNativePanel[ID]);
             }
             catch (Exception e)
             {

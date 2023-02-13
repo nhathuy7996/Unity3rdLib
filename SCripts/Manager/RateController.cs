@@ -71,6 +71,8 @@ public class RateController : MonoBehaviour
                 this.gameObject.SetActive(false);
 
             }));
+
+            PlayerPrefs.SetInt("RATE",1);
 #elif UNITY_EDITOR
             this.gameObject.SetActive(false);
 #endif

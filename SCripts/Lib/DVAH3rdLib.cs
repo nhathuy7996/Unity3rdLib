@@ -119,6 +119,8 @@ namespace DVAH
 
         public void ShowPopUpRate(bool isShow = true)
         {
+            if (isShow && PlayerPrefs.HasKey("RATE"))
+                return;
             _popupRate.SetActive(isShow);
         }
 
