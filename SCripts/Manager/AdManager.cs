@@ -1312,8 +1312,7 @@ namespace DVAH
         ///       nativePanel.transform.localPosition = Vector3.zero;
         ///       nativePanel.rectTransform.sizeDelta = Vector2.zero;
         ///       nativePanel.rectTransform.anchorMax = new Vector2(1, 0.4f);
-        ///
-        ///       nativePanel.FitCollider(); //important, must call for boxcollider 2D fit with object Image
+        /// 
         /// })
         /// </code>
         /// </summary> 
@@ -1342,7 +1341,8 @@ namespace DVAH
             {
                 Debug.LogError("[Huynn3rdLib]===>Error on callback show native! error: " + e.ToString()+"<====");
             }
-           
+
+            _adNativePanel[ID].FitCollider();
         }
 #endif
 
