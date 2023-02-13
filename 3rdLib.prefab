@@ -3312,6 +3312,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47fa4ef55b02d4139861a2afc5e63fbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _delayTimeShowNoButton: 3
+  _noThankButton: {fileID: 9163363880040096839}
   _starManTrans: {fileID: 7791242755145096329}
   _starManager: []
 --- !u!1 &5803544318867555570
@@ -5226,7 +5228,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4408251939167393348
 RectTransform:
   m_ObjectHideFlags: 0
