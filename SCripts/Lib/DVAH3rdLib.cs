@@ -39,10 +39,13 @@ namespace DVAH
         // Start is called before the first frame update
         void Start()
         {
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+            Application.targetFrameRate = 120;
+
             if (_isDontDestroyOnLoad)
                 DontDestroyOnLoad(this.gameObject);
 
-            _= FireBaseManager.Instant.GetValueRemoteAsync("FORCE_UPDATE", (value) =>
+            _= FireBaseManager.Instant.GetValueRemoteAsync(CONSTANT.FORCE_UPDATE, (value) =>
             {
                 try
                 {
@@ -119,7 +122,7 @@ namespace DVAH
 
         public void ShowPopUpRate(bool isShow = true)
         {
-            if (isShow && PlayerPrefs.HasKey("RATE"))
+            if (isShow && PlayerPrefs.HasKey(CONSTANT.RATE_CHECK))
                 return;
             _popupRate.SetActive(isShow);
         }
