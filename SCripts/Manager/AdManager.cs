@@ -1176,7 +1176,7 @@ namespace DVAH
         {
             if (_isOffInter)
                 return;
-            if (CheckInternetConnection() && InterstitialIsLoaded())
+            if ( InterstitialIsLoaded())
             {
                 isShowingAd = true;
                 _callbackInter = callback;
@@ -1211,7 +1211,7 @@ namespace DVAH
             if (_isOffReward)
                 return;
 
-            if (CheckInternetConnection() && VideoRewardIsLoaded())
+            if (  VideoRewardIsLoaded())
             {
                 isShowingAd = true;
                 _callbackReward = callback;
