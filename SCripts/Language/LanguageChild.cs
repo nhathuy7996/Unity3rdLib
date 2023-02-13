@@ -3,19 +3,40 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DVAH;
+using TMPro;
 
 public class LanguageChild : MonoBehaviour
 {
     [SerializeField] string _key;
     Text _text;
 
+    TextMeshPro _textMesh;
 
     private void Awake()
     {
-        if (_text == null)
-            _text = this.GetComponent<Text>();
-
+        AssignText();
         StartCoroutine(WaitLanguageManager());
+    }
+
+    void AssignText()
+    {
+        if (_text != null)
+        {
+            return;
+        }
+
+        if (!this.TryGetComponent<Text>(out _text))
+        {
+            return;
+        }
+
+        if (_textMesh != null)
+            return;
+
+        if (!this.TryGetComponent<TextMeshPro>(out _textMesh))
+        {
+            return;
+        }
     }
 
     private void OnEnable()
@@ -25,10 +46,13 @@ public class LanguageChild : MonoBehaviour
 
     void changeLan(object param)
     {
-        if (_text == null)
-            return;
-        
-        _text.text = LanguageManager.Instant.Translator(_key);
+        AssignText();
+
+        if(_text)
+            _text.text = LanguageManager.Instant.Translator(_key);
+
+        if(_textMesh)
+            _textMesh.text = LanguageManager.Instant.Translator(_key);
     }
 
     private void OnDestroy()
