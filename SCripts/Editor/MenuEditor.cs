@@ -85,14 +85,14 @@ public class MenuEditor
             "cd $(git rev-parse --show-cdup)\n" +
             "git add -A\n" +
             "git commit -m \"prepare update lib!!!!!!\"\n" +
-            "git subtree pull --prefix "+Application.dataPath.Replace(Directory.GetCurrentDirectory(),"")+" https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
+            "git subtree pull --prefix " + Application.dataPath.Replace(Directory.GetCurrentDirectory() + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
         }
         else
         {
             cmdLines = "/C cd $(git rev-parse --show-cdup)&" +
             "git add -A&" +
             "git commit -m \"prepare update lib!!!!!!\"&" +
-            "git subtree pull --prefix "+Application.dataPath.Replace(Directory.GetCurrentDirectory(),"")+" https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
+            "git subtree pull --prefix " + Application.dataPath.Replace(Directory.GetCurrentDirectory() + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
         }
 
         string terminal = @"cmd.exe";
