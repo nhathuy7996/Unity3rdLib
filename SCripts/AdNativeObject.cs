@@ -15,6 +15,7 @@ namespace DVAH
         private void Awake()
         {
             rectTransform = this.GetComponent<RectTransform>();
+            this.gameObject.SetActive(false);
         }
 
         public void FitCollider()

@@ -1181,19 +1181,18 @@ namespace DVAH
                 isShowingAd = true;
                 _callbackInter = callback;
                 MaxSdk.ShowInterstitial(_InterstitialAdUnitID);
+                return;
             }
-            else
+
+            try
             {
-                try
-                {
-                    callback?.Invoke(InterVideoState.None);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError("[Huynn3rdLib]==> Faild invoke callback inter, error: " + e.ToString() + " <==");
-                }
-                if (_popUpNoAd && showNoAds) _popUpNoAd.SetActive(true);
+                callback?.Invoke(InterVideoState.None);
             }
+            catch (Exception e)
+            {
+                Debug.LogError("[Huynn3rdLib]==> Faild invoke callback inter, error: " + e.ToString() + " <==");
+            }
+            if (_popUpNoAd && showNoAds) _popUpNoAd.SetActive(true);
         }
 
 
@@ -1341,8 +1340,8 @@ namespace DVAH
             {
                 Debug.LogError("[Huynn3rdLib]===>Error on callback show native! error: " + e.ToString()+"<====");
             }
-
             _adNativePanel[ID].FitCollider();
+
         }
 #endif
 
