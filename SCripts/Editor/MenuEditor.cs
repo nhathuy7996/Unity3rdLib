@@ -76,6 +76,18 @@ public class MenuEditor
         if (string.IsNullOrEmpty(cmdPath))
             return;
 
+        var directory = new DirectoryInfo(Application.dataPath);
+        while (directory.GetDirectories(".git").Length == 0)
+        {
+            directory = directory.Parent;
+
+            if (directory == null)
+            {
+                throw new DirectoryNotFoundException("We went all the way up to the system root directory and didn't find any \".git\" directory!");
+            }
+        }
+        var repositoryPath = directory.FullName;
+
         string cmdLines = "";
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
@@ -85,14 +97,14 @@ public class MenuEditor
             "cd $(git rev-parse --show-cdup)\n" +
             "git add -A\n" +
             "git commit -m \"prepare update lib!!!!!!\"\n" +
-            "git subtree pull --prefix " + Application.dataPath.Replace(Directory.GetCurrentDirectory() + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
+            "git subtree pull --prefix " + Application.dataPath.Replace(repositoryPath + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
         }
         else
         {
             cmdLines = "/C cd $(git rev-parse --show-cdup)&" +
             "git add -A&" +
             "git commit -m \"prepare update lib!!!!!!\"&" +
-            "git subtree pull --prefix " + Application.dataPath.Replace(Directory.GetCurrentDirectory() + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
+            "git subtree pull --prefix " + Application.dataPath.Replace(repositoryPath + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
         }
 
         string terminal = @"cmd.exe";
