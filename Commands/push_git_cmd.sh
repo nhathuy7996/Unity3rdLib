@@ -1,5 +1,8 @@
 #!/bin/sh
 
+cd ../../
+cd /Volumes/DVA/UNITY/Lib/Assets
+cd $(git rev-parse --show-cdup)
 git add -A
-git commit -m "release appname +..."
-git push origin HEAD:production_hnn -f
+git commit -m "prepare update lib!!!!!!"
+git subtree pull --prefix Assets/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash

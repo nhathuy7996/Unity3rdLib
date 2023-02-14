@@ -25,7 +25,7 @@ class BuildProcess : IPreprocessBuildWithReport
 
         if (!PlayerSettings.applicationIdentifier.StartsWith("com."))
         {
-            if(!EditorUtility.DisplayDialog("Attention Pleas?",
+            if(!EditorUtility.DisplayDialog("Attention Please?",
                "Your package name not start with \"com.\". This can make your project not working correctly!", "Continue Build!","Stop build!"))
             {
                 MenuEditor.StopBuildWithMessage("package name not start with \"com.\"!"); 
@@ -35,10 +35,19 @@ class BuildProcess : IPreprocessBuildWithReport
 
         if (PlayerSettings.applicationIdentifier.Split('.').Count() < 3)
         {
-            if(!EditorUtility.DisplayDialog("Attention Pleas?",
+            if(!EditorUtility.DisplayDialog("Attention Please?",
                "Your package name is not in format 'com.X.Y' . This can make your project not working correctly!", "Continue Build!", "Stop build!"))
             {
                 MenuEditor.StopBuildWithMessage("package name not correct format!");
+            }
+        }
+
+         if (EditorUserBuildSettings.buildAppBundle && !PlayerSettings.Android.useCustomKeystore)
+        {
+            if(!EditorUtility.DisplayDialog("Attention Please?",
+               "Are you sure wanna build an .aab file with DEBUG keystore? It's definitely can't upload to google play!", "Continue Build!", "Stop build!"))
+            {
+                MenuEditor.StopBuildWithMessage("build aab with debug keystore!");
             }
         }
 
