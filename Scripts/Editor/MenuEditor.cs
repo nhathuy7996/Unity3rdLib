@@ -12,16 +12,10 @@ using System.Xml;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-using UnityEngine;
-using static UnityEditor.Progress;
-using UnityEditor.SceneManagement;
-using System.Runtime.Remoting.Lifetime;
+using UnityEngine; 
+using UnityEditor.SceneManagement; 
 using System.Diagnostics;
-using static UnityEditor.PlayerSettings;
-using UnityEngine.Networking.Types;
-using System.Text;
-using System.Net;
-
+using static UnityEditor.PlayerSettings; 
 
 public class MenuEditor 
 {
@@ -609,7 +603,7 @@ public class MenuEditor
             return files[0];
         }
 
-        Debug.LogError("[Huynn3rdLib]==>Project dont have require .sh file. Can't auto push git!!!!!<==");
+        UnityEngine.Debug.LogError("[Huynn3rdLib]==>Project dont have require .sh file. Can't auto push git!!!!!<==");
         return null;
     }
 
