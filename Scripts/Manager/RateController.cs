@@ -85,6 +85,10 @@ namespace DVAH
             this.gameObject.SetActive(false);
 #endif
             }
+            else
+            {
+                this.gameObject.SetActive(false);
+            }
         }
 
 
