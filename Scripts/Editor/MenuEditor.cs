@@ -390,7 +390,7 @@ public class MenuEditor
                             .Where(f => f.EndsWith("google-services.json")).ToArray();
         if (files.Length == 0)
         {
-            Debug.LogError("[Huynn3rdLib]==>Project doesnt contain google-services.json. Firebase may not work!!!!!<==");
+            UnityEngine.Debug.LogError("[Huynn3rdLib]==>Project doesnt contain google-services.json. Firebase may not work!!!!!<==");
             if (!EditorUtility.DisplayDialog("Oop, something wrong?",
                 "Missing google-service.js. All firebase services may not work?", "Continue", "Stop"))
             {
@@ -402,7 +402,7 @@ public class MenuEditor
 
         if (files.Length > 1)
         {
-            Debug.LogError("[Huynn3rdLib]==>Project contain more than one file google-services.json. Firebase may not work wrong!!!!!<==");
+            UnityEngine.Debug.LogError("[Huynn3rdLib]==>Project contain more than one file google-services.json. Firebase may not work wrong!!!!!<==");
             if (!EditorUtility.DisplayDialog("Oop, something wrong?",
                 "Too many google-service.js. All firebase services may not work?", "Continue", "Stop"))
             {
@@ -426,7 +426,7 @@ public class MenuEditor
             return files[0];
         }
 
-        Debug.LogError("[Huynn3rdLib]==>Project error google-services.xml. Firebase may not work wrong!!!!!<==");
+        UnityEngine.Debug.LogError("[Huynn3rdLib]==>Project error google-services.xml. Firebase may not work wrong!!!!!<==");
         return null;
     }
 
@@ -492,7 +492,7 @@ public class MenuEditor
         }
         else
         {
-            Debug.LogError("[Huynn3rdLib]:Can not find MaxSdkSetting!");
+            UnityEngine.Debug.LogError("[Huynn3rdLib]:Can not find MaxSdkSetting!");
         }
 
         if (max != null)
@@ -543,7 +543,7 @@ public class MenuEditor
         }
         else
         {
-            Debug.LogError("[Huynn3rdLib]:Can not find MaxSdkSetting!");
+            UnityEngine.Debug.LogError("[Huynn3rdLib]:Can not find MaxSdkSetting!");
         }
 
         if (facebook != null)
@@ -558,7 +558,7 @@ public class MenuEditor
 
             }
             else
-                Debug.LogError("[Huynn3rdLib]:Can not find FB app ID field!");
+                UnityEngine.Debug.LogError("[Huynn3rdLib]:Can not find FB app ID field!");
 
 
             var clientToken = facebook.GetType().GetProperty("ClientTokens");
@@ -570,7 +570,7 @@ public class MenuEditor
                 fbClientToken = ((List<string>)facebookClientTokenProps)[0];
             }
             else
-                Debug.LogError("[Huynn3rdLib]:Can not find FB client token field!");
+                UnityEngine.Debug.LogError("[Huynn3rdLib]:Can not find FB client token field!");
 
             string facebookReport = string.Format("               -------------FACEBOOK--------------\n" +
                 "FB AppID: {0} \n" +

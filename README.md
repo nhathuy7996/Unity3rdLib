@@ -19,14 +19,20 @@ if project packgename not follow format "com.X.Y". It will cause some error on u
 
 
 ## Guide:
-- Add git subtree on project and pull production (_develop branch may not working well yet!_)
-- (Git Add Command: git subtree add --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash    )
-- (Git Pull Command: git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash  )
- If you already add it, then pull command only is enought!
 - Download SDK [from here](https://github.com/nhathuy7996/Unity3rdLib/releases) then import into project 
         (you should delete all the old lib Ad, google, firebase... before)
 - Reimport All
 - Android Resolve -> Force Resolve
+- Then you have 2 way to add the code lib to your project:
+    - The profession way:
+        - Add git subtree on project and pull production (_develop branch may not working well yet!_)
+        - (Git Add Command: git subtree add --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash    )
+        - (Git Pull Command: git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash  )
+        If you already add it, then pull command only is enought!
+
+    - The lazy way:
+        ![add Code](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/0.png)
+
 - put prefab 3rdLib into scene index 0 on build setting (check dontDestroyOnload if project have multiple scene)
 
 ![put prefab 3rdLib into scene index 0 on build setting](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/1.png)
@@ -147,8 +153,8 @@ if some condition still false but loading reach max time then loading still stop
 
 
 #### ***ShowPopUprate***
-        MasterLib.Instant.ShowPopUpRate() //==> Show
-        MasterLib.Instant.ShowPopUpRate(false) //==> Hide
+        DVAH3rdLib.Instant.ShowPopUpRate() //==> Show
+        DVAH3rdLib.Instant.ShowPopUpRate(false) //==> Hide
 
 #### ***AdManager***
         AdManager.Instant.ShowBanner();
