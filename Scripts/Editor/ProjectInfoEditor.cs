@@ -442,7 +442,11 @@ class ProjectInfoEditor : EditorWindow
 
             EditorGUILayout.EndHorizontal();
 #endif
+
+
+            EditorUtility.SetDirty(adManager);
             PrefabUtility.RecordPrefabInstancePropertyModifications(adManager);
+
         }
 #endregion
 

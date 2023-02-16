@@ -83,8 +83,6 @@ namespace DVAH
 
 
         List<NativeAd> _nativeAd = new List<NativeAd>();
-
-        List<AdLoader> _nativeAdLoader = new List<AdLoader>();
 #endif
 
 #if UNITY_EDITOR
@@ -277,11 +275,10 @@ namespace DVAH
 #if NATIVE_AD
 
             _nativeAd = new List<NativeAd>(new NativeAd[_NativeAdID.Count]);
-            _nativeAdLoader = new List<AdLoader>(new AdLoader[_NativeAdID.Count]);
             MobileAds.Initialize(initStatus =>
             {
                 _isSDKAdMobInitDone = true;
-                _ = LoadNativeADs(new List<int>() {0});
+                _ = LoadNativeADs(0);
 
             });
 #endif
@@ -339,8 +336,8 @@ namespace DVAH
         private void OnBannerAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             if (_isBannerCurrentlyAllow)
-                _= this.ShowBanner();
-            Debug.Log("[Huynn3rdLib]==> Banner ad loaded "+adUnitId+" <==");
+                _ = this.ShowBanner();
+            Debug.Log("[Huynn3rdLib]==> Banner ad loaded " + adUnitId + " <==");
             MaxSdk.StartBannerAutoRefresh(_BannerAdUnitID);
 
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load_done, adNetwork: adInfo.NetworkName);
@@ -401,7 +398,7 @@ namespace DVAH
 
         void LoadInterstitial()
         {
-            Debug.Log("[Huynn3rdLib]==>Start load Interstitial "+_InterstitialAdUnitID+" <==");
+            Debug.Log("[Huynn3rdLib]==>Start load Interstitial " + _InterstitialAdUnitID + " <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load);
             MaxSdk.LoadInterstitial(_InterstitialAdUnitID);
         }
@@ -513,7 +510,7 @@ namespace DVAH
 
         private void LoadRewardedAd()
         {
-            Debug.Log("[Huynn3rdLib]==> Load reward Ad "+_RewardedAdUnitID+" ! <==");
+            Debug.Log("[Huynn3rdLib]==> Load reward Ad " + _RewardedAdUnitID + " ! <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.load);
             MaxSdk.LoadRewardedAd(_RewardedAdUnitID);
         }
@@ -640,7 +637,7 @@ namespace DVAH
 
         public void LoadAdOpen(int ID = 0)
         {
-            Debug.Log("[Huynn3rdLib]==> Start load ad open/resume! ID:"+ _OpenAdUnitIDs[ID] + " <==");
+            Debug.Log("[Huynn3rdLib]==> Start load ad open/resume! ID:" + _OpenAdUnitIDs[ID] + " <==");
 
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load);
 
@@ -710,7 +707,7 @@ namespace DVAH
             double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
             isShowingAd = false;
 
-            waitLoadAdOpen((float)retryDelay, ID); 
+            waitLoadAdOpen((float)retryDelay, ID);
 
         }
 
@@ -748,31 +745,33 @@ namespace DVAH
             AdOpenRetryAttemp[ID]++;
             double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
             isShowingAd = false;
- 
+
             LoadAdOpen(ID);
         }
 
 
         #endregion
 
-     
+
 
 #if NATIVE_AD
 
         #region Native Ad Methods
 
-        public async Task LoadNativeADs(List<int> IDs)
+        public async Task LoadNativeADs(params int[] indexes)
         {
             while (!_isSDKAdMobInitDone)
             {
                 await Task.Delay(50);
             }
 
-            foreach (int id in IDs)
+            foreach (int index in indexes)
             {
-                _nativeAdLoader[id] = RequestNativeAd(_NativeAdID[id]);
+
 #if UNITY_EDITOR
-                this.HandleNativeAdLoaded(_nativeAdLoader[id], new NativeAdEventArgs());
+                this.HandleNativeAdLoaded(RequestNativeAd(_NativeAdID[index]), new NativeAdEventArgs());
+#else
+                RequestNativeAd(_NativeAdID[index]);
 #endif
             }
 
@@ -794,7 +793,7 @@ namespace DVAH
 
             adLoader.LoadAd(new AdRequest.Builder().Build());
 
-            Debug.Log("[Huynn3rdLib]===>Start load Native "+ AdID + " <====");
+            Debug.Log("[Huynn3rdLib]===>Start load Native " + AdID + " <====");
 
             return adLoader;
         }
@@ -806,7 +805,7 @@ namespace DVAH
 
 
 #if UNITY_EDITOR
-      
+
             _adNativePanel[adNativeID].body.text = "<color=blue>" + this.NativeAdID[adNativeID] + "</color>\n";
             for (int i = 0; i < 3; i++)
             {
@@ -834,7 +833,8 @@ namespace DVAH
                 foreach (Texture2D texture2D in imagetexture)
                 {
                     RawImage bg;
-                    if (i >= _adNativePanel[adNativeID].adBG.transform.parent.childCount) {
+                    if (i >= _adNativePanel[adNativeID].adBG.transform.parent.childCount)
+                    {
                         bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
                        Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent);
                     }
@@ -1027,10 +1027,10 @@ namespace DVAH
             Debug.LogError("[Huynn3rdLib]===> NativeAd load Fail! error: " + e.ToString());
             FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.load_fail);
 
-            int ID = _nativeAdLoader.IndexOf((AdLoader)sender);
+            int ID = _NativeAdID.IndexOf(((AdLoader)sender).AdUnitId);
             if (ID < 0)
             {
-                Debug.LogError("[Huynn3rdLib]===> HandleAdFailedToLoad cant find ID from sender");
+                Debug.LogErrorFormat("[Huynn3rdLib]===> HandleAdFailedToLoad cant find ID _{0}_ from sender", ((AdLoader)sender).AdUnitId);
                 return;
             }
 
@@ -1048,13 +1048,13 @@ namespace DVAH
             Debug.Log("[Huynn3rdLib]===> Native ad loaded.");
 
 
-            int ID = _nativeAdLoader.IndexOf((AdLoader)sender);
-            if(ID < 0)
+            int ID = _NativeAdID.IndexOf(((AdLoader)sender).AdUnitId);
+            if (ID < 0)
             {
-                Debug.LogError("[Huynn3rdLib]===> HandleNativeAdLoaded cant find ID from sender");
+                Debug.LogErrorFormat("[Huynn3rdLib]===> HandleAdLoaded cant find ID _{0}_ from sender", ((AdLoader)sender).AdUnitId);
                 return;
             }
-            
+
 
             this._nativeAd[ID] = e.nativeAd;
 
@@ -1082,7 +1082,7 @@ namespace DVAH
         private void AdLoader_OnNativeAdClicked(object sender, EventArgs e)
         {
             Debug.Log("[Huynn3rdLib]===> Handle ad native clicked! ");
-            
+
         }
 
 
@@ -1176,7 +1176,7 @@ namespace DVAH
         {
             if (_isOffInter)
                 return;
-            if ( InterstitialIsLoaded())
+            if (InterstitialIsLoaded())
             {
                 isShowingAd = true;
                 _callbackInter = callback;
@@ -1210,7 +1210,7 @@ namespace DVAH
             if (_isOffReward)
                 return;
 
-            if (  VideoRewardIsLoaded())
+            if (VideoRewardIsLoaded())
             {
                 isShowingAd = true;
                 _callbackReward = callback;
@@ -1296,7 +1296,7 @@ namespace DVAH
             int ID = _OpenAdUnitIDs.Count - 1;
             if (ID < 0)
                 return;
-            ShowAdOpen(ID,false, callback);
+            ShowAdOpen(ID, false, callback);
         }
 
 #if NATIVE_AD
@@ -1338,19 +1338,19 @@ namespace DVAH
             }
             catch (Exception e)
             {
-                Debug.LogError("[Huynn3rdLib]===>Error on callback show native! error: " + e.ToString()+"<====");
+                Debug.LogError("[Huynn3rdLib]===>Error on callback show native! error: " + e.ToString() + "<====");
             }
             _adNativePanel[ID].FitCollider();
 
         }
 #endif
 
-#endregion
+        #endregion
 
 
-            #region Track Revenue
+        #region Track Revenue
 
-            private void TrackAdRevenue(MaxSdkBase.AdInfo adInfo)
+        private void TrackAdRevenue(MaxSdkBase.AdInfo adInfo)
         {
             AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AdjustAdRevenueSourceAppLovinMAX);
 
@@ -1397,7 +1397,7 @@ namespace DVAH
 
         IEnumerator waitReloadAd(float delay, Action callback)
         {
-            yield return new WaitForSeconds(delay );
+            yield return new WaitForSeconds(delay);
 
             callback?.Invoke();
         }
