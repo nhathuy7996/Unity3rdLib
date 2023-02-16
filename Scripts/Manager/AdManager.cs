@@ -771,7 +771,7 @@ namespace DVAH
 #if UNITY_EDITOR
                 this.HandleNativeAdLoaded(RequestNativeAd(_NativeAdID[index]), new NativeAdEventArgs());
 #else
-                RequestNativeAd(_NativeAdID[id]);
+                RequestNativeAd(_NativeAdID[index]);
 #endif
             }
 
