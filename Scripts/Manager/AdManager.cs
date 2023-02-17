@@ -1024,7 +1024,7 @@ namespace DVAH
 
         private void HandleAdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
         {
-            Debug.LogError("[Huynn3rdLib]===> NativeAd load Fail! error: " + e.ToString());
+            Debug.LogError("[Huynn3rdLib]===> NativeAd load Fail! error: " + e.LoadAdError.GetMessage());
             FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.load_fail);
 
             int ID = _NativeAdID.IndexOf(((AdLoader)sender).AdUnitId);
