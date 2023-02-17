@@ -70,17 +70,17 @@ public class MenuEditor
         if (string.IsNullOrEmpty(cmdPath))
             return;
 
-        var directory = new DirectoryInfo(Application.dataPath);
-        while (directory.GetDirectories(".git").Length == 0)
-        {
-            directory = directory.Parent;
+        //var directory = new DirectoryInfo(Application.dataPath);
+        //while (directory.GetDirectories(".git").Length == 0)
+        //{
+        //    directory = directory.Parent;
 
-            if (directory == null)
-            {
-                throw new DirectoryNotFoundException("We went all the way up to the system root directory and didn't find any \".git\" directory!");
-            }
-        }
-        var repositoryPath = directory.FullName;
+        //    if (directory == null)
+        //    {
+        //        throw new DirectoryNotFoundException("We went all the way up to the system root directory and didn't find any \".git\" directory!");
+        //    }
+        //}
+        //var repositoryPath = directory.FullName;
 
         string cmdLines = "";
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -89,17 +89,17 @@ public class MenuEditor
             "cd ../../\n" +
             "cd " + Application.dataPath + "\n" +
             "cd $(git rev-parse --show-cdup)\n" +
-            "git add -A\n" +
-            "git commit -m \"prepare update lib!!!!!!\"\n" +
-            "git subtree pull --prefix " + Application.dataPath.Replace(repositoryPath + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
+            "git add -A\n";
+            //"git commit -m \"prepare update lib!!!!!!\"\n" +
+            //"git subtree pull --prefix " + Application.dataPath.Replace(repositoryPath + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
         }
-        else
-        {
-            cmdLines = "/C cd $(git rev-parse --show-cdup)&" +
-            "git add -A&" +
-            "git commit -m \"prepare update lib!!!!!!\"&" +
-            "git subtree pull --prefix " + Application.dataPath.Replace(repositoryPath + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
-        }
+        //else
+        //{
+        //    cmdLines = "/C cd $(git rev-parse --show-cdup)&" +
+        //    "git add -A&" +
+        //    "git commit -m \"prepare update lib!!!!!!\"&" +
+        //    "git subtree pull --prefix " + Application.dataPath.Replace(repositoryPath + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
+        //}
 
         string terminal = @"cmd.exe";
 
@@ -123,6 +123,8 @@ public class MenuEditor
             uploadProc.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
 
             uploadProc.Start();
+
+            uploadProc.Exited += UploadProc_Exited;
         }
         else
         {
@@ -130,6 +132,11 @@ public class MenuEditor
             Process.Start(terminal, cmdLines);
         }
 
+    }
+
+    private static void UploadProc_Exited(object sender, EventArgs e)
+    {
+        EditorUtility.DisplayDialog("Your captain here!", "upload is Oke!", "Got it!" );
     }
 
     public static void PushGit(BuildReport _report)
