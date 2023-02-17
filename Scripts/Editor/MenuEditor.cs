@@ -513,23 +513,34 @@ public class MenuEditor
             string adReport = string.Format("               -------------AD ID--------------\n" +
                 "Banner ID: {0} \n" +
                 "Inter ID: {1} \n" +
-                "Reward ID: {2} \n\n",
+                "Reward ID: {2} \n",
                 adManagerObject.BannerAdUnitID,
                 adManagerObject.InterstitialAdUnitID,
                 adManagerObject.RewardedAdUnitID);
 
-            for (int i = 0; i < adManagerObject.OpenAdUnitIDs.Count; i++)
+            if(adManagerObject.OpenAdUnitIDs.Count != 0)
             {
-                adReport += string.Format("AppOpen AD ID {0}: {1}", (i + 1), adManagerObject.OpenAdUnitIDs[i]) + "\n\n\n";
+                adReport += "AppOpen AD ID:\n";
+                for (int i = 0; i < adManagerObject.OpenAdUnitIDs.Count; i++)
+                {
+                    adReport += string.Format("          {0}: {1}", (i + 1), adManagerObject.OpenAdUnitIDs[i]) + "\n";
+                }
+               
             }
+
 #if NATIVE_AD
-            for (int i = 0; i < adManagerObject.NativeAdID.Count; i++)
+            if (adManagerObject.NativeAdID.Count != 0)
             {
-                adReport += string.Format("Native ID {0}: {1}", (i + 1), adManagerObject.NativeAdID[i]) + "\n\n\n";
+                adReport += "Native AD ID:\n";
+                for (int i = 0; i < adManagerObject.NativeAdID.Count; i++)
+                {
+                    adReport += string.Format("          {0}: {1}", (i + 1), adManagerObject.NativeAdID[i]) + "\n";
+                }
+                adReport += "\n";
             }
 
 #endif
-
+            adReport += "\n\n";
             reportContent += adReport;
         }
 
