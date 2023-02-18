@@ -15,7 +15,8 @@ using UnityEditor.Build.Reporting;
 using UnityEngine; 
 using UnityEditor.SceneManagement; 
 using System.Diagnostics;
-using static UnityEditor.PlayerSettings; 
+using static UnityEditor.PlayerSettings;
+using System.Threading.Tasks;
 
 public class MenuEditor 
 {
@@ -102,7 +103,7 @@ public class MenuEditor
         }
 
         string terminal = @"cmd.exe";
-
+        System.Diagnostics.Process updateProc = new System.Diagnostics.Process();
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
             terminal = @"/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal";
@@ -115,28 +116,33 @@ public class MenuEditor
                 writer.Close();
             }
 
-            System.Diagnostics.Process uploadProc = new System.Diagnostics.Process();
-            uploadProc.StartInfo.FileName = terminal;
-            uploadProc.StartInfo.Arguments = cmdPath;
-            uploadProc.StartInfo.UseShellExecute = false;
-            uploadProc.StartInfo.CreateNoWindow = false;
-            uploadProc.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            
+            updateProc.StartInfo.FileName = terminal;
+            updateProc.StartInfo.Arguments = cmdPath;
+            updateProc.StartInfo.UseShellExecute = false;
+            updateProc.StartInfo.CreateNoWindow = false;
+            updateProc.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            updateProc.EnableRaisingEvents = true;
 
-            uploadProc.Start();
-
-            uploadProc.Exited += UploadProc_Exited;
+            updateProc.Exited += UploadProc_Exited;
+            updateProc.Start();
         }
         else
         {
             terminal = @"C:\Windows\system32\cmd.exe";
-            Process.Start(terminal, cmdLines);
+            updateProc.StartInfo.FileName = terminal;
+            updateProc.StartInfo.Arguments = cmdLines;
+            updateProc.EnableRaisingEvents = true;
+
+            updateProc.Exited += UploadProc_Exited;
+            updateProc.Start(); 
         }
 
     }
 
     private static void UploadProc_Exited(object sender, EventArgs e)
     {
-        EditorUtility.DisplayDialog("Your captain here!", "upload is Oke!", "Got it!" );
+        EditorUtility.DisplayDialog("You captain here!", "Update complete!", "Ok");
     }
 
     public static void PushGit(BuildReport _report)
@@ -438,7 +444,7 @@ public class MenuEditor
     }
 
 
-    public static string Report(BuildReport report, string changeLog)
+    public static string Report(BuildReport report)
     {
 
         string reportContent = string.Format("Time: " + DateTime.Now + "\n" +
@@ -453,8 +459,12 @@ public class MenuEditor
             PlayerSettings.applicationIdentifier,
             report.summary.outputPath);
 
-        if(!string.IsNullOrWhiteSpace(changeLog) && !string.IsNullOrEmpty(changeLog))
-            reportContent += changeLog +"\n\n\n";
+        if(!string.IsNullOrWhiteSpace(ChangeLogEditor.ChangeLogText) && !string.IsNullOrEmpty(ChangeLogEditor.ChangeLogText))
+        {
+            reportContent += string.Format("               -------------CHANGE LOG--------------\n") ;
+            reportContent += ChangeLogEditor.ChangeLogText + "\n\n\n";
+        }
+            
 
 
         Adjust adjustObject = GameObject.FindObjectOfType<Adjust>();
