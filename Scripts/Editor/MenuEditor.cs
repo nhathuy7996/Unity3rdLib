@@ -96,7 +96,7 @@ public class MenuEditor
         }
         else
         {
-            cmdLines = "/C cd $(git rev-parse --show-cdup)&" +
+            cmdLines = "/K cd $(git rev-parse --show-cdup)&" +
             "git add -A&" +
             "git commit -m \"prepare update lib!!!!!!\"&" +
             "git subtree pull --prefix " + Application.dataPath.Replace(repositoryPath + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
@@ -130,12 +130,7 @@ public class MenuEditor
         else
         {
             terminal = @"C:\Windows\system32\cmd.exe";
-            updateProc.StartInfo.FileName = terminal;
-            updateProc.StartInfo.Arguments = cmdLines;
-            updateProc.EnableRaisingEvents = true;
-
-            updateProc.Exited += UploadProc_Exited;
-            updateProc.Start(); 
+            Process.Start(terminal, cmdLines);
         }
 
     }
@@ -163,7 +158,7 @@ public class MenuEditor
         }
         else
         {
-            cmdLines = "/C git add -A&" +
+            cmdLines = "/K git add -A&" +
             "git commit -m \"release _" + PlayerSettings.bundleVersion + "\"&" +
             "git push origin HEAD:production_doNotCreateBranchFromHere -f";
         }

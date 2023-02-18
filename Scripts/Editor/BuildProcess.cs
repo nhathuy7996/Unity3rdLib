@@ -53,7 +53,7 @@ class BuildProcess : IPreprocessBuildWithReport
 
         if (!MenuEditor.CheckFirebaseJson(false))
         {
-
+            
             return;
         }
 
@@ -62,8 +62,7 @@ class BuildProcess : IPreprocessBuildWithReport
         MenuEditor.FixGoogleXml(false);
 
         reportContent = MenuEditor.Report(report);
-
-        
+         
     }
 
     
