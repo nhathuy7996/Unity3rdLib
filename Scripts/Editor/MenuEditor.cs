@@ -12,13 +12,13 @@ using System.Xml;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-using UnityEngine; 
-using UnityEditor.SceneManagement; 
+using UnityEngine;
+using UnityEditor.SceneManagement;
 using System.Diagnostics;
 using static UnityEditor.PlayerSettings;
 using System.Threading.Tasks;
 
-public class MenuEditor 
+public class MenuEditor
 {
     [MenuItem("3rdLib/Play")]
     public static void PlayGame()
@@ -36,13 +36,13 @@ public class MenuEditor
     [MenuItem("3rdLib/Clear PlayerPrefs")]
     public static void ClearPlayerPrefs()
     {
-        if(!EditorUtility.DisplayDialog("Attention", "Clear all player prefb!", "Ok!","Cancel"))
+        if (!EditorUtility.DisplayDialog("Attention", "Clear all player prefb!", "Ok!", "Cancel"))
             return;
 
         PlayerPrefs.DeleteAll();
     }
 
-    [MenuItem("3rdLib/Git/Push production" )]
+    [MenuItem("3rdLib/Git/Push production")]
     public static void MenuPushGit()
     {
         if (!EditorUtility.DisplayDialog("Attention Please!", "It will commit all change then push to branch production_hnn on remote. " +
@@ -90,16 +90,16 @@ public class MenuEditor
             "cd ../../\n" +
             "cd " + Application.dataPath + "\n" +
             "cd $(git rev-parse --show-cdup)\n" +
-            "git add -A\n"+
+            "git add -A\n" +
             "git commit -m \"prepare update lib!!!!!!\"\n" +
             "git subtree pull --prefix " + Application.dataPath.Replace(repositoryPath + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
         }
         else
         {
-            cmdLines = "/K cd $(git rev-parse --show-cdup)&" +
+            cmdLines = "/K cd " + repositoryPath + "&" +
             "git add -A&" +
             "git commit -m \"prepare update lib!!!!!!\"&" +
-            "git subtree pull --prefix " + Application.dataPath.Replace(repositoryPath + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
+            "git subtree pull --prefix " + Application.dataPath.Replace(repositoryPath.Replace("\\", " / ") + " / ", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash";
         }
 
         string terminal = @"cmd.exe";
@@ -116,12 +116,12 @@ public class MenuEditor
                 writer.Close();
             }
 
-            
+
             updateProc.StartInfo.FileName = terminal;
             updateProc.StartInfo.Arguments = cmdPath;
             updateProc.StartInfo.UseShellExecute = false;
             updateProc.StartInfo.CreateNoWindow = false;
-            updateProc.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            updateProc.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Maximized;
             updateProc.EnableRaisingEvents = true;
 
             updateProc.Exited += UploadProc_Exited;
@@ -130,14 +130,20 @@ public class MenuEditor
         else
         {
             terminal = @"C:\Windows\system32\cmd.exe";
-            Process.Start(terminal, cmdLines);
+            updateProc.StartInfo.FileName = terminal;
+            updateProc.StartInfo.Arguments = cmdLines;
+            updateProc.EnableRaisingEvents = true;
+
+            updateProc.Exited += UploadProc_Exited;
+            updateProc.Start();
+
         }
 
     }
 
-    private static void UploadProc_Exited(object sender, EventArgs e)
+    public static void UploadProc_Exited(object sender, EventArgs e)
     {
-        EditorUtility.DisplayDialog("You captain here!", "Update complete!", "Ok");
+        Debug.LogError("Process done!");
     }
 
     public static void PushGit(BuildReport _report)
@@ -158,7 +164,7 @@ public class MenuEditor
         }
         else
         {
-            cmdLines = "/K git add -A&" +
+            cmdLines = "/C git add -A&" +
             "git commit -m \"release _" + PlayerSettings.bundleVersion + "\"&" +
             "git push origin HEAD:production_doNotCreateBranchFromHere -f";
         }
@@ -192,7 +198,7 @@ public class MenuEditor
             Process.Start(terminal, cmdLines);
         }
 
-       
+
     }
 
     public static void FixAndroidManifestFB()
@@ -209,7 +215,7 @@ public class MenuEditor
 
         var appIds = facebook.GetType().GetProperty("AppIds");
         object facebookAppIDProp = null;
-        facebookAppIDProp  = appIds.GetValue(facebookAppIDProp, null);
+        facebookAppIDProp = appIds.GetValue(facebookAppIDProp, null);
         string fbAppID = ((List<string>)facebookAppIDProp)[0];
 
 
@@ -219,10 +225,10 @@ public class MenuEditor
         {
             return;
         }
-        
+
         XmlDocument xmlDoc = new XmlDocument();
         xmlDoc.Load(files[0]);
-        
+
 
         foreach (XmlNode e in xmlDoc.GetElementsByTagName("meta-data"))
         {
@@ -231,7 +237,7 @@ public class MenuEditor
                 continue;
             }
 
-            if (e.Attributes["android:value"].Value.Equals("fb"+fbAppID))
+            if (e.Attributes["android:value"].Value.Equals("fb" + fbAppID))
             {
                 break;
             }
@@ -242,7 +248,7 @@ public class MenuEditor
 
         foreach (XmlNode e in xmlDoc.GetElementsByTagName("provider"))
         {
-            
+
             if (e.Attributes["android:authorities"].Value.Equals("com.facebook.app.FacebookContentProvider" + fbAppID))
             {
                 continue;
@@ -252,7 +258,7 @@ public class MenuEditor
         }
 
         FileStream stream = new FileStream(files[0], FileMode.Create);
-         
+
         xmlDoc.Save(stream);
     }
 
@@ -390,7 +396,7 @@ public class MenuEditor
                "google-services.xml: Oke oke", "Ok!");
     }
 
-  
+
     public static bool CheckFirebaseJson(bool isShowOk = true)
     {
 
@@ -454,12 +460,12 @@ public class MenuEditor
             PlayerSettings.applicationIdentifier,
             report.summary.outputPath);
 
-        if(!string.IsNullOrWhiteSpace(ChangeLogEditor.ChangeLogText) && !string.IsNullOrEmpty(ChangeLogEditor.ChangeLogText))
+        if (!string.IsNullOrWhiteSpace(ChangeLogEditor.ChangeLogText) && !string.IsNullOrEmpty(ChangeLogEditor.ChangeLogText))
         {
-            reportContent += string.Format("               -------------CHANGE LOG--------------\n") ;
+            reportContent += string.Format("               -------------CHANGE LOG--------------\n");
             reportContent += ChangeLogEditor.ChangeLogText + "\n\n\n";
         }
-            
+
 
 
         Adjust adjustObject = GameObject.FindObjectOfType<Adjust>();
@@ -534,14 +540,14 @@ public class MenuEditor
                 adManagerObject.InterstitialAdUnitID,
                 adManagerObject.RewardedAdUnitID);
 
-            if(adManagerObject.OpenAdUnitIDs.Count != 0)
+            if (adManagerObject.OpenAdUnitIDs.Count != 0)
             {
                 adReport += "AppOpen AD ID:\n";
                 for (int i = 0; i < adManagerObject.OpenAdUnitIDs.Count; i++)
                 {
                     adReport += string.Format("          {0}: {1}", (i + 1), adManagerObject.OpenAdUnitIDs[i]) + "\n";
                 }
-               
+
             }
 
 #if NATIVE_AD
@@ -607,7 +613,7 @@ public class MenuEditor
             reportContent += facebookReport;
 
         }
-         
+
         return reportContent;
     }
 
