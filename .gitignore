@@ -74,3 +74,5 @@ Scenes/SampleScene.unity
 Scenes/SampleScene.unity.meta
 google-services.json
 google-services.json.meta
+
+*.sh
