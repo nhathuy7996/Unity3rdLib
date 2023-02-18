@@ -61,7 +61,7 @@ class BuildProcess : IPreprocessBuildWithReport
 
         MenuEditor.FixGoogleXml(false);
 
-        reportContent = MenuEditor.Report(report);
+        reportContent = MenuEditor.Report(report, ChangeLogEditor.ChangeLogText);
 
         
     }

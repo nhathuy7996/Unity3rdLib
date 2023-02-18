@@ -41,7 +41,7 @@ public class MenuEditor
         PlayerPrefs.DeleteAll();
     }
 
-    [MenuItem("3rdLib/Push production" )]
+    [MenuItem("3rdLib/Git/Push production" )]
     public static void MenuPushGit()
     {
         if (!EditorUtility.DisplayDialog("Attention Please!", "It will commit all change then push to branch production_hnn on remote. " +
@@ -53,7 +53,7 @@ public class MenuEditor
         PushGit(null);
     }
 
-    [MenuItem("3rdLib/Update Lib")]
+    [MenuItem("3rdLib/Git/Update Lib")]
     public static void UpdateLib()
     {
         if (!EditorUtility.DisplayDialog("Attention Please!", "Before update, all change will be commit (not push yet)!", "Got it!", "Stop"))
@@ -438,7 +438,7 @@ public class MenuEditor
     }
 
 
-    public static string Report(BuildReport report)
+    public static string Report(BuildReport report, string changeLog)
     {
 
         string reportContent = string.Format("Time: " + DateTime.Now + "\n" +
@@ -452,6 +452,10 @@ public class MenuEditor
             PlayerSettings.Android.bundleVersionCode,
             PlayerSettings.applicationIdentifier,
             report.summary.outputPath);
+
+        if(!string.IsNullOrWhiteSpace(changeLog) && !string.IsNullOrEmpty(changeLog))
+            reportContent += changeLog +"\n\n\n";
+
 
         Adjust adjustObject = GameObject.FindObjectOfType<Adjust>();
         if (adjustObject)
