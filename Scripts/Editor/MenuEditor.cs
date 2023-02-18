@@ -444,7 +444,7 @@ public class MenuEditor
     }
 
 
-    public static string Report(BuildReport report, string changeLog)
+    public static string Report(BuildReport report)
     {
 
         string reportContent = string.Format("Time: " + DateTime.Now + "\n" +
@@ -459,8 +459,12 @@ public class MenuEditor
             PlayerSettings.applicationIdentifier,
             report.summary.outputPath);
 
-        if(!string.IsNullOrWhiteSpace(changeLog) && !string.IsNullOrEmpty(changeLog))
-            reportContent += changeLog +"\n\n\n";
+        if(!string.IsNullOrWhiteSpace(ChangeLogEditor.ChangeLogText) && !string.IsNullOrEmpty(ChangeLogEditor.ChangeLogText))
+        {
+            reportContent += string.Format("               -------------CHANGE LOG--------------\n") ;
+            reportContent += ChangeLogEditor.ChangeLogText + "\n\n\n";
+        }
+            
 
 
         Adjust adjustObject = GameObject.FindObjectOfType<Adjust>();

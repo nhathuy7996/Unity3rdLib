@@ -9,7 +9,7 @@ using UnityEditor.SceneManagement;
 public class ChangeLogEditor : EditorWindow
 {
     static EditorWindow wnd;
-    public static string ChangeLogText;
+    public static string ChangeLogText = "";
 
     Vector2 scroll;
 
