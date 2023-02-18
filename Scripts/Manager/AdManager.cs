@@ -278,7 +278,7 @@ namespace DVAH
             MobileAds.Initialize(initStatus =>
             {
                 _isSDKAdMobInitDone = true;
-                _ = LoadNativeADs(0);
+                //_ = LoadNativeADs(0);
 
             });
 #endif
@@ -347,7 +347,7 @@ namespace DVAH
         private void OnBannerAdFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo)
         {
             // Banner ad failed to load. MAX will automatically try loading a new ad internally.
-            Debug.LogError("[Huynn3rdLib]==>Banner ad failed to load with error code: " + errorInfo.Code + " <==");
+            Debug.LogError("[Huynn3rdLib]==>Banner ad failed to load with error code: " + errorInfo.AdLoadFailureInfo + " <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load_fail);
             bannerRetryAttempt++;
             double retryDelay = Math.Pow(2, Math.Min(6, bannerRetryAttempt));
@@ -418,7 +418,7 @@ namespace DVAH
             interstitialRetryAttempt++;
             double retryDelay = Math.Pow(2, Math.Min(6, interstitialRetryAttempt));
 
-            Debug.LogError("[Huynn3rdLib]==> Interstitial failed to load with error code: " + errorInfo.Code + " <==");
+            Debug.LogError("[Huynn3rdLib]==> Interstitial failed to load with error code: " + errorInfo.AdLoadFailureInfo + " <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load_fail);
 
             Invoke("LoadInterstitial", (float)retryDelay);
@@ -433,7 +433,7 @@ namespace DVAH
         private void InterstitialFailedToDisplayEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo, MaxSdkBase.AdInfo adInfo)
         {
             // Interstitial ad failed to display. We recommend loading the next ad
-            Debug.LogError("[Huynn3rdLib]==> Interstitial failed to display with error code: " + errorInfo.Code + " <==");
+            Debug.LogError("[Huynn3rdLib]==> Interstitial failed to display with error code: " + errorInfo.AdLoadFailureInfo + " <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.show_fail, adNetwork: adInfo.NetworkName);
             LoadInterstitial();
 
@@ -531,7 +531,7 @@ namespace DVAH
             rewardedRetryAttempt++;
             double retryDelay = Math.Pow(2, Math.Min(6, rewardedRetryAttempt));
 
-            Debug.LogError("[Huynn3rdLib]==> Rewarded ad failed to load with error code: " + errorInfo.Code + " <==");
+            Debug.LogError("[Huynn3rdLib]==> Rewarded ad failed to load with error code: " + errorInfo.AdLoadFailureInfo + " <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.load_fail);
             Invoke("LoadRewardedAd", (float)retryDelay);
 
@@ -541,7 +541,7 @@ namespace DVAH
         {
             // Rewarded ad failed to display. We recommend loading the next ad
 
-            Debug.LogError("[Huynn3rdLib]==> Rewarded ad failed to display with error code: " + errorInfo.Code + " <==");
+            Debug.LogError("[Huynn3rdLib]==> Rewarded ad failed to display with error code: " + errorInfo.AdLoadFailureInfo + " <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.show_fail, adInfo.NetworkName);
             LoadRewardedAd();
             try
@@ -660,6 +660,20 @@ namespace DVAH
             AdOpenRetryAttemp[ID] = 0;
         }
 
+        private void AppOpenOnAdLoadFailedEvent(string arg1, ErrorInfo errorInfo)
+        {
+            Debug.LogError("[Huynn3rdLib]==> Load ad open/resume failed, code: " + errorInfo.AdLoadFailureInfo + " <==");
+            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load_fail);
+            int ID = _OpenAdUnitIDs.IndexOf(arg1);
+            if (ID < 0)
+                return;
+            AdOpenRetryAttemp[ID]++;
+            double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
+            isShowingAd = false;
+
+            waitLoadAdOpen((float)retryDelay, ID);
+        }
+
         private void AppOpen_OnAdDisplayedEvent(string arg1, AdInfo arg2)
         {
             Debug.Log("[Huynn3rdLib]==> Show ad open/resume success! <==");
@@ -684,9 +698,9 @@ namespace DVAH
             _adOpenClickCallback = null;
         }
 
-        private void AppOpen_OnAdDisplayFailedEvent(string arg1, ErrorInfo arg2, AdInfo arg3)
+        private void AppOpen_OnAdDisplayFailedEvent(string arg1, ErrorInfo errorInfo, AdInfo arg3)
         {
-            Debug.LogError("[Huynn3rdLib]==> Show ad open/resume failed, code: " + arg2.Code + " <==");
+            Debug.LogError("[Huynn3rdLib]==> Show ad open/resume failed, code: " + errorInfo.AdLoadFailureInfo + " <==");
 
             try
             {
@@ -709,20 +723,6 @@ namespace DVAH
 
             waitLoadAdOpen((float)retryDelay, ID);
 
-        }
-
-        private void AppOpenOnAdLoadFailedEvent(string arg1, ErrorInfo arg2)
-        {
-            Debug.LogError("[Huynn3rdLib]==> Load ad open/resume failed, code: " + arg2.Code + " <==");
-            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load_fail);
-            int ID = _OpenAdUnitIDs.IndexOf(arg1);
-            if (ID < 0)
-                return;
-            AdOpenRetryAttemp[ID]++;
-            double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
-            isShowingAd = false;
-
-            waitLoadAdOpen((float)retryDelay, ID);
         }
 
 
