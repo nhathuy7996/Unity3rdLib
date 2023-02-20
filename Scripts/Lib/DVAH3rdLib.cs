@@ -116,6 +116,7 @@ namespace DVAH
             if (_devTapCount < 5)
                 return;
 
+            _ = AdManager.Instant.ShowAdDebugger();
             if (!_notiDebug.activeSelf)
                 _notiDebug.SetActive(true);
         }

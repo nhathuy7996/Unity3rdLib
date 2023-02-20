@@ -193,10 +193,10 @@ namespace DVAH
 
         #endregion
 
-
-
-
-        private bool isShowingAd = false, _isSDKMaxInitDone = false, _isSDKAdMobInitDone = false, _isBannerInitDone = false;
+        private bool isShowingAd = false, _isSDKMaxInitDone = false,
+            _isSDKAdMobInitDone = false,
+            _isBannerInitDone = false,
+            _isnativeKeepReload = true;
 
         #endregion
 
@@ -282,6 +282,17 @@ namespace DVAH
 
             });
 #endif
+        }
+
+        public async Task ShowAdDebugger()
+        {
+            while (!_isSDKMaxInitDone)
+            {
+                Debug.LogWarning("[Huynn3rdLib]==>Waiting Max SDK init done!<==");
+                await Task.Delay(500);
+            }
+
+            MaxSdk.ShowMediationDebugger();
         }
 
         #region Banner Ad Methods
@@ -626,7 +637,8 @@ namespace DVAH
                 TrackAdRevenue(adInfo);
             };
 
-            LoadAdOpen(0);
+            if(_OpenAdUnitIDs.Count > 0)
+                LoadAdOpen(0);
         }
 
         IEnumerator waitLoadAdOpen(float time, int ID)
@@ -775,6 +787,12 @@ namespace DVAH
 #endif
             }
 
+        }
+
+        public AdManager SetAdNativeKeepReload(bool isKeepReload)
+        {
+            this._isnativeKeepReload = isKeepReload;
+            return this;
         }
 
         public AdLoader RequestNativeAd(string AdID)
@@ -1039,7 +1057,10 @@ namespace DVAH
 
             StartCoroutine(waitReloadAd((float)retryDelay, () =>
             {
-                RequestNativeAd(_NativeAdID[ID]);
+                if(_isnativeKeepReload)
+                    RequestNativeAd(_NativeAdID[ID]);
+                else
+                    Debug.Log("[Huynn3rdLib]===> Native stop reload.");
             }));
         }
 
