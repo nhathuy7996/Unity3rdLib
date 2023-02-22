@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Google.Play.Review;
 using UnityEngine.Events;
-using Unity.Burst.CompilerServices;
 
 namespace DVAH
 {

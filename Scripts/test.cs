@@ -9,6 +9,10 @@ using System.Text.RegularExpressions;
 
 public class test : MonoBehaviour
 {
+    private Vector3 touchPosition;
+    private Quaternion rotateModel;
+    private float rotationSpeed = 360;
+    private Vector3 angle;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,7 +24,7 @@ public class test : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-         
+        
         //-----Buy product-----
         //IAPManager.Instant.BuyProductID("IDProduct", () =>
         //{
