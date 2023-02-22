@@ -64,7 +64,11 @@ namespace DVAH
             {
                 _ = FireBaseManager.Instant.LogEventWithParameter("screen_view_data", new Hashtable()
                 {
-                    {"id_screen","loading_end" },
+                    {"id_screen","loading_end" }
+                });
+
+                _ = FireBaseManager.Instant.LogEventWithParameter("screen_view_data", new Hashtable()
+                { 
                     {"id_screen","lobby_start" }
                 });
             };
