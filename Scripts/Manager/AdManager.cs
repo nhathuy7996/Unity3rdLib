@@ -185,6 +185,7 @@ namespace DVAH
         private Action<InterVideoState> _callbackInter = null;
         private Action<RewardVideoState> _callbackReward = null;
         private Action<bool> _callbackOpenAD = null;
+        private Action<int,bool> _callbackLoadNativeAd = null;
 
         private Action _bannerClickCallback = null;
         private Action _interClickCallback = null;
@@ -195,8 +196,9 @@ namespace DVAH
 
         private bool isShowingAd = false, _isSDKMaxInitDone = false,
             _isSDKAdMobInitDone = false,
-            _isBannerInitDone = false,
-            _isnativeKeepReload = true;
+            _isBannerInitDone = false;
+
+        bool[] _isnativeKeepReload;
 
         #endregion
 
@@ -275,6 +277,11 @@ namespace DVAH
 #if NATIVE_AD
 
             _nativeAd = new List<NativeAd>(new NativeAd[_NativeAdID.Count]);
+            _isnativeKeepReload = new bool[_NativeAdID.Count];
+            for (int i = 0; i< _isnativeKeepReload.Length; i++)
+            {
+                _isnativeKeepReload[i] = true;
+            }
             MobileAds.Initialize(initStatus =>
             {
                 _isSDKAdMobInitDone = true;
@@ -770,13 +777,14 @@ namespace DVAH
 
         #region Native Ad Methods
 
-        public async Task LoadNativeADs(params int[] indexes)
+        public async Task LoadNativeADs(Action<int,bool> callback, params int[] indexes)
         {
             while (!_isSDKAdMobInitDone)
             {
                 await Task.Delay(50);
             }
 
+            _callbackLoadNativeAd = callback;
             foreach (int index in indexes)
             {
 
@@ -789,9 +797,11 @@ namespace DVAH
 
         }
 
-        public AdManager SetAdNativeKeepReload(bool isKeepReload)
+        public AdManager SetAdNativeKeepReload(int ID,bool isKeepReload)
         {
-            this._isnativeKeepReload = isKeepReload;
+            if (ID >= _isnativeKeepReload.Length)
+                return this;
+            this._isnativeKeepReload[ID] = isKeepReload;
             return this;
         }
 
@@ -819,7 +829,7 @@ namespace DVAH
 
         public bool CreateNativeAd(int adNativeID)
         {
-            Debug.Log("[Huynn3rdLib]===>set object nativ<e===");
+            Debug.Log("[Huynn3rdLib]===>set object native "+adNativeID+" <===");
 
 
 #if UNITY_EDITOR
@@ -1052,12 +1062,14 @@ namespace DVAH
                 return;
             }
 
+            _callbackLoadNativeAd?.Invoke(ID,false);
+
             NativeAdRetryAttemp++;
             double retryDelay = Math.Pow(2, Math.Min(6, NativeAdRetryAttemp));
 
             StartCoroutine(waitReloadAd((float)retryDelay, () =>
             {
-                if(_isnativeKeepReload)
+                if (_isnativeKeepReload[ID])
                     RequestNativeAd(_NativeAdID[ID]);
                 else
                     Debug.Log("[Huynn3rdLib]===> Native stop reload.");
@@ -1090,6 +1102,7 @@ namespace DVAH
                 FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.show_fail);
             }
 
+            _callbackLoadNativeAd?.Invoke(ID,true);
             FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.load_done);
 
         }
