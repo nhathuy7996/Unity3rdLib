@@ -99,15 +99,7 @@ namespace DVAH
                 a?.Invoke(null);
             }
 
-            for (int i = 0; i <= (int)LanguageName.SP; i++)
-            {
-
-                if (((int)language) == i )
-                {
-                    PlayerPrefs.SetInt("LAN", i);
-                    break;
-                }
-            }
+            PlayerPrefs.SetInt("LAN", (int)language);
 
             foreach (var btn in _languageBtns)
             {

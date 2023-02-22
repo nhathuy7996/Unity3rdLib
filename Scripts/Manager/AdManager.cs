@@ -481,7 +481,7 @@ namespace DVAH
             Debug.Log("[Huynn3rdLib]==> Interstitial dismissed <==");
             try
             {
-                _callbackInter?.Invoke(InterVideoState.None);
+                _callbackInter?.Invoke(InterVideoState.Closed);
             }
             catch (Exception e)
             {
