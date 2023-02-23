@@ -797,6 +797,11 @@ namespace DVAH
 
         }
 
+        public async Task LoadNativeADs( params int[] indexes)
+        {
+            await LoadNativeADs((id, success) => { }, indexes);
+        }
+
         public AdManager SetAdNativeKeepReload(int ID,bool isKeepReload)
         {
             if (ID >= _isnativeKeepReload.Length)
@@ -1350,7 +1355,7 @@ namespace DVAH
         /// </code>
         /// </summary> 
         /// <param name="callback">Callback using for assign Native AD object into right canvas</param>
-        public async Task ShowNative(int ID, Action<AdNativeObject> callBack)
+        public async Task ShowNative(int ID, Action<AdNativeObject> callBack = null)
         {
             if (ID >= _adNativePanel.Count || ID >= _nativeAd.Count)
                 return;
@@ -1377,6 +1382,7 @@ namespace DVAH
             _adNativePanel[ID].FitCollider();
 
         }
+
 #endif
 
         #endregion
