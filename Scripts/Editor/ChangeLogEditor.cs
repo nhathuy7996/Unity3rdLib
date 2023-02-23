@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEditor.SceneManagement;
 
 public class ChangeLogEditor : EditorWindow

@@ -48,6 +48,7 @@ namespace DVAH
 
         public LoadingManager Init(Action<List<bool>> onDone = null)
         {
+            
             _conditionDone.Clear();
             for (int i = 0; i < _numberCondition; i++)
             {
@@ -59,6 +60,18 @@ namespace DVAH
             _loading.value = 0;
             _loading.onValueChanged.RemoveAllListeners();
             _onDone = onDone;
+            _onDone += (doneCondition) =>
+            {
+                _ = FireBaseManager.Instant.LogEventWithParameter("screen_view_data", new Hashtable()
+                {
+                    {"id_screen","loading_end" }
+                });
+
+                _ = FireBaseManager.Instant.LogEventWithParameter("screen_view_data", new Hashtable()
+                { 
+                    {"id_screen","lobby_start" }
+                });
+            };
             _loading.onValueChanged.AddListener((value) =>
             {
                 if (value == 100)
@@ -79,7 +92,6 @@ namespace DVAH
 
                 }
             });
-
             return this;
         }
 
