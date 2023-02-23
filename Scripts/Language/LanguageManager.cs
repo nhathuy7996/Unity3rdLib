@@ -60,15 +60,26 @@ namespace DVAH
         {
             if (isLanguageSeted)
             {
+                ChangeLanguage((LanguageName)PlayerPrefs.GetInt("LAN"));
                 ClosePopUp();
-
+                LoadingManager.Instant.DoneCondition(1);
             }
             else
             {
-                 
+                ChangeLanguage();
+                _ = AdManager.Instant.ShowNative(0, (nativePanel) =>
+                {
+                    nativePanel.transform.SetParent(this.transform);
+                    nativePanel.transform.localScale = Vector3.one;
+                    nativePanel.transform.localPosition = Vector3.zero;
+                    nativePanel.rectTransform.sizeDelta = Vector2.zero;
+                    nativePanel.rectTransform.anchorMax = new Vector2(1, 0.4f);
+
+                    LoadingManager.Instant.DoneCondition(1);
+                });
             }
 
-            ChangeLanguage((LanguageName)PlayerPrefs.GetInt("LAN"));
+           
         }
 
         public void ClosePopUp()
