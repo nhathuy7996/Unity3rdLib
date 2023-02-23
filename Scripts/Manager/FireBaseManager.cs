@@ -57,13 +57,16 @@ namespace DVAH
        
 #endif
 
-        #region For AD event
+#region For AD event
 
         AD_TYPE _adTypeLoaded = AD_TYPE.open;
         [HideInInspector]
         public AD_TYPE adTypeShow = AD_TYPE.resume;
 
-#endregion
+        #endregion
+
+        #region For CUSTOM EVENT
+        #endregion
 
         private bool _isFetchDone = false;
 
@@ -403,7 +406,11 @@ namespace DVAH
 #endif
         }
 
-#endregion
+        #endregion
+
+
+        #region For CUSTOM EVENTS
+        #endregion
 
     }
 }

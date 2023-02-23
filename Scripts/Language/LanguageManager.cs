@@ -60,15 +60,16 @@ namespace DVAH
         {
             if (isLanguageSeted)
             {
+                ChangeLanguage((LanguageName)PlayerPrefs.GetInt("LAN"));
                 ClosePopUp();
 
             }
             else
             {
-                 
+                ChangeLanguage();
             }
 
-            ChangeLanguage((LanguageName)PlayerPrefs.GetInt("LAN"));
+            
         }
 
         public void ClosePopUp()
