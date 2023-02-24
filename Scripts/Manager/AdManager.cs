@@ -262,7 +262,7 @@ namespace DVAH
                 if (!_isOffInter)
                     InitializeInterstitialAds();
 
-                _ = InitializeBannerAds();
+                //_ = InitializeBannerAds();
 
                 if (!_isOffReward)
                     InitializeRewardedAds();

@@ -61,29 +61,12 @@ namespace DVAH
             {
                 ChangeLanguage((LanguageName)PlayerPrefs.GetInt(CONSTANT.LANGUAGE_ID));
                 ClosePopUp();
-<<<<<<< HEAD
-                LoadingManager.Instant.DoneCondition(1);
-=======
                 Observer.Instant.Notify(CONSTANT.LAN_1ST,true);
->>>>>>> bc28bb7e718cc3ae7f075c3cb6ebe1ec7e89d207
             }
             else
             {
                 ChangeLanguage();
-<<<<<<< HEAD
-                _ = AdManager.Instant.ShowNative(0, (nativePanel) =>
-                {
-                    nativePanel.transform.SetParent(this.transform);
-                    nativePanel.transform.localScale = Vector3.one;
-                    nativePanel.transform.localPosition = Vector3.zero;
-                    nativePanel.rectTransform.sizeDelta = Vector2.zero;
-                    nativePanel.rectTransform.anchorMax = new Vector2(1, 0.4f);
-
-                    LoadingManager.Instant.DoneCondition(1);
-                });
-=======
                 Observer.Instant.Notify(CONSTANT.LAN_1ST, false);
->>>>>>> bc28bb7e718cc3ae7f075c3cb6ebe1ec7e89d207
             }
 
            
