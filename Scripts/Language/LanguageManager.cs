@@ -16,7 +16,7 @@ namespace DVAH
         [SerializeField] GameObject _languageBtnManager;
         [SerializeField] Sprite _selectedLan, _normalLan;
 
-        public bool isLanguageSeted => PlayerPrefs.GetInt("LAN", -1) != -1;
+        public bool isLanguageSeted => PlayerPrefs.GetInt(CONSTANT.LANGUAGE_ID, -1) != -1;
 
         List<Button> _languageBtns = new List<Button>();
         Dictionary<string, Dictionary<string, string>> _languageDict = new Dictionary<string, Dictionary<string, string>>();
@@ -60,15 +60,17 @@ namespace DVAH
         {
             if (isLanguageSeted)
             {
+                ChangeLanguage((LanguageName)PlayerPrefs.GetInt(CONSTANT.LANGUAGE_ID));
                 ClosePopUp();
-
+                Observer.Instant.Notify(CONSTANT.LAN_1ST,true);
             }
             else
             {
-                 
+                ChangeLanguage();
+                Observer.Instant.Notify(CONSTANT.LAN_1ST, false);
             }
 
-            ChangeLanguage((LanguageName)PlayerPrefs.GetInt("LAN"));
+            
         }
 
         public void ClosePopUp()
@@ -81,12 +83,12 @@ namespace DVAH
         public string Translator(string key)
         {
             if (!_languageDict.ContainsKey(key))
-                return key;
+                return @key;
 
             if (!_languageDict[key].ContainsKey(_currentLanguage.ToString()))
-                return key;
+                return @key;
 
-            return _languageDict[key][_currentLanguage.ToString()];
+            return @_languageDict[key][_currentLanguage.ToString()];
 
         }
 
@@ -99,7 +101,7 @@ namespace DVAH
                 a?.Invoke(null);
             }
 
-            PlayerPrefs.SetInt("LAN", (int)language);
+            PlayerPrefs.SetInt(CONSTANT.LANGUAGE_ID, (int)language);
 
             foreach (var btn in _languageBtns)
             {

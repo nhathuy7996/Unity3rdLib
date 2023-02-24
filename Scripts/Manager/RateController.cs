@@ -71,6 +71,7 @@ namespace DVAH
 
         public void submitRate()
         {
+            PlayerPrefs.SetInt(CONSTANT.RATE_CHECK, 1);
             if (_starRate >= 4)
             {
 #if UNITY_ANDROID
@@ -79,7 +80,7 @@ namespace DVAH
                     this.gameObject.SetActive(false);
                 }));
 
-                PlayerPrefs.SetInt(CONSTANT.RATE_CHECK, 1);
+                
 #elif UNITY_EDITOR
             this.gameObject.SetActive(false);
 #endif

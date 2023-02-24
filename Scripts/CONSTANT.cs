@@ -4,6 +4,7 @@ namespace DVAH
     public class CONSTANT
     {
         #region Observer Key
+        public const string LAN_1ST = "LAN_1ST";
         #endregion
 
         #region IAP product ID
