@@ -18,6 +18,13 @@ public class LanguageChild : MonoBehaviour
         StartCoroutine(WaitLanguageManager());
     }
 
+    public LanguageChild SetKey(string key)
+    {
+        _key = key;
+        this.changeLan(null);
+        return this;
+    }
+
     void AssignText()
     {
         if (_text != null)
@@ -48,10 +55,10 @@ public class LanguageChild : MonoBehaviour
     {
         AssignText();
 
-        if(_text)
+        if (_text)
             _text.text = LanguageManager.Instant.Translator(_key);
 
-        if(_textMesh)
+        if (_textMesh)
             _textMesh.text = LanguageManager.Instant.Translator(_key);
     }
 
@@ -65,5 +72,6 @@ public class LanguageChild : MonoBehaviour
     {
         yield return new WaitUntil(()=> LanguageManager.Instant != null);
         LanguageManager.Instant.AddListener(changeLan);
+        this.changeLan(null);
     }
 }

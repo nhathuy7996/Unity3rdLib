@@ -80,9 +80,9 @@ namespace DVAH
 #if NATIVE_AD
         [Header("------NativeObject--------")]
         [SerializeField] List<AdNativeObject> _adNativePanel = new List<AdNativeObject>();
+        [SerializeField] AdNativeObject adNativeObject;
 
-
-        List<NativeAd> _nativeAd = new List<NativeAd>();
+        List<NativeAd> _nativeAd = new List<NativeAd>(); 
 #endif
 
 #if UNITY_EDITOR
@@ -281,6 +281,8 @@ namespace DVAH
             for (int i = 0; i< _isnativeKeepReload.Length; i++)
             {
                 _isnativeKeepReload[i] = true;
+                if (_adNativePanel[i] == null)
+                _adNativePanel[i] = Instantiate(adNativeObject, this.transform);
             }
             MobileAds.Initialize(initStatus =>
             {

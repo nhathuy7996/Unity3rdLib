@@ -11,7 +11,6 @@ namespace DVAH
 {
     public class LanguageManager : Singleton<LanguageManager>
     {
-
         [SerializeField] LanguageName _currentLanguage = LanguageName.EN;
         [SerializeField] GameObject _languageBtnManager;
         [SerializeField] Sprite _selectedLan, _normalLan;
@@ -92,12 +91,12 @@ namespace DVAH
         public string Translator(string key)
         {
             if (!_languageDict.ContainsKey(key))
-                return key;
+                return @key;
 
             if (!_languageDict[key].ContainsKey(_currentLanguage.ToString()))
-                return key;
+                return @key;
 
-            return _languageDict[key][_currentLanguage.ToString()];
+            return @_languageDict[key][_currentLanguage.ToString()];
 
         }
 

@@ -362,8 +362,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isUseLoading: 0
-  _isLoadingAutoStart: 1
-  _maxTimeLoading: 10
+  _maxTimeLoading: 30
   _numberCondition: 1
   _conditionDone: 
   _loadingPopUp: {fileID: 5039681637574412812}
@@ -1108,6 +1107,7 @@ MonoBehaviour:
   _OpenAdUnitIDs: []
   _NativeAdID: []
   _adNativePanel: []
+  adNativeObject: {fileID: 3937387803866194027, guid: 6ed66577ef15748a99b1e6a7dc3dd398, type: 3}
 --- !u!1 &375057543647880371
 GameObject:
   m_ObjectHideFlags: 0
@@ -2231,7 +2231,7 @@ GameObject:
   - component: {fileID: 5283854605353784891}
   - component: {fileID: 5032728799131638268}
   m_Layer: 5
-  m_Name: Canvas-Rate
+  m_Name: Canvas-PopUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3792,7 +3792,9 @@ MonoBehaviour:
   _forceUpdateNo: {fileID: 8027347361294850213}
   _isAutoInit: 1
   _isInitByOrder: 0
-  _childLibs: []
+  _childLibs:
+  - {fileID: 8802076312074791181}
+  - {fileID: 337766984811589102}
 --- !u!114 &3369000014230790961
 MonoBehaviour:
   m_ObjectHideFlags: 0

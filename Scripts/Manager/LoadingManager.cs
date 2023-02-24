@@ -11,7 +11,7 @@ namespace DVAH
     public class LoadingManager : Singleton<LoadingManager>
     {
         [SerializeField]
-        bool _isUseLoading = true, _isLoadingAutoStart = true;
+        bool _isUseLoading = true;
 
         [SerializeField]
         float _maxTimeLoading = 0;
@@ -38,13 +38,6 @@ namespace DVAH
         float _loadingMaxvalue;
 
         // Start is called before the first frame update
-
-
-        private void Start()
-        {
-            if(_isLoadingAutoStart)
-                Init(); 
-        }
 
         public LoadingManager Init(Action<List<bool>> onDone = null)
         {
@@ -105,8 +98,7 @@ namespace DVAH
         }
 
         public void StopLoading()
-        {
-           
+        { 
             if (_maxTimeLoading == 0.2f)
                 return;
             Debug.Log("[Huynn3rdLib]==> Force stop loading! <==");
