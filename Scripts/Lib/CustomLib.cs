@@ -23,7 +23,7 @@ public class CustomLib : MonoBehaviour
 
     void LoadingCompleteCallback(List<bool> doneCondition)
     {
-        //AdManager.Instant.SetAdNativeKeepReload(0, false);
+        AdManager.Instant.SetAdNativeKeepReload(0, false);
         AdManager.Instant.ShowAdOpen(0,true, (isSuccess) =>
         {
             SceneManager.UnloadSceneAsync(oldScene);
