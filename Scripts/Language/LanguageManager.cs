@@ -82,12 +82,12 @@ namespace DVAH
         public string Translator(string key)
         {
             if (!_languageDict.ContainsKey(key))
-                return key;
+                return @key;
 
             if (!_languageDict[key].ContainsKey(_currentLanguage.ToString()))
-                return key;
+                return @key;
 
-            return _languageDict[key][_currentLanguage.ToString()];
+            return @_languageDict[key][_currentLanguage.ToString()];
 
         }
 
