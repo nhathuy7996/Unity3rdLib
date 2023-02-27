@@ -5,6 +5,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DVAH
 {
@@ -36,6 +37,7 @@ namespace DVAH
         Action<List<bool>> _onDone = null;
 
         float _loadingMaxvalue;
+        bool _isLoadingStart = false;
 
         /// <summary>
         /// Start Loading bar with an action call back
@@ -46,7 +48,7 @@ namespace DVAH
         /// <returns> LoadingManager component</returns>
         public LoadingManager Init(Action<List<bool>> onDone = null)
         {
-            
+            _isLoadingStart = true;
             _conditionDone.Clear();
             for (int i = 0; i < _numberCondition; i++)
             {
@@ -56,28 +58,26 @@ namespace DVAH
             _loadingMaxvalue = _loading.maxValue;
             _loading.value = 0;
             _loading.onValueChanged.RemoveAllListeners();
-            _onDone = onDone;
-            _onDone += (doneCondition) =>
-            {
-                _ = FireBaseManager.Instant.LogEventWithParameter("screen_view_data", new Hashtable()
-                {
-                    {"id_screen","loading_end" }
-                });
-
-                _ = FireBaseManager.Instant.LogEventWithParameter("screen_view_data", new Hashtable()
-                { 
-                    {"id_screen","lobby_start" }
-                });
-            };
+            _onDone = onDone; 
             _loading.onValueChanged.AddListener((value) =>
             {
                 if (value == 100)
                 {
                     Debug.Log("[Huynn3rdLib]==>Loading Done!<==");
                     _loadingPopUp.SetActive(false);
-
+                    _isLoadingStart = false;
                     try
                     {
+                     
+                        _ = FireBaseManager.Instant.LogEventWithParameter("screen_view_data", new Hashtable()
+                        {
+                            {"id_screen","loading_end" }
+                        });
+
+                                _ = FireBaseManager.Instant.LogEventWithParameter("screen_view_data", new Hashtable()
+                        {
+                            {"id_screen","lobby_start" }
+                        });
                         _onDone?.Invoke(_conditionDone);
                     }
                     catch (Exception e)
@@ -147,16 +147,27 @@ namespace DVAH
         /// <returns></returns>
         public LoadingManager DoneCondition(int id)
         {
+            _ = waitToSetDoneCondition(id);
+            return this;
+        }
+
+        async Task waitToSetDoneCondition(int id)
+        {
+            while (!_isLoadingStart)
+            {
+                await Task.Delay(500);
+            }
+
             if (id >= _conditionDone.Count)
             {
                 Debug.LogError("[Huynn3rdLib]==> ID condition not exist, check number of conditon on inspector! <==");
-                return this;
+                return;
             }
 
             if (_loading.value >= 99f)
             {
                 Debug.LogWarning("[Huynn3rdLib]==> Loading already stop, maybe check your game flow! <==");
-                return this;
+                return;
             }
 
             _conditionDone[id] = true;
@@ -165,8 +176,6 @@ namespace DVAH
                 Debug.Log("[Huynn3rdLib]==> All condition is done! stop loading! <==");
                 StopLoading();
             }
-
-            return this;
         }
 
         private void OnDrawGizmosSelected()
