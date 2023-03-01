@@ -1098,7 +1098,7 @@ namespace DVAH
                 return;
             }
 
-            if (!_nativeADLoader[ID].AdUnitId.Equals(NativeAdID[ID]))
+            if (!_nativeADLoader[ID].AdUnitId.Equals(_NativeAdID[ID]))
             {
                 Debug.LogErrorFormat("[Huynn3rdLib]===> adloaderID {0} doesnt == senderID {1}", _nativeADLoader[ID].AdUnitId,((AdLoader)sender).AdUnitId);
                 return;
