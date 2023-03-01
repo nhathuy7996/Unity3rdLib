@@ -82,7 +82,9 @@ namespace DVAH
         [SerializeField] List<AdNativeObject> _adNativePanel = new List<AdNativeObject>();
         [SerializeField] AdNativeObject adNativeObject;
 
-        List<NativeAd> _nativeAd = new List<NativeAd>(); 
+        List<NativeAd> _nativeAd = new List<NativeAd>();
+
+        List<AdLoader> _nativeADLoader = new List<AdLoader>();
 #endif
 
 #if UNITY_EDITOR
@@ -277,6 +279,7 @@ namespace DVAH
 #if NATIVE_AD
 
             _nativeAd = new List<NativeAd>(new NativeAd[_NativeAdID.Count]);
+          
             _isnativeKeepReload = new bool[_NativeAdID.Count];
             for (int i = 0; i< _isnativeKeepReload.Length; i++)
             {
@@ -787,13 +790,13 @@ namespace DVAH
             }
 
             _callbackLoadNativeAd = callback;
+            _nativeADLoader.Clear();
             foreach (int index in indexes)
             {
-
+                AdLoader adLoader = RequestNativeAd(_NativeAdID[index]);
+                _nativeADLoader.Add(adLoader);
 #if UNITY_EDITOR
-                this.HandleNativeAdLoaded(RequestNativeAd(_NativeAdID[index]), new NativeAdEventArgs());
-#else
-                RequestNativeAd(_NativeAdID[index]);
+                this.HandleNativeAdLoaded(adLoader, new NativeAdEventArgs());
 #endif
             }
 
@@ -1088,16 +1091,20 @@ namespace DVAH
             Debug.Log("[Huynn3rdLib]===> Native ad loaded.");
 
 
-            int ID = _NativeAdID.IndexOf(((AdLoader)sender).AdUnitId);
+            int ID = _nativeADLoader.IndexOf((AdLoader)sender);
             if (ID < 0)
             {
                 Debug.LogErrorFormat("[Huynn3rdLib]===> HandleAdLoaded cant find ID _{0}_ from sender", ((AdLoader)sender).AdUnitId);
                 return;
             }
 
+            if (!_nativeADLoader[ID].AdUnitId.Equals(NativeAdID[ID]))
+            {
+                Debug.LogErrorFormat("[Huynn3rdLib]===> adloaderID {0} doesnt == senderID {1}", _nativeADLoader[ID].AdUnitId,((AdLoader)sender).AdUnitId);
+                return;
+            }
 
             this._nativeAd[ID] = e.nativeAd;
-
 
             if (this.CreateNativeAd(ID))
             {
