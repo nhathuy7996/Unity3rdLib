@@ -19,7 +19,7 @@ using System.Collections;
 using System.Threading.Tasks;
 
 
-namespace HuynnLib
+namespace DVAH
 {
 
     public class IAPManager : Singleton<IAPManager>, IStoreListener, IChildLib
