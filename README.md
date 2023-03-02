@@ -10,6 +10,7 @@
 - [x] NoAds popup
 - [x] google Rate
 - [x] Loading controller
+- [x] Language controller
 
 #### --> Auto check missing file google-service.js <--
 for Firebase service working correctly, file google-service.js must inside Assets folder
@@ -17,21 +18,25 @@ for Firebase service working correctly, file google-service.js must inside Asset
 #### --> Auto check and warning package name is correct format <--
 if project packgename not follow format "com.X.Y". It will cause some error on upload for google play store!
 
+#### --> Auto push branch production <--
+After build aab, a branch production will auto create and push your code to there!
+
 
 ## Guide:
 - Download SDK [from here](https://github.com/nhathuy7996/Unity3rdLib/releases) then import into project 
-        (you should delete all the old lib Ad, google, firebase... before)
+        (you should delete all the old lib Ad, google, firebase... before) and [Demo project here](https://github.com/nhathuy7996/DemoLib)
+- I'm recommend your build setting like this:
+![build setting](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/buildSetting.png)
 - Reimport All
 - Android Resolve -> Force Resolve
 - Then you have 2 way to add the code lib to your project:
+    - The lazy way:
+        ![add Code](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/0.png)
     - The profession way:
         - Add git subtree on project and pull production (_develop branch may not working well yet!_)
         - (Git Add Command: git subtree add --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash    )
         - (Git Pull Command: git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash  )
         If you already add it, then pull command only is enought!
-
-    - The lazy way:
-        ![add Code](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/0.png)
 
 - put prefab 3rdLib into scene index 0 on build setting (check dontDestroyOnload if project have multiple scene)
 
