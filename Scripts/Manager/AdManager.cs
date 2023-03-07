@@ -279,8 +279,8 @@ namespace DVAH
 #if NATIVE_AD
 
             _nativeAd = new List<NativeAd>(new NativeAd[_NativeAdID.Count]);
-          
             _isnativeKeepReload = new bool[_NativeAdID.Count];
+            _nativeADLoader.Clear();
             for (int i = 0; i< _isnativeKeepReload.Length; i++)
             {
                 _isnativeKeepReload[i] = true;
@@ -790,7 +790,7 @@ namespace DVAH
             }
 
             _callbackLoadNativeAd = callback;
-            _nativeADLoader.Clear();
+           
             foreach (int index in indexes)
             {
                 AdLoader adLoader = RequestNativeAd(_NativeAdID[index]);
