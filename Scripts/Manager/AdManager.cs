@@ -279,10 +279,11 @@ namespace DVAH
 #if NATIVE_AD
 
             _nativeAd = new List<NativeAd>(new NativeAd[_NativeAdID.Count]);
-          
             _isnativeKeepReload = new bool[_NativeAdID.Count];
+            _nativeADLoader.Clear();
             for (int i = 0; i< _isnativeKeepReload.Length; i++)
             {
+                _nativeADLoader.Add(null);
                 _isnativeKeepReload[i] = true;
                 if (_adNativePanel[i] == null)
                 _adNativePanel[i] = Instantiate(adNativeObject, this.transform);
@@ -790,11 +791,11 @@ namespace DVAH
             }
 
             _callbackLoadNativeAd = callback;
-            _nativeADLoader.Clear();
+           
             foreach (int index in indexes)
             {
                 AdLoader adLoader = RequestNativeAd(_NativeAdID[index]);
-                _nativeADLoader.Add(adLoader);
+                _nativeADLoader[index] = (adLoader);
 #if UNITY_EDITOR
                 this.HandleNativeAdLoaded(adLoader, new NativeAdEventArgs());
 #endif
