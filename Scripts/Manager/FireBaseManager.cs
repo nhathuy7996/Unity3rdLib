@@ -350,7 +350,9 @@ namespace DVAH
         {
             _ = this.LogEventWithParameter("ad_event", new Hashtable()
             {
-                 {string.Format("ad_{0}_load_stats", adNetwork),string.Format( "ad_{0}_{1}",adType.ToString(), adState.ToString() )}
+                 {"ad_load_stats" ,string.Format( "ad_{0}_{1}",adType.ToString(), adState.ToString() )},
+                  {"ad_source" ,adNetwork}
+                
             });
         }
 
@@ -390,7 +392,8 @@ namespace DVAH
         {
             _ = this.LogEventWithParameter("ad_event", new Hashtable()
             {
-                 {string.Format("ad_{0}_load_stats", adNetwork),string.Format( "ad_{0}_click", ad_type.ToString() )}
+                 {string.Format("ad_load_stats", adNetwork),string.Format( "ad_{0}_click", ad_type.ToString() )},
+                  {"ad_source" ,adNetwork}
             });
         }
 
