@@ -186,9 +186,10 @@ class ProjectInfoEditor : EditorWindow
 
         if (adjustGameObject)
         {
+            adjustGameObject.startManually = false;
             EditorGUILayout.Space(20);
             EditorGUILayout.LabelField("Adjust:", TextGreenStyles);
-            adjustGameObject.appToken = EditorGUILayout.TextField("Adjust Token", adjustGameObject.appToken);
+            adjustGameObject.appToken = EditorGUILayout.TextField("Adjust Token", adjustGameObject.appToken.Replace(" ",""));
 
 
             EditorGUILayout.BeginHorizontal();
@@ -217,8 +218,8 @@ class ProjectInfoEditor : EditorWindow
             FireBaseManager fireBaseManager = GameObject.FindObjectOfType<FireBaseManager>();
             if (fireBaseManager)
             {
-                fireBaseManager.ADValue = EditorGUILayout.TextField("ad_value", fireBaseManager.ADValue);
-                fireBaseManager.Level_Achived = EditorGUILayout.TextField("level_achived", fireBaseManager.Level_Achived);
+                fireBaseManager.ADValue = EditorGUILayout.TextField("ad_value", fireBaseManager.ADValue.Replace(" ", ""));
+                fireBaseManager.Level_Achived = EditorGUILayout.TextField("level_achived", fireBaseManager.Level_Achived.Replace(" ", ""));
             }
             PrefabUtility.RecordPrefabInstancePropertyModifications(fireBaseManager);
             PrefabUtility.RecordPrefabInstancePropertyModifications(adjustGameObject);
@@ -236,10 +237,10 @@ class ProjectInfoEditor : EditorWindow
         {
             EditorGUILayout.Space(20);
             EditorGUILayout.LabelField("Google:", TextGreenStyles);
-            gg.GoogleMobileAdsAndroidAppId = EditorGUILayout.TextField("Android AD ID", gg.GoogleMobileAdsAndroidAppId);
+            gg.GoogleMobileAdsAndroidAppId = EditorGUILayout.TextField("Android AD ID", gg.GoogleMobileAdsAndroidAppId.Replace(" ", ""));
             if (adManager)
             {
-                adManager.paid_ad_revenue = EditorGUILayout.TextField("Event Paid AD", adManager.paid_ad_revenue);
+                adManager.paid_ad_revenue = EditorGUILayout.TextField("Event Paid AD", adManager.paid_ad_revenue.Replace(" ", ""));
                 PrefabUtility.RecordPrefabInstancePropertyModifications(adManager);
             }
             PrefabUtility.RecordPrefabInstancePropertyModifications(gg);
@@ -267,7 +268,7 @@ class ProjectInfoEditor : EditorWindow
         {
             EditorGUILayout.Space(20);
             EditorGUILayout.LabelField("AppLovin:", TextGreenStyles);
-            max.SdkKey = EditorGUILayout.TextField("MaxSdk key", max.SdkKey);
+            max.SdkKey = EditorGUILayout.TextField("MaxSdk key", max.SdkKey.Replace(" ", ""));
             if (adManager)
                 adManager.MaxSdkKey = max.SdkKey;
             if (gg != null)
@@ -277,7 +278,7 @@ class ProjectInfoEditor : EditorWindow
             }
             else
             {
-                max.AdMobAndroidAppId = EditorGUILayout.TextField("Android AD ID", max.AdMobAndroidAppId);
+                max.AdMobAndroidAppId = EditorGUILayout.TextField("Android AD ID", max.AdMobAndroidAppId.Replace(" ", ""));
             }
             PrefabUtility.RecordPrefabInstancePropertyModifications(max);
             EditorUtility.SetDirty(max);
@@ -347,7 +348,7 @@ class ProjectInfoEditor : EditorWindow
                     facebookClientTokenProps = clientToken.GetValue(facebookClientTokenProps, null);
                     fbClientToken = ((List<string>)facebookClientTokenProps)[0];
                 }
-                fbClientToken = EditorGUILayout.TextField("Client token", fbClientToken);
+                fbClientToken = EditorGUILayout.TextField("Client token", fbClientToken.Replace(" ", ""));
                 clientToken.SetValue(facebook, new List<string>() { fbClientToken }, null);
             }
             else
@@ -372,9 +373,9 @@ class ProjectInfoEditor : EditorWindow
     
             EditorGUILayout.Space(20);
             EditorGUILayout.LabelField("AD IDs:", TextGreenStyles);
-            adManager.BannerAdUnitID = EditorGUILayout.TextField("Banner ID", adManager.BannerAdUnitID);
-            adManager.InterstitialAdUnitID = EditorGUILayout.TextField("Inter ID", adManager.InterstitialAdUnitID);
-            adManager.RewardedAdUnitID = EditorGUILayout.TextField("Reward ID", adManager.RewardedAdUnitID);
+            adManager.BannerAdUnitID = EditorGUILayout.TextField("Banner ID", adManager.BannerAdUnitID.Replace(" ",""));
+            adManager.InterstitialAdUnitID = EditorGUILayout.TextField("Inter ID", adManager.InterstitialAdUnitID.Replace(" ", ""));
+            adManager.RewardedAdUnitID = EditorGUILayout.TextField("Reward ID", adManager.RewardedAdUnitID.Replace(" ", ""));
 
 
             EditorGUILayout.BeginHorizontal();
@@ -395,7 +396,7 @@ class ProjectInfoEditor : EditorWindow
             EditorGUILayout.BeginVertical();
             for (int i = 0; i < adManager.OpenAdUnitIDs.Count; i++)
             {
-                adManager.OpenAdUnitIDs[i] = EditorGUILayout.TextField("Ad ID " + (i + 1), adManager.OpenAdUnitIDs[i]);
+                adManager.OpenAdUnitIDs[i] = EditorGUILayout.TextField("Ad ID " + (i + 1), adManager.OpenAdUnitIDs[i].Replace(" ", ""));
             }
 
 
@@ -426,7 +427,7 @@ class ProjectInfoEditor : EditorWindow
             EditorGUILayout.BeginVertical();
             for (int i = 0; i< adManager.NativeAdID.Count; i++)
             {
-                adManager.NativeAdID[i] = EditorGUILayout.TextField("Ad ID "+(i+1), adManager.NativeAdID[i]);
+                adManager.NativeAdID[i] = EditorGUILayout.TextField("Ad ID "+(i+1), adManager.NativeAdID[i].Replace(" ", ""));
             }
 
             if( EditorGUILayout.LinkButton("ID test: ca-app-pub-3940256099942544/2247696110"))
