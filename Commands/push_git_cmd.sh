@@ -2,6 +2,7 @@
 
 cd ../../
 cd /Volumes/DVA/UNITY/DemoLib/Assets
+cd $(git rev-parse --show-cdup)
 git add -A
-git commit -m "release_1.0"
-git push origin HEAD:production_doNotCreateBranchFromHere -f
+git commit -m "prepare update lib!!!!!!"
+git subtree pull --prefix Assets/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash
