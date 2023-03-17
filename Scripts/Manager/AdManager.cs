@@ -847,48 +847,15 @@ namespace DVAH
 #if UNITY_EDITOR
 
             _adNativePanel[adNativeID].body.text = "<color=blue>" + this.NativeAdID[adNativeID] + "</color>\n";
-            for (int i = 0; i < 3; i++)
-            {
-                GameObject bg;
-                if (i >= _adNativePanel[adNativeID].adBGManager.childCount)
-                {
+            _adNativePanel[adNativeID].setAdBG(new Texture2D[3].ToList());
 
-                    bg = Instantiate(_adNativePanel[adNativeID].adBGFitter, _adNativePanel[adNativeID].adBGFitter.transform.position,
-                       Quaternion.identity, _adNativePanel[adNativeID].adBGManager);
-                }
-                else
-                {
-                    bg = _adNativePanel[adNativeID].adBGManager.GetChild(i).gameObject;
-                }
-
-                _adNativePanel[adNativeID].setAdBG();
-                bg.SetActive(true);
-            }
             return true;
 #endif
 
             List<Texture2D> imagetexture = this._nativeAd[adNativeID].GetImageTextures();
             if (imagetexture.Any())
             {
-                List<GameObject> Bgs = new List<GameObject>();
-                int i = 0;
-                foreach (Texture2D texture2D in imagetexture)
-                {
-                    GameObject bg;
-                    if (i >= _adNativePanel[adNativeID].adBGManager.childCount)
-                    {
-                        bg = Instantiate(_adNativePanel[adNativeID].adBGFitter, _adNativePanel[adNativeID].adBGFitter.transform.position,
-                       Quaternion.identity, _adNativePanel[adNativeID].adBGManager);
-                    }
-                    else
-                    {
-                        bg = _adNativePanel[adNativeID].adBGManager.GetChild(i).gameObject;
-                    }
-
-                    _adNativePanel[adNativeID].setAdBG(texture2D);
-                    bg.SetActive(true);
-                    Bgs.Add(bg);
-                }
+                List<GameObject> Bgs = _adNativePanel[adNativeID].setAdBG(imagetexture);
 
                 this._nativeAd[adNativeID].RegisterImageGameObjects(Bgs);
             }
