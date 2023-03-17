@@ -401,6 +401,52 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 683.6041, y: 64.8667}
   m_EdgeRadius: 0
+--- !u!1 &4880001147201085414
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5984555329324086880}
+  - component: {fileID: 4990692135732671279}
+  m_Layer: 5
+  m_Name: AdBGFitter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &5984555329324086880
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4880001147201085414}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7373984933992471941}
+  m_Father: {fileID: 7373984932824646422}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 540.00006, y: -159.86679}
+  m_SizeDelta: {x: 1080.0001, y: 319.73358}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &4990692135732671279
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4880001147201085414}
+  m_CullTransparentMesh: 1
 --- !u!1 &6813129287346734346
 GameObject:
   m_ObjectHideFlags: 0
@@ -467,7 +513,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   adIcon: {fileID: 7373984932087215311}
   adChoice: {fileID: 7373984933036250084}
-  adBG: {fileID: 7373984933992471938}
+  adBG: {fileID: 4880001147201085414}
   callToAction: {fileID: 7373984932797704953}
   advertiser: {fileID: 7373984932917597945}
   headLine: {fileID: 7373984932437552985}
@@ -969,7 +1015,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7373984933992471941}
+  - {fileID: 5984555329324086880}
   m_Father: {fileID: 7373984933600254782}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1481,13 +1527,14 @@ GameObject:
   - component: {fileID: 7373984933992471937}
   - component: {fileID: 7373984933992471938}
   - component: {fileID: 2615512939381784125}
+  - component: {fileID: 4034969526631697070}
   m_Layer: 5
   m_Name: AdBG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7373984933992471941
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1500,7 +1547,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7373984932824646422}
+  m_Father: {fileID: 5984555329324086880}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -1569,3 +1616,17 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1175.97, y: 1044.27}
   m_EdgeRadius: 0
+--- !u!114 &4034969526631697070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7373984933992471942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 0
+  m_AspectRatio: 1

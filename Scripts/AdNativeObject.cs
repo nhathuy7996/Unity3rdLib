@@ -7,7 +7,8 @@ namespace DVAH
 {
     public class AdNativeObject : MonoBehaviour
     {
-        public RawImage adIcon, adChoice, adBG;
+        public RawImage adIcon, adChoice;
+        public GameObject adBG;
         public Text callToAction, advertiser, headLine, body, price, store;
 
         public RectTransform rectTransform;
@@ -39,7 +40,7 @@ namespace DVAH
             Transform adBGParent = adBG.transform.parent;
             for (int i = 0; i < adBGParent.childCount; i++)
             {
-                adBGParent.GetChild(i).GetComponent<BoxCollider2D>().size = adBG.rectTransform.rect.size;
+                adBGParent.GetChild(i).GetComponentInChildren<BoxCollider2D>().size = adBGParent.GetChild(i).GetComponentInChildren<RawImage>().rectTransform.rect.size;
             }
         }
 

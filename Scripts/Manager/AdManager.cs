@@ -853,13 +853,17 @@ namespace DVAH
                 {
 
                     bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
-                       Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent);
+                       Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent).GetComponentInChildren<RawImage>();
                 }
                 else
                 {
-                    bg = _adNativePanel[adNativeID].adBG.transform.parent.GetChild(i).GetComponent<RawImage>();
+                    bg = _adNativePanel[adNativeID].adBG.transform.parent.GetChild(i).GetComponentInChildren<RawImage>();
                 }
-                bg.gameObject.SetActive(true);
+
+                float aspect = 1;
+                bg.GetComponent<AspectRatioFitter>().aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+                bg.GetComponent<AspectRatioFitter>().aspectRatio = aspect;
+                bg.transform.parent.gameObject.SetActive(true);
             }
             return true;
 #endif
@@ -875,14 +879,19 @@ namespace DVAH
                     if (i >= _adNativePanel[adNativeID].adBG.transform.parent.childCount)
                     {
                         bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
-                       Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent);
+                       Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent).GetComponentInChildren<RawImage>();
                     }
                     else
                     {
-                        bg = _adNativePanel[adNativeID].adBG.transform.parent.GetChild(i).GetComponent<RawImage>();
+                        bg = _adNativePanel[adNativeID].adBG.transform.parent.GetChild(i).GetComponentInChildren<RawImage>();
                     }
+
+                    float aspect = texture2D.width / texture2D.height;
+                    bg.GetComponent<AspectRatioFitter>().aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+                    bg.GetComponent<AspectRatioFitter>().aspectRatio = aspect;
+
                     bg.texture = texture2D;
-                    bg.gameObject.SetActive(true);
+                    bg.transform.parent.gameObject.SetActive(true);
                     Bgs.Add(bg.gameObject);
                 }
 
