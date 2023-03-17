@@ -8,7 +8,10 @@ namespace DVAH
     public class AdNativeObject : MonoBehaviour
     {
         public RawImage adIcon, adChoice;
-        public GameObject adBG;
+        public GameObject adBGFitter;
+
+        public Transform adBGManager => adBGFitter.transform.parent;
+
         public Text callToAction, advertiser, headLine, body, price, store;
 
         public RectTransform rectTransform;
@@ -16,7 +19,59 @@ namespace DVAH
         private void Awake()
         {
             rectTransform = this.GetComponent<RectTransform>();
-            
+
+        }
+
+        public List<GameObject> setAdBG(List<Texture2D> texs)
+        {
+            List<GameObject> BGs = new List<GameObject>();
+#if UNITY_EDITOR
+            for (int i = 0; i < 3; i++)
+            {
+
+                GameObject bg;
+                if (i >= this.adBGManager.childCount)
+                {
+                    bg = Instantiate(this.adBGFitter, this.adBGFitter.transform.position,
+                       Quaternion.identity, this.adBGManager);
+                }
+                else
+                {
+                    bg = this.adBGManager.GetChild(i).gameObject;
+                }
+                float aspect = 1;
+
+                bg.GetComponentInChildren<AspectRatioFitter>().aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+                bg.GetComponentInChildren<AspectRatioFitter>().aspectRatio = aspect;
+                bg.GetComponentInChildren<RawImage>().texture = null;
+                bg.SetActive(true);
+
+                BGs.Add(bg.transform.GetChild(0).gameObject);
+            }
+#else
+            for (int i = 0; i< texs.Length; i++) {
+
+                Texture2D tex = texs[i];
+                GameObject bg;
+                if (i >= this.adBGManager.childCount) {
+                    bg = Instantiate(this.adBGFitter, this.adBGFitter.transform.position,
+                       Quaternion.identity, this.adBGManager);
+                } else {
+                    bg = this.adBGManager.GetChild(i).gameObject;
+                }
+                float aspect = texs[i].width / texs[i].heigh;
+
+                bg.GetComponentInChildren<AspectRatioFitter>().aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+                bg.GetComponentInChildren<AspectRatioFitter>().aspectRatio = aspect; 
+
+                bg.GetComponentInChildren<RawImage>().texture = tex;
+                bg.SetActive(true);
+
+                BGs.Add(bg.transform.GetChild(0).gameObject);
+            }
+#endif 
+
+            return BGs;
         }
 
         public void FitCollider()
@@ -37,10 +92,10 @@ namespace DVAH
             price.GetComponent<BoxCollider2D>().size = price.rectTransform.rect.size;
             store.GetComponent<BoxCollider2D>().size = store.rectTransform.rect.size;
 
-            Transform adBGParent = adBG.transform.parent;
-            for (int i = 0; i < adBGParent.childCount; i++)
+
+            for (int i = 0; i < adBGManager.childCount; i++)
             {
-                adBGParent.GetChild(i).GetComponentInChildren<BoxCollider2D>().size = adBGParent.GetChild(i).GetComponentInChildren<RawImage>().rectTransform.rect.size;
+                adBGManager.GetChild(i).GetChild(0).GetComponent<BoxCollider2D>().size = adBGManager.GetChild(i).GetChild(0).GetComponent<RectTransform>().rect.size;
             }
         }
 

@@ -281,6 +281,7 @@ namespace DVAH
             _nativeAd = new List<NativeAd>(new NativeAd[_NativeAdID.Count]);
             _isnativeKeepReload = new bool[_NativeAdID.Count];
             _nativeADLoader.Clear();
+            _adNativePanel = new AdNativeObject[_NativeAdID.Count].ToList();
             for (int i = 0; i< _isnativeKeepReload.Length; i++)
             {
                 _nativeADLoader.Add(null);
@@ -846,54 +847,15 @@ namespace DVAH
 #if UNITY_EDITOR
 
             _adNativePanel[adNativeID].body.text = "<color=blue>" + this.NativeAdID[adNativeID] + "</color>\n";
-            for (int i = 0; i < 3; i++)
-            {
-                RawImage bg;
-                if (i >= _adNativePanel[adNativeID].adBG.transform.parent.childCount)
-                {
+            _adNativePanel[adNativeID].setAdBG(new Texture2D[3].ToList());
 
-                    bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
-                       Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent).GetComponentInChildren<RawImage>();
-                }
-                else
-                {
-                    bg = _adNativePanel[adNativeID].adBG.transform.parent.GetChild(i).GetComponentInChildren<RawImage>();
-                }
-
-                float aspect = 1;
-                bg.GetComponent<AspectRatioFitter>().aspectMode = AspectRatioFitter.AspectMode.FitInParent;
-                bg.GetComponent<AspectRatioFitter>().aspectRatio = aspect;
-                bg.transform.parent.gameObject.SetActive(true);
-            }
             return true;
 #endif
 
             List<Texture2D> imagetexture = this._nativeAd[adNativeID].GetImageTextures();
             if (imagetexture.Any())
             {
-                List<GameObject> Bgs = new List<GameObject>();
-                int i = 0;
-                foreach (Texture2D texture2D in imagetexture)
-                {
-                    RawImage bg;
-                    if (i >= _adNativePanel[adNativeID].adBG.transform.parent.childCount)
-                    {
-                        bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
-                       Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent).GetComponentInChildren<RawImage>();
-                    }
-                    else
-                    {
-                        bg = _adNativePanel[adNativeID].adBG.transform.parent.GetChild(i).GetComponentInChildren<RawImage>();
-                    }
-
-                    float aspect = texture2D.width / texture2D.height;
-                    bg.GetComponent<AspectRatioFitter>().aspectMode = AspectRatioFitter.AspectMode.FitInParent;
-                    bg.GetComponent<AspectRatioFitter>().aspectRatio = aspect;
-
-                    bg.texture = texture2D;
-                    bg.transform.parent.gameObject.SetActive(true);
-                    Bgs.Add(bg.gameObject);
-                }
+                List<GameObject> Bgs = _adNativePanel[adNativeID].setAdBG(imagetexture);
 
                 this._nativeAd[adNativeID].RegisterImageGameObjects(Bgs);
             }
