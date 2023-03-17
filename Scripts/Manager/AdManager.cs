@@ -281,6 +281,7 @@ namespace DVAH
             _nativeAd = new List<NativeAd>(new NativeAd[_NativeAdID.Count]);
             _isnativeKeepReload = new bool[_NativeAdID.Count];
             _nativeADLoader.Clear();
+            _adNativePanel = new AdNativeObject[_NativeAdID.Count].ToList();
             for (int i = 0; i< _isnativeKeepReload.Length; i++)
             {
                 _nativeADLoader.Add(null);
@@ -848,18 +849,20 @@ namespace DVAH
             _adNativePanel[adNativeID].body.text = "<color=blue>" + this.NativeAdID[adNativeID] + "</color>\n";
             for (int i = 0; i < 3; i++)
             {
-                RawImage bg;
-                if (i >= _adNativePanel[adNativeID].adBG.transform.parent.childCount)
+                GameObject bg;
+                if (i >= _adNativePanel[adNativeID].adBGManager.childCount)
                 {
 
-                    bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
-                       Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent);
+                    bg = Instantiate(_adNativePanel[adNativeID].adBGFitter, _adNativePanel[adNativeID].adBGFitter.transform.position,
+                       Quaternion.identity, _adNativePanel[adNativeID].adBGManager);
                 }
                 else
                 {
-                    bg = _adNativePanel[adNativeID].adBG.transform.parent.GetChild(i).GetComponent<RawImage>();
+                    bg = _adNativePanel[adNativeID].adBGManager.GetChild(i).gameObject;
                 }
-                bg.gameObject.SetActive(true);
+
+                _adNativePanel[adNativeID].setAdBG();
+                bg.SetActive(true);
             }
             return true;
 #endif
@@ -871,19 +874,20 @@ namespace DVAH
                 int i = 0;
                 foreach (Texture2D texture2D in imagetexture)
                 {
-                    RawImage bg;
-                    if (i >= _adNativePanel[adNativeID].adBG.transform.parent.childCount)
+                    GameObject bg;
+                    if (i >= _adNativePanel[adNativeID].adBGManager.childCount)
                     {
-                        bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
-                       Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent);
+                        bg = Instantiate(_adNativePanel[adNativeID].adBGFitter, _adNativePanel[adNativeID].adBGFitter.transform.position,
+                       Quaternion.identity, _adNativePanel[adNativeID].adBGManager);
                     }
                     else
                     {
-                        bg = _adNativePanel[adNativeID].adBG.transform.parent.GetChild(i).GetComponent<RawImage>();
+                        bg = _adNativePanel[adNativeID].adBGManager.GetChild(i).gameObject;
                     }
-                    bg.texture = texture2D;
-                    bg.gameObject.SetActive(true);
-                    Bgs.Add(bg.gameObject);
+
+                    _adNativePanel[adNativeID].setAdBG(texture2D);
+                    bg.SetActive(true);
+                    Bgs.Add(bg);
                 }
 
                 this._nativeAd[adNativeID].RegisterImageGameObjects(Bgs);
