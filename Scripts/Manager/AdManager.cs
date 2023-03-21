@@ -259,9 +259,12 @@ namespace DVAH
             return this;
         }
 
-        public AdManager setOffAdPosition(AD_TYPE aD_TYPE, bool isOff)
+        public AdManager setOffAdPosition(bool isOff,params AD_TYPE[] aD_TYPE)
         {
-            _offAdPosition[(int)aD_TYPE] = isOff;
+            foreach (AD_TYPE aD in aD_TYPE) {
+                _offAdPosition[(int)aD] = isOff;
+            }
+            
             return this;
         }
         #endregion
