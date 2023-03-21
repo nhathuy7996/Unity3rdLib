@@ -26,6 +26,16 @@ namespace DVAH
         Watched
     }
 
+    public enum AD_TYPE
+    {
+        open,
+        resume,
+        banner,
+        inter,
+        reward,
+        native
+    }
+
     public class AdManager : Singleton<AdManager>, IChildLib
     {
         #region Lib Properties
@@ -50,8 +60,8 @@ namespace DVAH
         bool _isBannerAutoShow = false;
 
         #region control AD is Allow
-        bool _isBannerCurrentlyAllow = false, _isOffBanner = false, _isOffInter = false,
-            _isOffReward = false, _isOffAdsOpen = false, _isOffAdsResume = false;
+        bool _isBannerCurrentlyAllow = false;
+        bool[] _offAdPosition = new bool[] {false, false, false, false, false, false };
         public bool isAdBanner => _isBannerCurrentlyAllow;
         #endregion
 
@@ -248,6 +258,12 @@ namespace DVAH
             _adOpenClickCallback = callback;
             return this;
         }
+
+        public AdManager setOffAdPosition(AD_TYPE aD_TYPE, bool isOff)
+        {
+            _offAdPosition[(int)aD_TYPE] = isOff;
+            return this;
+        }
         #endregion
 
         void InitMAX()
@@ -261,12 +277,13 @@ namespace DVAH
                 Debug.Log("[Huynn3rdLib]==> MAX SDK Initialized <==");
                 _isSDKMaxInitDone = true;
                 InitAdOpen();
-                if (!_isOffInter)
+                if (!_offAdPosition[(int)AD_TYPE.inter])
                     InitializeInterstitialAds();
 
-                _ = InitializeBannerAds();
+                if (!_offAdPosition[(int)AD_TYPE.banner])
+                    _ = InitializeBannerAds();
 
-                if (!_isOffReward)
+                if (!_offAdPosition[(int)AD_TYPE.reward])
                     InitializeRewardedAds();
 
             };
@@ -321,7 +338,7 @@ namespace DVAH
 
             UnityMainThread.wkr.AddJob(() =>
             {
-                if (_isOffBanner)
+                if (_offAdPosition[(int)AD_TYPE.banner])
                     return;
                 if (string.IsNullOrWhiteSpace(_BannerAdUnitID))
                     return;
@@ -1151,7 +1168,7 @@ namespace DVAH
         /// </summary>
         public async Task ShowBanner()
         {
-            if (_isOffBanner)
+            if (_offAdPosition[(int)AD_TYPE.banner])
                 return;
 
             while (!_isBannerInitDone)
@@ -1194,7 +1211,7 @@ namespace DVAH
         /// <param name="showNoAds"></param>
         public void ShowInterstitial(Action<InterVideoState> callback = null, bool showNoAds = false)
         {
-            if (_isOffInter)
+            if (_offAdPosition[(int)AD_TYPE.inter])
                 return;
             if (InterstitialIsLoaded())
             {
@@ -1227,7 +1244,7 @@ namespace DVAH
         /// <param name="showNoAds"></param>
         public void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false)
         {
-            if (_isOffReward)
+            if (_offAdPosition[(int)AD_TYPE.reward])
                 return;
 
             if (VideoRewardIsLoaded())
@@ -1266,11 +1283,17 @@ namespace DVAH
         /// <param name="callback">Callback when adopen show done or fail pass true if ad show success and false if ad fail</param>
         public void ShowAdOpen(int ID = 0, bool isAdOpen = false, Action<bool> callback = null)
         {
-            if (isAdOpen && _isOffAdsOpen)
+            if (isAdOpen && _offAdPosition[(int)AD_TYPE.open])
+            {
+                callback?.Invoke(false);
                 return;
+            }
 
-            if (!isAdOpen && _isOffAdsResume)
+            if (!isAdOpen && _offAdPosition[(int)AD_TYPE.resume])
+            {
+                callback?.Invoke(false);
                 return;
+            }
 
             if (isShowingAd)
             {
