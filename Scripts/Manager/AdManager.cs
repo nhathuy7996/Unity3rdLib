@@ -62,6 +62,8 @@ namespace DVAH
         #region control AD is Allow
         bool _isBannerCurrentlyAllow = false;
         bool[] _offAdPosition = new bool[] {false, false, false, false, false, false };
+
+        public bool[] offAdPosition => _offAdPosition;
         public bool isAdBanner => _isBannerCurrentlyAllow;
         #endregion
 
@@ -306,8 +308,14 @@ namespace DVAH
             {
                 _nativeADLoader.Add(null);
                 _isnativeKeepReload[i] = true;
-                if (_adNativePanel[i] == null)
-                _adNativePanel[i] = Instantiate(adNativeObject, this.transform);
+                if (i >= _adNativePanel.Count || _adNativePanel[i] == null)
+                {
+                    AdNativeObject g = Instantiate(adNativeObject, this.transform);
+                    if (i >= _adNativePanel.Count)
+                        _adNativePanel.Add(g);
+                    else
+                        _adNativePanel[i] = g;
+                }
             }
             MobileAds.Initialize(initStatus =>
             {
@@ -1390,7 +1398,34 @@ namespace DVAH
 
         }
 
-#endif
+        public async Task HideNative(int ID, Action<AdNativeObject, bool> callBack = null)
+        {
+            if (ID >= _adNativePanel.Count || _adNativePanel[ID] == null)
+            {
+                Debug.LogErrorFormat("[Huynn3rdLib]===> item ad native ID {} doesnt exist! ", ID);
+            }
+
+
+#if UNITY_EDITOR
+            await Task.Delay(50);
+#else
+            while (_nativeAd[ID] == null)
+            {
+                await Task.Delay(500);
+            }
+#endif 
+            try
+            {
+                callBack?.Invoke(_adNativePanel[ID], _adNativePanel[ID].gameObject.activeSelf);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("[Huynn3rdLib]===>Error on callback show native! error: " + e.ToString() + "<====");
+            }
+            _adNativePanel[ID].gameObject.SetActive(false);
+        }
+
+#endif //NATIVE_AD
 
         #endregion
 
