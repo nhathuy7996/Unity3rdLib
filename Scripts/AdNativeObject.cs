@@ -24,8 +24,14 @@ namespace DVAH
 
         private void OnEnable()
         {
-            Canvas c = this.GetComponentInParent<Canvas>();
-            if (c == null || c.renderMode != RenderMode.ScreenSpaceOverlay)
+            Canvas c = null;
+            Transform parent = this.transform;
+            while (parent != null && c == null)
+            {
+                parent = parent.parent;
+                c = parent.GetComponent<Canvas>();
+            }
+            if (c == null || c.renderMode == RenderMode.ScreenSpaceOverlay)
             {
                 string error = "[Huynn3rdLib]====>If native object doesnt on canvas OR canvas using RenderMode.ScreenSpaceOverlay, " +
                     "then native AD not clickable which make your impression not record eventhought you saw native AD show up on editor/device!!! <====";
