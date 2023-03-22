@@ -22,6 +22,26 @@ namespace DVAH
 
         }
 
+        private void OnEnable()
+        {
+            Canvas c = this.GetComponentInParent<Canvas>();
+            if (c == null || c.renderMode != RenderMode.ScreenSpaceOverlay)
+            {
+                string error = "[Huynn3rdLib]====>If native object doesnt on canvas OR canvas using RenderMode.ScreenSpaceOverlay, " +
+                    "then native AD not clickable which make your impression not record eventhought you saw native AD show up on editor/device!!! <====";
+                Debug.LogError(error);
+                callToAction.text = error;
+                advertiser.text = error;
+                headLine.text = error;
+                body.text = error;
+
+                callToAction.color = Color.red;
+                advertiser.color = Color.red;
+                headLine.color = Color.red;
+                body.color = Color.red;
+            }
+        }
+
         public List<GameObject> setAdBG(List<Texture2D> texs)
         {
             List<GameObject> BGs = new List<GameObject>();
