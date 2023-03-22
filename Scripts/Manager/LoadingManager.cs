@@ -32,12 +32,17 @@ namespace DVAH
         Slider _loading;
 
         [SerializeField]
-        Text _loadingText;
+        Text _loadingText, _versionText;
 
         Action<List<bool>> _onDone = null;
 
         float _loadingMaxvalue;
         bool _isLoadingStart = false;
+
+        private void Start()
+        {
+            _versionText.text = "Version <color=red>" + Application.version+"</color>";
+        }
 
         /// <summary>
         /// Start Loading bar with an action call back

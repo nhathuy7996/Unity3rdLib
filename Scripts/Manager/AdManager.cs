@@ -57,7 +57,7 @@ namespace DVAH
         }
 #endif
         [SerializeField]
-        bool _isBannerAutoShow = false;
+        bool _isBannerAutoShow = false, _initBannerManually;
 
         #region control AD is Allow
         bool _isBannerCurrentlyAllow = false;
@@ -201,10 +201,7 @@ namespace DVAH
         private Action<bool> _callbackOpenAD = null;
         private Action<int,bool> _callbackLoadNativeAd = null;
 
-        private Action _bannerClickCallback = null;
-        private Action _interClickCallback = null;
-        private Action _rewardClickCallback = null;
-        private Action _adOpenClickCallback = null;
+        private Action[] _clickADCallback = new Action[6];
 
         #endregion
 
@@ -237,29 +234,11 @@ namespace DVAH
 
 
         #region ClickCallBack
-        public AdManager AssignClickCallBackBanner(Action callback)
+        public AdManager AssignClickCallBack(Action callback, AD_TYPE adType )
         {
-            _bannerClickCallback = callback;
+            _clickADCallback[(int)adType] = callback;
             return this;
-        }
-
-        public AdManager AssignClickCallBackInter(Action callback)
-        {
-            _interClickCallback = callback;
-            return this;
-        }
-
-        public AdManager AssignClickCallBackReward(Action callback)
-        {
-            _rewardClickCallback = callback;
-            return this;
-        }
-
-        public AdManager AssignClickCallBackAdOpne(Action callback)
-        {
-            _adOpenClickCallback = callback;
-            return this;
-        }
+        } 
 
         public AdManager setOffAdPosition(bool isOff,params AD_TYPE[] aD_TYPE)
         {
@@ -285,7 +264,7 @@ namespace DVAH
                 if (!_offAdPosition[(int)AD_TYPE.inter])
                     InitializeInterstitialAds();
 
-                if (!_offAdPosition[(int)AD_TYPE.banner])
+                if (!_offAdPosition[(int)AD_TYPE.banner] && !_initBannerManually)
                     _ = InitializeBannerAds();
 
                 if (!_offAdPosition[(int)AD_TYPE.reward])
@@ -414,13 +393,13 @@ namespace DVAH
             FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.banner, adNetwork: adInfo.NetworkName);
             try
             {
-                _bannerClickCallback?.Invoke();
+                _clickADCallback[(int)AD_TYPE.banner]?.Invoke();
             }
             catch (Exception e)
             {
                 Debug.LogError("[Huynn3rdLib]==> invoke banner click callback error: " + e.ToString() + " <==");
             }
-            _bannerClickCallback = null;
+            _clickADCallback[(int)AD_TYPE.banner] = null;
         }
 
 
@@ -509,13 +488,13 @@ namespace DVAH
             FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.inter, adNetwork: adInfo.NetworkName);
             try
             {
-                _interClickCallback?.Invoke();
+                _clickADCallback[(int)AD_TYPE.inter]?.Invoke();
             }
             catch (Exception e)
             {
                 Debug.LogError("[Huynn3rdLib]==> Faild invoke click inter callback, error: " + e.ToString() + " <==");
             }
-            _interClickCallback = null;
+            _clickADCallback[(int)AD_TYPE.inter] = null;
         }
 
         private void OnInterstitialDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -622,7 +601,7 @@ namespace DVAH
             FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.reward, adNetwork: adInfo.NetworkName);
             try
             {
-                _rewardClickCallback?.Invoke();
+                _clickADCallback[(int)AD_TYPE.reward]?.Invoke();
 
             }
             catch (Exception e)
@@ -630,7 +609,7 @@ namespace DVAH
                 Debug.LogError("[Huynn3rdLib]==> Faild invoke reward click callback, error: " + e.ToString() + " <==");
             }
 
-            _rewardClickCallback = null;
+            _clickADCallback[(int)AD_TYPE.reward] = null;
         }
 
         private void OnRewardedAdDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -742,14 +721,14 @@ namespace DVAH
             FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.open, adNetwork: adInfo.NetworkName);
             try
             {
-                _adOpenClickCallback?.Invoke();
+                _clickADCallback[(int)AD_TYPE.open]?.Invoke();
             }
             catch (Exception e)
             {
                 Debug.LogError("[Huynn3rdLib]==>Callback click ad open error: " + e.ToString() + "<==");
             }
 
-            _adOpenClickCallback = null;
+            _clickADCallback[(int)AD_TYPE.open] = null;
         }
 
         private void AppOpen_OnAdDisplayFailedEvent(string arg1, ErrorInfo errorInfo, AdInfo arg3)
@@ -1130,7 +1109,16 @@ namespace DVAH
         private void AdLoader_OnNativeAdClicked(object sender, EventArgs e)
         {
             Debug.Log("[Huynn3rdLib]===> Handle ad native clicked! ");
-
+            FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.native, adNetwork: "ADMOB");
+            try
+            {
+                _clickADCallback[(int)AD_TYPE.native]?.Invoke();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("[Huynn3rdLib]==> Faild invoke click inter callback, error: " + exception.Message + " <==");
+            }
+            _clickADCallback[(int)AD_TYPE.native] = null;
         }
 
 
