@@ -29,7 +29,8 @@ public class MenuEditor
             return;
         }
 
-        EditorSceneManager.OpenScene(EditorBuildSettings.scenes[0].path);
+        if (EditorUtility.DisplayDialog("Attention", "Do you want clear all playerPrefb before run?", "Yes", "No"))
+            PlayerPrefs.DeleteAll();
         UnityEditor.EditorApplication.isPlaying = true;
     }
 
