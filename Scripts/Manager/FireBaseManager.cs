@@ -426,16 +426,6 @@ public enum LEVEL_STATE_EVENT
     win_level
 }
 
-public enum AD_TYPE
-{
-    open,
-    resume,
-    banner,
-    inter,
-    reward,
-    native
-}
-
 public enum AD_STATE
 {
     load,

@@ -26,6 +26,16 @@ namespace DVAH
         Watched
     }
 
+    public enum AD_TYPE
+    {
+        open,
+        resume,
+        banner,
+        inter,
+        reward,
+        native
+    }
+
     public class AdManager : Singleton<AdManager>, IChildLib
     {
         #region Lib Properties
@@ -47,11 +57,13 @@ namespace DVAH
         }
 #endif
         [SerializeField]
-        bool _isBannerAutoShow = false;
+        bool _isBannerAutoShow = false, _initBannerManually;
 
         #region control AD is Allow
-        bool _isBannerCurrentlyAllow = false, _isOffBanner = false, _isOffInter = false,
-            _isOffReward = false, _isOffAdsOpen = false, _isOffAdsResume = false;
+        bool _isBannerCurrentlyAllow = false;
+        bool[] _offAdPosition = new bool[] {false, false, false, false, false, false };
+
+        public bool[] offAdPosition => _offAdPosition;
         public bool isAdBanner => _isBannerCurrentlyAllow;
         #endregion
 
@@ -189,10 +201,7 @@ namespace DVAH
         private Action<bool> _callbackOpenAD = null;
         private Action<int,bool> _callbackLoadNativeAd = null;
 
-        private Action _bannerClickCallback = null;
-        private Action _interClickCallback = null;
-        private Action _rewardClickCallback = null;
-        private Action _adOpenClickCallback = null;
+        private Action[] _clickADCallback = new Action[6];
 
         #endregion
 
@@ -225,27 +234,18 @@ namespace DVAH
 
 
         #region ClickCallBack
-        public AdManager AssignClickCallBackBanner(Action callback)
+        public AdManager AssignClickCallBack(Action callback, AD_TYPE adType )
         {
-            _bannerClickCallback = callback;
+            _clickADCallback[(int)adType] = callback;
             return this;
-        }
+        } 
 
-        public AdManager AssignClickCallBackInter(Action callback)
+        public AdManager setOffAdPosition(bool isOff,params AD_TYPE[] aD_TYPE)
         {
-            _interClickCallback = callback;
-            return this;
-        }
-
-        public AdManager AssignClickCallBackReward(Action callback)
-        {
-            _rewardClickCallback = callback;
-            return this;
-        }
-
-        public AdManager AssignClickCallBackAdOpne(Action callback)
-        {
-            _adOpenClickCallback = callback;
+            foreach (AD_TYPE aD in aD_TYPE) {
+                _offAdPosition[(int)aD] = isOff;
+            }
+            
             return this;
         }
         #endregion
@@ -261,12 +261,13 @@ namespace DVAH
                 Debug.Log("[Huynn3rdLib]==> MAX SDK Initialized <==");
                 _isSDKMaxInitDone = true;
                 InitAdOpen();
-                if (!_isOffInter)
+                if (!_offAdPosition[(int)AD_TYPE.inter])
                     InitializeInterstitialAds();
 
-                _ = InitializeBannerAds();
+                if (!_offAdPosition[(int)AD_TYPE.banner] && !_initBannerManually)
+                    _ = InitializeBannerAds();
 
-                if (!_isOffReward)
+                if (!_offAdPosition[(int)AD_TYPE.reward])
                     InitializeRewardedAds();
 
             };
@@ -281,12 +282,19 @@ namespace DVAH
             _nativeAd = new List<NativeAd>(new NativeAd[_NativeAdID.Count]);
             _isnativeKeepReload = new bool[_NativeAdID.Count];
             _nativeADLoader.Clear();
+            _adNativePanel = new AdNativeObject[_NativeAdID.Count].ToList();
             for (int i = 0; i< _isnativeKeepReload.Length; i++)
             {
                 _nativeADLoader.Add(null);
                 _isnativeKeepReload[i] = true;
-                if (_adNativePanel[i] == null)
-                _adNativePanel[i] = Instantiate(adNativeObject, this.transform);
+                if (i >= _adNativePanel.Count || _adNativePanel[i] == null)
+                {
+                    AdNativeObject g = Instantiate(adNativeObject, this.transform);
+                    if (i >= _adNativePanel.Count)
+                        _adNativePanel.Add(g);
+                    else
+                        _adNativePanel[i] = g;
+                }
             }
             MobileAds.Initialize(initStatus =>
             {
@@ -320,7 +328,7 @@ namespace DVAH
 
             UnityMainThread.wkr.AddJob(() =>
             {
-                if (_isOffBanner)
+                if (_offAdPosition[(int)AD_TYPE.banner])
                     return;
                 if (string.IsNullOrWhiteSpace(_BannerAdUnitID))
                     return;
@@ -385,13 +393,13 @@ namespace DVAH
             FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.banner, adNetwork: adInfo.NetworkName);
             try
             {
-                _bannerClickCallback?.Invoke();
+                _clickADCallback[(int)AD_TYPE.banner]?.Invoke();
             }
             catch (Exception e)
             {
                 Debug.LogError("[Huynn3rdLib]==> invoke banner click callback error: " + e.ToString() + " <==");
             }
-            _bannerClickCallback = null;
+            _clickADCallback[(int)AD_TYPE.banner] = null;
         }
 
 
@@ -480,13 +488,13 @@ namespace DVAH
             FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.inter, adNetwork: adInfo.NetworkName);
             try
             {
-                _interClickCallback?.Invoke();
+                _clickADCallback[(int)AD_TYPE.inter]?.Invoke();
             }
             catch (Exception e)
             {
                 Debug.LogError("[Huynn3rdLib]==> Faild invoke click inter callback, error: " + e.ToString() + " <==");
             }
-            _interClickCallback = null;
+            _clickADCallback[(int)AD_TYPE.inter] = null;
         }
 
         private void OnInterstitialDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -593,7 +601,7 @@ namespace DVAH
             FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.reward, adNetwork: adInfo.NetworkName);
             try
             {
-                _rewardClickCallback?.Invoke();
+                _clickADCallback[(int)AD_TYPE.reward]?.Invoke();
 
             }
             catch (Exception e)
@@ -601,7 +609,7 @@ namespace DVAH
                 Debug.LogError("[Huynn3rdLib]==> Faild invoke reward click callback, error: " + e.ToString() + " <==");
             }
 
-            _rewardClickCallback = null;
+            _clickADCallback[(int)AD_TYPE.reward] = null;
         }
 
         private void OnRewardedAdDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -713,14 +721,14 @@ namespace DVAH
             FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.open, adNetwork: adInfo.NetworkName);
             try
             {
-                _adOpenClickCallback?.Invoke();
+                _clickADCallback[(int)AD_TYPE.open]?.Invoke();
             }
             catch (Exception e)
             {
                 Debug.LogError("[Huynn3rdLib]==>Callback click ad open error: " + e.ToString() + "<==");
             }
 
-            _adOpenClickCallback = null;
+            _clickADCallback[(int)AD_TYPE.open] = null;
         }
 
         private void AppOpen_OnAdDisplayFailedEvent(string arg1, ErrorInfo errorInfo, AdInfo arg3)
@@ -846,45 +854,15 @@ namespace DVAH
 #if UNITY_EDITOR
 
             _adNativePanel[adNativeID].body.text = "<color=blue>" + this.NativeAdID[adNativeID] + "</color>\n";
-            for (int i = 0; i < 3; i++)
-            {
-                RawImage bg;
-                if (i >= _adNativePanel[adNativeID].adBG.transform.parent.childCount)
-                {
+            _adNativePanel[adNativeID].setAdBG(new Texture2D[3].ToList());
 
-                    bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
-                       Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent);
-                }
-                else
-                {
-                    bg = _adNativePanel[adNativeID].adBG.transform.parent.GetChild(i).GetComponent<RawImage>();
-                }
-                bg.gameObject.SetActive(true);
-            }
             return true;
 #endif
 
             List<Texture2D> imagetexture = this._nativeAd[adNativeID].GetImageTextures();
             if (imagetexture.Any())
             {
-                List<GameObject> Bgs = new List<GameObject>();
-                int i = 0;
-                foreach (Texture2D texture2D in imagetexture)
-                {
-                    RawImage bg;
-                    if (i >= _adNativePanel[adNativeID].adBG.transform.parent.childCount)
-                    {
-                        bg = Instantiate(_adNativePanel[adNativeID].adBG, _adNativePanel[adNativeID].adBG.transform.position,
-                       Quaternion.identity, _adNativePanel[adNativeID].adBG.transform.parent);
-                    }
-                    else
-                    {
-                        bg = _adNativePanel[adNativeID].adBG.transform.parent.GetChild(i).GetComponent<RawImage>();
-                    }
-                    bg.texture = texture2D;
-                    bg.gameObject.SetActive(true);
-                    Bgs.Add(bg.gameObject);
-                }
+                List<GameObject> Bgs = _adNativePanel[adNativeID].setAdBG(imagetexture);
 
                 this._nativeAd[adNativeID].RegisterImageGameObjects(Bgs);
             }
@@ -1131,7 +1109,16 @@ namespace DVAH
         private void AdLoader_OnNativeAdClicked(object sender, EventArgs e)
         {
             Debug.Log("[Huynn3rdLib]===> Handle ad native clicked! ");
-
+            FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.native, adNetwork: "ADMOB");
+            try
+            {
+                _clickADCallback[(int)AD_TYPE.native]?.Invoke();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("[Huynn3rdLib]==> Faild invoke click inter callback, error: " + exception.Message + " <==");
+            }
+            _clickADCallback[(int)AD_TYPE.native] = null;
         }
 
 
@@ -1180,7 +1167,7 @@ namespace DVAH
         /// </summary>
         public async Task ShowBanner()
         {
-            if (_isOffBanner)
+            if (_offAdPosition[(int)AD_TYPE.banner])
                 return;
 
             while (!_isBannerInitDone)
@@ -1223,7 +1210,7 @@ namespace DVAH
         /// <param name="showNoAds"></param>
         public void ShowInterstitial(Action<InterVideoState> callback = null, bool showNoAds = false)
         {
-            if (_isOffInter)
+            if (_offAdPosition[(int)AD_TYPE.inter])
                 return;
             if (InterstitialIsLoaded())
             {
@@ -1256,7 +1243,7 @@ namespace DVAH
         /// <param name="showNoAds"></param>
         public void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false)
         {
-            if (_isOffReward)
+            if (_offAdPosition[(int)AD_TYPE.reward])
                 return;
 
             if (VideoRewardIsLoaded())
@@ -1295,11 +1282,17 @@ namespace DVAH
         /// <param name="callback">Callback when adopen show done or fail pass true if ad show success and false if ad fail</param>
         public void ShowAdOpen(int ID = 0, bool isAdOpen = false, Action<bool> callback = null)
         {
-            if (isAdOpen && _isOffAdsOpen)
+            if (isAdOpen && _offAdPosition[(int)AD_TYPE.open])
+            {
+                callback?.Invoke(false);
                 return;
+            }
 
-            if (!isAdOpen && _isOffAdsResume)
+            if (!isAdOpen && _offAdPosition[(int)AD_TYPE.resume])
+            {
+                callback?.Invoke(false);
                 return;
+            }
 
             if (isShowingAd)
             {
@@ -1393,7 +1386,34 @@ namespace DVAH
 
         }
 
-#endif
+        public async Task HideNative(int ID, Action<AdNativeObject, bool> callBack = null)
+        {
+            if (ID >= _adNativePanel.Count || _adNativePanel[ID] == null)
+            {
+                Debug.LogErrorFormat("[Huynn3rdLib]===> item ad native ID {} doesnt exist! ", ID);
+            }
+
+
+#if UNITY_EDITOR
+            await Task.Delay(50);
+#else
+            while (_nativeAd[ID] == null)
+            {
+                await Task.Delay(500);
+            }
+#endif 
+            try
+            {
+                callBack?.Invoke(_adNativePanel[ID], _adNativePanel[ID].gameObject.activeSelf);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("[Huynn3rdLib]===>Error on callback show native! error: " + e.ToString() + "<====");
+            }
+            _adNativePanel[ID].gameObject.SetActive(false);
+        }
+
+#endif //NATIVE_AD
 
         #endregion
 
