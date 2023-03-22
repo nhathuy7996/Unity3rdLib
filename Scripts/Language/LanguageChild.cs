@@ -9,8 +9,8 @@ public class LanguageChild : MonoBehaviour
 {
     [SerializeField] string _key;
     Text _text;
-
-    TextMeshPro _textMesh;
+    
+    TextMeshProUGUI _textMesh;
 
     private void Awake()
     {
@@ -32,7 +32,7 @@ public class LanguageChild : MonoBehaviour
             return;
         }
 
-        if (!this.TryGetComponent<Text>(out _text))
+        if (this.TryGetComponent<Text>(out _text))
         {
             return;
         }
@@ -40,7 +40,7 @@ public class LanguageChild : MonoBehaviour
         if (_textMesh != null)
             return;
 
-        if (!this.TryGetComponent<TextMeshPro>(out _textMesh))
+        if (this.TryGetComponent<TextMeshProUGUI>(out _textMesh))
         {
             return;
         }
