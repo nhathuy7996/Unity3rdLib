@@ -282,7 +282,7 @@ namespace DVAH
             _nativeAd = new List<NativeAd>(new NativeAd[_NativeAdID.Count]);
             _isnativeKeepReload = new bool[_NativeAdID.Count];
             _nativeADLoader.Clear();
-            _adNativePanel = new AdNativeObject[_NativeAdID.Count].ToList();
+           
             for (int i = 0; i< _isnativeKeepReload.Length; i++)
             {
                 _nativeADLoader.Add(null);
