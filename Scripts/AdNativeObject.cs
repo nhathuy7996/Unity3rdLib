@@ -29,7 +29,8 @@ namespace DVAH
             while (parent != null && c == null)
             {
                 parent = parent.parent;
-                parent.TryGetComponent<Canvas>(out c);
+                if(parent != null)
+                    parent.TryGetComponent<Canvas>(out c);
             }
             if (c == null || c.renderMode == RenderMode.ScreenSpaceOverlay)
             {
