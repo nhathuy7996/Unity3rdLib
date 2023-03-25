@@ -427,6 +427,8 @@ class ProjectInfoEditor : EditorWindow
             EditorGUILayout.BeginVertical();
             for (int i = 0; i< adManager.NativeAdID.Count; i++)
             {
+                if (adManager.NativeAdID[i] == null)
+                    adManager.NativeAdID[i] = "";
                 adManager.NativeAdID[i] = EditorGUILayout.TextField("Ad ID "+(i+1), adManager.NativeAdID[i].Replace(" ", ""));
             }
 
