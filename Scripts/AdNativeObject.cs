@@ -22,15 +22,18 @@ namespace DVAH
 
         }
 
-        private void OnEnable()
+        private void CheckCanvas()
         {
-            Canvas c = null;
             Transform parent = this.transform;
+            Canvas c = null;
+            parent.TryGetComponent<Canvas>(out c);
+
             while (parent != null && c == null)
             {
                 parent = parent.parent;
-                if (parent != null)
-                    parent.TryGetComponent<Canvas>(out c);
+                if (parent == null)
+                    break;
+                parent.TryGetComponent<Canvas>(out c);
             }
             if (c == null || c.renderMode == RenderMode.ScreenSpaceOverlay)
             {
@@ -124,6 +127,8 @@ namespace DVAH
             {
                 adBGManager.GetChild(i).GetChild(0).GetComponent<BoxCollider2D>().size = adBGManager.GetChild(i).GetChild(0).GetComponent<RectTransform>().rect.size;
             }
+
+            CheckCanvas();
         }
 
     }
