@@ -29,7 +29,7 @@ namespace DVAH
         }
         #endregion
 
-        #region FUNCTION LOAD AD
+        #region FUNCTION LOAD ADs
         public void InitializeBannerAdsAsync() {
             _ =AdMHighFather.Instant.InitializeBannerAds();
         }
@@ -44,7 +44,7 @@ namespace DVAH
 
         #endregion
 
-        #region FUNCTION SHOW/HIDE ADS
+        #region FUNCTION SHOW/HIDE ADs
 
         /// <summary>
         /// Show AD Banner, It doesn't matter SDK init done or not
@@ -175,6 +175,32 @@ namespace DVAH
         }
 
 #endif //NATIVE_AD
+
+        #endregion
+
+        #region FUNCTION CHECK LOAD ADs
+
+        public bool InterstitialIsLoaded()
+        {
+            return AdMHighFather.Instant.InterstitialIsLoaded();
+        }
+
+        public bool VideoRewardIsLoaded()
+        {
+            return AdMHighFather.Instant.VideoRewardIsLoaded();
+        }
+
+        public bool AdsOpenIsLoaded(int ID = 0)
+        {
+            return AdMHighFather.Instant.AdsOpenIsLoaded(ID);
+        }
+
+        public bool NativeAdLoaded(int ID)
+        {
+
+            return AdMHighFather.Instant.NativeAdLoaded(ID);
+
+        }
 
         #endregion
 
