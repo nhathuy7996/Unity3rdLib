@@ -122,7 +122,7 @@ class ProjectInfoEditor : EditorWindow
                 DVAH_Data = UnityEditor.AssetDatabase.LoadAssetAtPath<DVAH_Data>(path);
 
                 numberAddOpenAdID = DVAH_Data.AppLovin_ADOpenIDs.Count;
-                numberNativeADID = DVAH_Data.AppLovin_NativeAdIDs.Count
+                numberNativeADID = DVAH_Data.AppLovin_NativeAdIDs.Count;
             }
             else
             {
