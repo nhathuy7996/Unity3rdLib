@@ -22,7 +22,7 @@ class BuildProcess : IPreprocessBuildWithReport
 
     public void OnPreprocessBuild(BuildReport report)
     {
-
+        ProjectInfoEditor.InitWindowEditor();
         if (!PlayerSettings.applicationIdentifier.StartsWith("com."))
         {
             if(!EditorUtility.DisplayDialog("Attention Please?",
