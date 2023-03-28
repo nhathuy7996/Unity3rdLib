@@ -4,8 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using GoogleMobileAds.Api;
 using UnityEngine;
-using UnityEngine.Events; 
-
+using UnityEngine.Events;
 namespace DVAH
 { 
 
@@ -23,6 +22,26 @@ namespace DVAH
             _ = AdMHighFather.Instant.setOffAdPosition(isOff, aD_TYPE);
             return this;
         }
+
+        public AdManager SetAdNativeKeepReload(int ID, bool isKeepReload) {
+            AdMHighFather.Instant.SetAdNativeKeepReload(ID, isKeepReload);
+            return this;
+        }
+        #endregion
+
+        #region FUNCTION LOAD AD
+        public void InitializeBannerAdsAsync() {
+            _ =AdMHighFather.Instant.InitializeBannerAds();
+        }
+
+        public void LoadNativeADsAsync(params int[] IDs) {
+            _ = AdMHighFather.Instant.LoadNativeADs(IDs);
+        }
+
+        public void LoadNativeADsAsync(Action<int, bool> callback, params int[] indexes) {
+            _ = AdMHighFather.Instant.LoadNativeADs(callback,indexes);
+        }
+
         #endregion
 
         #region FUNCTION SHOW/HIDE ADS
@@ -133,7 +152,7 @@ namespace DVAH
         /// </code>
         /// </summary> 
         /// <param name="callback">Callback using for assign Native AD object into right canvas</param>
-        public void ShowNative(int ID, Action<AdNativeObject> callBack = null)
+        public void ShowNativeAsync(int ID, Action<AdNativeObject> callBack = null)
         {
             _= AdMHighFather.Instant.ShowNative(ID, callBack);
 
@@ -150,7 +169,7 @@ namespace DVAH
         /// </code>
         /// </summary> 
         /// <param name="callback">Callback return adNative panel, dont destroy it!!</param>
-        public void HideNative(int ID, Action<AdNativeObject> callBack = null)
+        public void HideNativeAsync(int ID, Action<AdNativeObject> callBack = null)
         {
             _ = AdMHighFather.Instant.HideNative(ID, callBack);
         }
