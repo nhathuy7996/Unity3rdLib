@@ -15,7 +15,7 @@ public class DVAH_Data : ScriptableObject
 
     //Google
     public string Google_Android_AppID = "";
-    public string Google_Event_Paid_AD = "";
+    public string Google_Event_Paid_AD = "paid_ad_impression_value";
 
    
     //FaceBook

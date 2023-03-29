@@ -92,7 +92,7 @@ namespace DVAH
         /// </code>
         /// </summary>
         /// <param name="callback"></param>
-        /// <param name="showNoAds"></param>
+        /// <param name="showNoAds">if you wanna show a popup "ad not avaiable!"</param>
         public void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false)
         {
             AdMHighFather.Instant.ShowRewardVideo(callback, showNoAds);
