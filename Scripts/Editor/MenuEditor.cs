@@ -486,7 +486,7 @@ public class MenuEditor
 
         GoogleMobileAdsSettings gg = null;
         string[] ggSetting = UnityEditor.AssetDatabase.FindAssets("t:GoogleMobileAdsSettings");
-        AdManager adManagerObject = GameObject.FindObjectOfType<DVAH.AdManager>();
+        AdMHighFather adManagerObject = GameObject.FindObjectOfType<DVAH.AdMHighFather>();
 
         if (ggSetting.Length != 0)
         {

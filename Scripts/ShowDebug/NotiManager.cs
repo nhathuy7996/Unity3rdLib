@@ -22,8 +22,8 @@ namespace DVAH
             instant = this;
             Context = this.GetComponentInChildren<Text>(true);
 
-            if(AdManager.Instant.isAdBanner && AdManager.Instant.BannerPosition.ToString().StartsWith("Bottom"))
-                _panelNoti.offsetMin = new Vector2(_panelNoti.offsetMin.x, 320 );
+            //if(AdManager.Instant.isAdBanner && AdManager.Instant.BannerPosition.ToString().StartsWith("Bottom"))
+            //    _panelNoti.offsetMin = new Vector2(_panelNoti.offsetMin.x, 320 );
         }
         // Start is called before the first frame update
         public void Log(string S)
