@@ -76,7 +76,7 @@ namespace DVAH
         {
 
             this.gameObject.SetActive(false);
-            _ = AdManager.Instant.ShowBanner();
+            AdManager.Instant.ShowBanner();
         }
 
         public string Translator(string key)

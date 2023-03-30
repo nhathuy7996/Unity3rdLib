@@ -36,7 +36,7 @@ public class CustomLib : MonoBehaviour
         AdManager.Instant.ShowAdOpen(0,true, (isSuccess) =>
         {
             SceneManager.UnloadSceneAsync(oldScene);
-            _= AdManager.Instant.InitializeBannerAds();
+            AdManager.Instant.InitializeBannerAdsAsync();
         });
     }
 
@@ -44,11 +44,11 @@ public class CustomLib : MonoBehaviour
     {
         if (!PlayerPrefs.HasKey(CONSTANT.LANGUAGE_ID))
         {
-            _ = AdManager.Instant.LoadNativeADs(0,1,2,3,4,5,6,7,8,9);
+            AdManager.Instant.LoadNativeADsAsync(0,1,2,3,4,5,6,7,8,9);
         }
         else
         {
-            _ = AdManager.Instant.LoadNativeADs(1, 2, 3, 4, 5, 6, 7, 8, 9);
+            AdManager.Instant.LoadNativeADsAsync(1, 2, 3, 4, 5, 6, 7, 8, 9);
             LoadingManager.Instant.DoneCondition(1);
         }
 
@@ -60,7 +60,7 @@ public class CustomLib : MonoBehaviour
         {
             if (!(bool)data)
             {
-                _ = AdManager.Instant.ShowNative(0, (nativePanel) =>
+                AdManager.Instant.ShowNativeAsync(0, (nativePanel) =>
                 {
                     nativePanel.transform.SetParent(LanguageManager.Instant.transform);
                     nativePanel.transform.localScale = Vector3.one;

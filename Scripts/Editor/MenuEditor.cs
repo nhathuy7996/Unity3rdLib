@@ -29,6 +29,10 @@ public class MenuEditor
             return;
         }
 
+        if (EditorUtility.DisplayDialog("Attention", "Do you want clear all playerPrefb before run?", "Yes", "No"))
+            PlayerPrefs.DeleteAll();
+
+        EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
         EditorSceneManager.OpenScene(EditorBuildSettings.scenes[0].path);
         UnityEditor.EditorApplication.isPlaying = true;
     }
@@ -482,7 +486,7 @@ public class MenuEditor
 
         GoogleMobileAdsSettings gg = null;
         string[] ggSetting = UnityEditor.AssetDatabase.FindAssets("t:GoogleMobileAdsSettings");
-        AdManager adManagerObject = GameObject.FindObjectOfType<DVAH.AdManager>();
+        AdMHighFather adManagerObject = GameObject.FindObjectOfType<DVAH.AdMHighFather>();
 
         if (ggSetting.Length != 0)
         {

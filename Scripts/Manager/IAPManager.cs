@@ -30,7 +30,7 @@ namespace DVAH
 
         List<string> _restoreItemCheck = new List<string>();
 
-        private Action _onBuyDone = null, _onBuyFail = null;
+        private Action<bool> _onBuyDone = null;
 
         public bool IsInitDone => IsInitialized();
         private bool _isBuying = false; 
@@ -142,12 +142,11 @@ namespace DVAH
         /// <param name="productId">ID of product (in catalog)</param>
         /// <param name="onBuyDone">do sth if buy success (example: add coin ...)</param>
         /// <param name="onBuyFail">do sth if buy fail (example: show popup sorry ...)</param>
-        public void BuyProductID(string productId, Action onBuyDone = null, Action onBuyFail = null)
+        public void BuyProductID(string productId, Action<bool> onBuyDone = null )
         {
             if (_isBuying) return;
 
-            _onBuyDone = onBuyDone;
-            _onBuyFail = onBuyFail;
+            _onBuyDone = onBuyDone; 
 
             if (!string.IsNullOrEmpty(productId))
                 Debug.Log("[Huynn3rdLib]==> buy productId : " + productId+" <==");
@@ -265,11 +264,14 @@ namespace DVAH
                     if(!_restoreItemCheck.Contains(product.id))
                         _restoreItemCheck.Add(product.id);
 
-                    if (_onBuyDone != null)
+                    try
                     {
-                        _onBuyDone.Invoke();
+                        _onBuyDone?.Invoke(true);
                         _onBuyDone = null;
+                    } catch (Exception e) {
+                        Debug.LogError("[Huynn3rdLib]==> Buy production success but fail on invoke callback, error: "+e.Message);
                     }
+            
 
                     _isBuying = false;
                     return PurchaseProcessingResult.Complete;
@@ -289,15 +291,19 @@ namespace DVAH
             // A product purchase attempt did not succeed. Check failureReason for more detail. Consider sharing 
             // this reason with the user to guide their troubleshooting actions.
             _isBuying = false;
-            _onBuyDone = null;
-            if (_onBuyFail != null)
-            {
-                _onBuyFail.Invoke();
-                _onBuyFail = null;
-            }
-
             Debug.LogError(string.Format("[Huynn3rdLib]==> OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1} <==", product.definition.storeSpecificId, failureReason));
 
+            try
+            {
+                _onBuyDone?.Invoke(false);
+                _onBuyDone = null;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("[Huynn3rdLib]==> Buy production fail then fail on invoke callback, error: " + e.Message);
+            }
+
+           
         }
     }
 

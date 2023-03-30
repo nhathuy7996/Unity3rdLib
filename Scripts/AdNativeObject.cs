@@ -22,6 +22,36 @@ namespace DVAH
 
         }
 
+        private void CheckCanvas()
+        {
+            Transform parent = this.transform;
+            Canvas c = null;
+            parent.TryGetComponent<Canvas>(out c);
+
+            while (parent != null && c == null)
+            {
+                parent = parent.parent;
+                if (parent == null)
+                    break;
+                parent.TryGetComponent<Canvas>(out c);
+            }
+            if (c == null || c.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                string error = "[Huynn3rdLib]====>If native object doesnt on canvas OR canvas using RenderMode.ScreenSpaceOverlay, " +
+                    "then native AD not clickable which make your impression not record eventhought you saw native AD show up on editor/device!!! <====";
+                Debug.LogError(error);
+                callToAction.text = error;
+                advertiser.text = error;
+                headLine.text = error;
+                body.text = error;
+
+                callToAction.color = Color.red;
+                advertiser.color = Color.red;
+                headLine.color = Color.red;
+                body.color = Color.red;
+            }
+        }
+
         public List<GameObject> setAdBG(List<Texture2D> texs)
         {
             List<GameObject> BGs = new List<GameObject>();
@@ -49,7 +79,7 @@ namespace DVAH
                 BGs.Add(bg.transform.GetChild(0).gameObject);
             }
 #else
-            for (int i = 0; i< texs.Length; i++) {
+            for (int i = 0; i< texs.Count; i++) {
 
                 Texture2D tex = texs[i];
                 GameObject bg;
@@ -59,7 +89,7 @@ namespace DVAH
                 } else {
                     bg = this.adBGManager.GetChild(i).gameObject;
                 }
-                float aspect = texs[i].width / texs[i].heigh;
+                float aspect = texs[i].width / texs[i].height;
 
                 bg.GetComponentInChildren<AspectRatioFitter>().aspectMode = AspectRatioFitter.AspectMode.FitInParent;
                 bg.GetComponentInChildren<AspectRatioFitter>().aspectRatio = aspect; 
@@ -97,6 +127,8 @@ namespace DVAH
             {
                 adBGManager.GetChild(i).GetChild(0).GetComponent<BoxCollider2D>().size = adBGManager.GetChild(i).GetChild(0).GetComponent<RectTransform>().rect.size;
             }
+
+            CheckCanvas();
         }
 
     }

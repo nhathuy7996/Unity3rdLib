@@ -87,7 +87,7 @@ namespace DVAH
         {
             if (_noInternetDebug)
             {
-                _noInternetDebug.SetActive(!AdManager.Instant.CheckInternetConnection());
+                _noInternetDebug.SetActive(!this.CheckInternetConnection());
             }  
 
 
@@ -116,7 +116,7 @@ namespace DVAH
             if (_devTapCount < 5)
                 return;
 
-            _ = AdManager.Instant.ShowAdDebugger();
+            _ = AdMHighFather.Instant.ShowAdDebugger();
             if (!_notiDebug.activeSelf)
                 _notiDebug.SetActive(true);
         }
@@ -177,6 +177,11 @@ namespace DVAH
                 _childLibs.Add(_masterLib.transform.GetChild(i).gameObject);
             }
            
+        }
+
+        public bool CheckInternetConnection()
+        {
+            return AdMHighFather.Instant.CheckInternetConnection();
         }
 
         public bool CheckFirebaseJS()
