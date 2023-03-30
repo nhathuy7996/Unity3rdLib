@@ -51,6 +51,8 @@ class ProjectInfoEditor : EditorWindow
 
     DVAH_Data DVAH_Data;
 
+    static bool usingAdNative = false, usingIAP = false;
+
     bool isShowKeyStorePass = false, isShowAliasPass = false;
     Adjust adjustGameObject;
 
@@ -82,7 +84,14 @@ class ProjectInfoEditor : EditorWindow
         {
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
             EditorSceneManager.OpenScene(EditorBuildSettings.scenes[0].path);
-        } 
+        }
+
+        string[] symbolsList;
+        PlayerSettings.GetScriptingDefineSymbols(UnityEditor.Build.NamedBuildTarget.Android,out symbolsList);
+        if (symbolsList.ToList().Contains("NATIVE_AD"))
+            usingAdNative = true;
+        if (symbolsList.ToList().Contains("IAP"))
+            usingIAP = true;
     }
 
     void OnGUI()
@@ -122,7 +131,9 @@ class ProjectInfoEditor : EditorWindow
                 DVAH_Data = UnityEditor.AssetDatabase.LoadAssetAtPath<DVAH_Data>(path);
 
                 numberAddOpenAdID = DVAH_Data.AppLovin_ADOpenIDs.Count;
+#if NATIVE_AD
                 numberNativeADID = DVAH_Data.AppLovin_NativeAdIDs.Count;
+#endif
             }
             else
             {
@@ -175,6 +186,51 @@ class ProjectInfoEditor : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
         PlayerSettings.Android.useCustomKeystore = EditorGUILayout.Toggle("Custom KeyStore", PlayerSettings.Android.useCustomKeystore);
+        usingAdNative = EditorGUILayout.Toggle("Using Ad Native", usingAdNative);
+        usingIAP = EditorGUILayout.Toggle("Using IAP", usingIAP);
+
+        string[] symbols;
+        PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android, out symbols);
+        List<string> tmpSymbols = symbols.ToList();
+        if (usingAdNative)
+        { 
+            if (!tmpSymbols.Contains("NATIVE_AD"))
+            {
+                tmpSymbols.Add("NATIVE_AD");
+                symbols = tmpSymbols.ToArray();
+            }
+        }
+        else
+        {
+            if (symbols.Contains("NATIVE_AD"))
+            {
+                
+                tmpSymbols.Remove("NATIVE_AD");
+                symbols = tmpSymbols.ToArray();
+                
+            } 
+        }
+
+        if (usingIAP)
+        {
+            if (!symbols.Contains("IAP"))
+            {
+                tmpSymbols.Add("IAP");
+                symbols = tmpSymbols.ToArray();
+            }
+        }
+        else
+        {
+            if (symbols.Contains("IAP"))
+            {
+               
+                tmpSymbols.Remove("IAP");
+                symbols = tmpSymbols.ToArray();
+
+            }
+        }
+        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android, symbols);
+
         if (PlayerSettings.Android.useCustomKeystore)
         {
             if (EditorGUILayout.LinkButton("Select"))
@@ -319,7 +375,7 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.EndHorizontal(); 
-#endif 
+#endif
 
         PrefabUtility.RecordPrefabInstancePropertyModifications(DVAH_Data);
         EditorUtility.SetDirty(DVAH_Data);
@@ -431,12 +487,7 @@ class ProjectInfoEditor : EditorWindow
             }
         }
         else
-        {
-          
-            EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("Facebook:", TextGreenStyles);
-
-            
+        {   
             var appIds = facebook.GetType().GetProperty("AppIds");
 
             if (appIds != null)
@@ -511,7 +562,7 @@ class ProjectInfoEditor : EditorWindow
                 adManager.OpenAdUnitIDs[i] = DVAH_Data.AppLovin_ADOpenIDs[i];
             } 
  
-#if NATIVE_AD 
+#if NATIVE_AD
              
             if (numberNativeADID > adManager.NativeAdID.Count)
             {

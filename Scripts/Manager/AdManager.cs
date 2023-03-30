@@ -23,17 +23,20 @@ namespace DVAH
             return this;
         }
 
+#if NATIVE_AD
         public AdManager SetAdNativeKeepReload(int ID, bool isKeepReload) {
             AdMHighFather.Instant.SetAdNativeKeepReload(ID, isKeepReload);
             return this;
         }
-        #endregion
+#endif
+#endregion
 
         #region FUNCTION LOAD ADs
         public void InitializeBannerAdsAsync() {
             _ =AdMHighFather.Instant.InitializeBannerAds();
         }
 
+#if NATIVE_AD
         public void LoadNativeADsAsync(params int[] IDs) {
             _ = AdMHighFather.Instant.LoadNativeADs(IDs);
         }
@@ -41,8 +44,9 @@ namespace DVAH
         public void LoadNativeADsAsync(Action<int, bool> callback, params int[] indexes) {
             _ = AdMHighFather.Instant.LoadNativeADs(callback,indexes);
         }
+#endif
 
-        #endregion
+#endregion
 
         #region FUNCTION SHOW/HIDE ADs
 

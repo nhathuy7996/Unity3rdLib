@@ -26,6 +26,4 @@ MonoBehaviour:
   AppLovin_RewardID: 
   AppLovin_ADOpenIDs:
   - vvvv
-  AppLovin_NativeAdIDs:
-  - fff
-  - aa
+  AppLovin_NativeAdIDs: []
