@@ -398,6 +398,10 @@ class ProjectInfoEditor : EditorWindow
                 fireBaseManager.Level_Achived = DVAH_Data.EventsToken_LevelAchives;
                 PrefabUtility.RecordPrefabInstancePropertyModifications(fireBaseManager);
             }
+            else
+            {
+                fireBaseManager = GameObject.FindObjectOfType<FireBaseManager>();
+            }
            
             PrefabUtility.RecordPrefabInstancePropertyModifications(adjustGameObject);
         }
