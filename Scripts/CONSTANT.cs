@@ -3,6 +3,7 @@ namespace DVAH
 {
     public class CONSTANT
     {
+        public const string Prefix = "<color=cyan>[Huynn3rdLib]</color>";
         #region Observer Key
         public const string LAN_1ST = "LAN_1ST";
         #endregion

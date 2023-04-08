@@ -37,7 +37,7 @@ namespace DVAH
             }
             if (c == null || c.renderMode == RenderMode.ScreenSpaceOverlay)
             {
-                string error = "[Huynn3rdLib]====>If native object doesnt on canvas OR canvas using RenderMode.ScreenSpaceOverlay, " +
+                string error = CONSTANT.Prefix + $"====>If native object doesnt on canvas OR canvas using RenderMode.ScreenSpaceOverlay, " +
                     "then native AD not clickable which make your impression not record eventhought you saw native AD show up on editor/device!!! <====";
                 Debug.LogError(error);
                 callToAction.text = error;

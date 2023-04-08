@@ -39,7 +39,7 @@ namespace DVAH
 
         public void Init(Action onInitDone)
         {
-            Debug.Log("[Huynn3rdLib]==========> IAP start Init! <==========");
+            Debug.Log(CONSTANT.Prefix + $"==========><color=#00FF00>IAP start Init!</color><==========");
             _onInitDone = onInitDone;
             InitializePurchasing();
         }
@@ -109,7 +109,7 @@ namespace DVAH
                 if(isTimeOut)
                     if (countTime >= 360000f)
                     {
-                        Debug.LogError(string.Format("[Huynn3rdLib]==>Restored product {0} fail, becuz time out! Check your network please!<==", productID));
+                        Debug.LogError(string.Format(CONSTANT.Prefix + $"==>Restored product {0} fail, becuz time out! Check your network please!<==", productID));
                         return false;
                     }
                 await Task.Delay(500);
@@ -121,7 +121,7 @@ namespace DVAH
                 return true;
             }
 
-            Debug.LogError(string.Format("[Huynn3rdLib]==>Restored product {0} fail, Check product ID!<==", productID));
+            Debug.LogError(string.Format(CONSTANT.Prefix + $"==>Restored product {0} fail, Check product ID!<==", productID));
             return false;
         }
 
@@ -149,7 +149,7 @@ namespace DVAH
             _onBuyDone = onBuyDone; 
 
             if (!string.IsNullOrEmpty(productId))
-                Debug.Log("[Huynn3rdLib]==> buy productId : " + productId+" <==");
+                Debug.Log(CONSTANT.Prefix + $"==> buy productId : " + productId+" <==");
             // If Purchasing has been initialized ...
             if (IsInitialized())
             {
@@ -169,7 +169,7 @@ namespace DVAH
 
                 _isBuying = false;
                 // ... report the product look-up failure situation  
-                Debug.LogError("[Huynn3rdLib]==> BuyProductID: FAIL. Not purchasing product, either is not found or is not available for purchase <==");
+                Debug.LogError(CONSTANT.Prefix + $"==> BuyProductID: FAIL. Not purchasing product, either is not found or is not available for purchase <==");
 
                 return;
             }
@@ -177,7 +177,7 @@ namespace DVAH
             // ... report the fact Purchasing has not succeeded initializing yet. Consider waiting longer or 
             // retrying initiailization.
             _isBuying = false;
-            Debug.LogError("[Huynn3rdLib]==> BuyProductID FAIL. Not initialized <==");
+            Debug.LogError(CONSTANT.Prefix + $"==> BuyProductID FAIL. Not initialized <==");
             //NoticeManager.Instance.LogNotice("BuyProductID FAIL. Not initialized.");
 
         }
@@ -191,7 +191,7 @@ namespace DVAH
             if (!IsInitialized())
             {
                 // ... report the situation and stop restoring. Consider either waiting longer, or retrying initialization.
-                Debug.LogError("[Huynn3rdLib]==> RestorePurchases FAIL. Not initialized <==");
+                Debug.LogError(CONSTANT.Prefix + $"==> RestorePurchases FAIL. Not initialized <==");
                 //NoticeManager.Instance.LogNotice("RestorePurchases FAIL. Not initialized.");
                 return;
             }
@@ -201,7 +201,7 @@ namespace DVAH
                 Application.platform == RuntimePlatform.OSXPlayer)
             {
                 // ... begin restoring purchases
-                Debug.Log("[Huynn3rdLib]==> RestorePurchases started ...<==");
+                Debug.Log(CONSTANT.Prefix + $"==> RestorePurchases started ...<==");
 
                 // Fetch the Apple store-specific subsystem.
                 var apple = m_StoreExtensionProvider.GetExtension<IAppleExtensions>();
@@ -211,14 +211,14 @@ namespace DVAH
                 {
                     // The first phase of restoration. If no more responses are received on ProcessPurchase then 
                     // no purchases are available to be restored.
-                    Debug.Log("[Huynn3rdLib]==> RestorePurchases continuing: " + result + ". If no further messages, no purchases available to restore <==");
+                    Debug.Log(CONSTANT.Prefix + $"==> RestorePurchases continuing: " + result + ". If no further messages, no purchases available to restore <==");
                 });
             }
             // Otherwise ...
             else
             {
                 // We are not running on an Apple device. No work is necessary to restore purchases.
-                Debug.LogError("[Huynn3rdLib]==> RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform+" <==");
+                Debug.LogError(CONSTANT.Prefix + $"==> RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform+" <==");
             }
         }
 
@@ -243,7 +243,7 @@ namespace DVAH
         public void OnInitializeFailed(InitializationFailureReason error)
         {
             // Purchasing set-up has not succeeded. Check error for reason. Consider sharing this reason with the user.
-            Debug.LogError("[Huynn3rdLib]==> OnInitializeFailed InitializationFailureReason:" + error+" <==");
+            Debug.LogError(CONSTANT.Prefix + $"==> OnInitializeFailed InitializationFailureReason:" + error+" <==");
             _onInitDone?.Invoke();
         }
 
@@ -257,7 +257,7 @@ namespace DVAH
 
                 if (String.Equals(args.purchasedProduct.definition.id, product.id, StringComparison.Ordinal))
                 {
-                    Debug.Log(string.Format("[Huynn3rdLib]==> ProcessPurchase: PASS. Product: '{0}' <==", args.purchasedProduct.definition.id));
+                    Debug.Log(string.Format(CONSTANT.Prefix + $"==> ProcessPurchase: PASS. Product: '{0}' <==", args.purchasedProduct.definition.id));
                     //NoticeManager.Instance.LogNotice(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));
                     //#if  UNITY_EDITOR
                      
@@ -269,7 +269,7 @@ namespace DVAH
                         _onBuyDone?.Invoke(true);
                         _onBuyDone = null;
                     } catch (Exception e) {
-                        Debug.LogError("[Huynn3rdLib]==> Buy production success but fail on invoke callback, error: "+e.Message);
+                        Debug.LogError(CONSTANT.Prefix + $"==> Buy production success but fail on invoke callback, error: "+e.Message);
                     }
             
 
@@ -291,7 +291,7 @@ namespace DVAH
             // A product purchase attempt did not succeed. Check failureReason for more detail. Consider sharing 
             // this reason with the user to guide their troubleshooting actions.
             _isBuying = false;
-            Debug.LogError(string.Format("[Huynn3rdLib]==> OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1} <==", product.definition.storeSpecificId, failureReason));
+            Debug.LogError(string.Format(CONSTANT.Prefix + $"==> OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1} <==", product.definition.storeSpecificId, failureReason));
 
             try
             {
@@ -300,7 +300,7 @@ namespace DVAH
             }
             catch (Exception e)
             {
-                Debug.LogError("[Huynn3rdLib]==> Buy production fail then fail on invoke callback, error: " + e.Message);
+                Debug.LogError(CONSTANT.Prefix + $"==> Buy production fail then fail on invoke callback, error: " + e.Message);
             }
 
            

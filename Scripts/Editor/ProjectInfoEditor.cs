@@ -468,7 +468,7 @@ class ProjectInfoEditor : EditorWindow
             }
             else
             {
-                Debug.LogError("[Huynn3rdLib]:Can not find MaxSdkSetting!");
+                Debug.LogError(CONSTANT.Prefix + $":Can not find MaxSdkSetting!");
             }
         }
 
@@ -487,7 +487,7 @@ class ProjectInfoEditor : EditorWindow
             }
             else
             {
-                Debug.LogError("[Huynn3rdLib]:Can not find MaxSdkSetting!");
+                Debug.LogError(CONSTANT.Prefix + $":Can not find MaxSdkSetting!");
             }
         }
         else
@@ -506,7 +506,7 @@ class ProjectInfoEditor : EditorWindow
                 appIds.SetValue(facebook, new List<string>() { DVAH_Data.Facebook_AppID }, null);
             }
             else
-                Debug.LogError("[Huynn3rdLib]:Can not find FB app ID field!");
+                Debug.LogError(CONSTANT.Prefix + $":Can not find FB app ID field!");
 
             
             var clientToken = facebook.GetType().GetProperty("ClientTokens");
@@ -523,7 +523,7 @@ class ProjectInfoEditor : EditorWindow
                 clientToken.SetValue(facebook, new List<string>() { DVAH_Data.Facebook_ClientToken }, null);
             }
             else
-                Debug.LogError("[Huynn3rdLib]:Can not find FB client token field!");
+                Debug.LogError(CONSTANT.Prefix + $":Can not find FB client token field!");
 
             var keyStorePath = facebook.GetType().GetProperty("AndroidKeystorePath");
             if (keyStorePath != null)

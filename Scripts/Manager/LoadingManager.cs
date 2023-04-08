@@ -68,7 +68,7 @@ namespace DVAH
             {
                 if (value == 100)
                 {
-                    Debug.Log("[Huynn3rdLib]==>Loading Done!<==");
+                    Debug.Log(CONSTANT.Prefix + $"==>Loading Done!<==");
                     _loadingPopUp.SetActive(false);
                     _isLoadingStart = false;
                     try
@@ -87,7 +87,7 @@ namespace DVAH
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError("[Huynn3rdLib]==> callback ondone loading error: " + e.ToString() + " <==");
+                        Debug.LogError(CONSTANT.Prefix + $"==> callback ondone loading error: " + e.ToString() + " <==");
                     }
 
                     _loading.onValueChanged.RemoveAllListeners();
@@ -124,7 +124,7 @@ namespace DVAH
         { 
             if (_maxTimeLoading == 0.2f)
                 return;
-            Debug.Log("[Huynn3rdLib]==> Force stop loading! <==");
+            Debug.Log(CONSTANT.Prefix + $"==> Force stop loading! <==");
             _loadingMaxvalue = _loading.maxValue - _loading.value;
             _maxTimeLoading = 0.2f;
 
@@ -167,20 +167,20 @@ namespace DVAH
 
             if (id >= _conditionDone.Count)
             {
-                Debug.LogError("[Huynn3rdLib]==> ID condition not exist, check number of conditon on inspector! <==");
+                Debug.LogError(CONSTANT.Prefix + $"==> ID condition not exist, check number of conditon on inspector! <==");
                 return;
             }
 
             if (_loading.value >= 99f)
             {
-                Debug.LogWarning("[Huynn3rdLib]==> Loading already stop, maybe check your game flow! <==");
+                Debug.LogWarning(CONSTANT.Prefix + $"==> Loading already stop, maybe check your game flow! <==");
                 return;
             }
 
             _conditionDone[id] = true;
             if (_conditionDone.Where(c => c == false).Count() == 0)
             {
-                Debug.Log("[Huynn3rdLib]==> All condition is done! stop loading! <==");
+                Debug.Log(CONSTANT.Prefix + $"==> All condition is done! stop loading! <==");
                 StopLoading();
             }
         }
