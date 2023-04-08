@@ -94,34 +94,34 @@ namespace DVAH
 
         IEnumerator RequestReviews(UnityAction afterRateAction)
         {
-            Debug.Log("[Huynn3rdLib]==> RequestReviews-----1 <==");
+            Debug.Log(CONSTANT.Prefix + $"==> RequestReviews-----1 <==");
             _reviewManager = new ReviewManager();
 
             var requestFlowOperation = _reviewManager.RequestReviewFlow();
-            Debug.Log("[Huynn3rdLib]==> RequestReviews-----2 <==");
+            Debug.Log(CONSTANT.Prefix + $"==> RequestReviews-----2 <==");
             yield return requestFlowOperation;
-            Debug.Log("[Huynn3rdLib]==> RequestReviews-----3 <==");
+            Debug.Log(CONSTANT.Prefix + $"==> RequestReviews-----3 <==");
             if (requestFlowOperation.Error != ReviewErrorCode.NoError)
             {
                 // Log error. For example, using requestFlowOperation.Error.ToString().
-                Debug.LogError("[Huynn3rdLib]==> requestFlowOperation-----4-error: " + requestFlowOperation.Error.ToString() + " <==");
+                Debug.LogError(CONSTANT.Prefix + $"==> requestFlowOperation-----4-error: " + requestFlowOperation.Error.ToString() + " <==");
                 yield break;
             }
-            Debug.Log("[Huynn3rdLib]==> RequestReviews-----5 <==");
+            Debug.Log(CONSTANT.Prefix + $"==> RequestReviews-----5 <==");
             _playReviewInfo = requestFlowOperation.GetResult();
 
             var launchFlowOperation = _reviewManager.LaunchReviewFlow(_playReviewInfo);
-            Debug.Log("[Huynn3rdLib]==> RequestReviews-----6 <==");
+            Debug.Log(CONSTANT.Prefix + $"==> RequestReviews-----6 <==");
             yield return launchFlowOperation;
-            Debug.Log("[Huynn3rdLib]==> RequestReviews-----7 <==");
+            Debug.Log(CONSTANT.Prefix + $"==> RequestReviews-----7 <==");
             _playReviewInfo = null; // Reset the object
             if (launchFlowOperation.Error != ReviewErrorCode.NoError)
             {
                 // Log error. For example, using requestFlowOperation.Error.ToString().
-                Debug.LogError("[Huynn3rdLib]==> launchFlowOperation-----8-error: " + launchFlowOperation.Error.ToString() + " <==");
+                Debug.LogError(CONSTANT.Prefix + $"==> launchFlowOperation-----8-error: " + launchFlowOperation.Error.ToString() + " <==");
                 yield break;
             }
-            Debug.Log("[Huynn3rdLib]==> RequestReviews-----9 <==");
+            Debug.Log(CONSTANT.Prefix + $"==> RequestReviews-----9 <==");
             // The flow has finished. The API does not indicate whether the user
             // reviewed or not, or even whether the review dialog was shown. Thus, no
             // matter the result, we continue our app flow.
