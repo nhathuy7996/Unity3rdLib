@@ -72,6 +72,8 @@ class ProjectInfoEditor : EditorWindow
 
     int numberNativeADID = 0, numberAddOpenAdID = 0;
 
+    MasterLib masterLib;
+
     // Add menu named "My Window" to the Window menu
     [MenuItem("3rdLib/Checklist APERO",priority = 0)]
     public static void InitWindowEditor()
@@ -96,7 +98,7 @@ class ProjectInfoEditor : EditorWindow
 
     void OnGUI()
     {
-         
+        
         if (TextRedStyles == null)
         {
             TextRedStyles = new GUIStyle(EditorStyles.label);
@@ -229,6 +231,8 @@ class ProjectInfoEditor : EditorWindow
 
             }
         }
+ 
+
         PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android, symbols);
 
         if (PlayerSettings.Android.useCustomKeystore)

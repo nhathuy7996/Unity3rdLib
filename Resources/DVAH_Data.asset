@@ -23,7 +23,8 @@ MonoBehaviour:
   AppLovin_SDK_Key: 
   AppLovin_BannerID: 123
   AppLovin_InterID: 123
-  AppLovin_RewardID: 
+  AppLovin_RewardID: 123
   AppLovin_ADOpenIDs:
   - vvvv
-  AppLovin_NativeAdIDs: []
+  AppLovin_NativeAdIDs:
+  - ca-app-pub-3940256099942544/2247696110

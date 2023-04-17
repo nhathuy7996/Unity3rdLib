@@ -68,7 +68,7 @@ namespace DVAH
         /// </summary>
         public void DestroyBanner()
         {
-            _= AdMHighFather.Instant.ShowBanner();
+            AdMHighFather.Instant.DestroyBanner();
         }
 
 
