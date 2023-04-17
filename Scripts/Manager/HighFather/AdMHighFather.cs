@@ -1365,6 +1365,9 @@ namespace DVAH
         /// <param name="callback">Callback using for assign Native AD object into right canvas</param>
         public async Task ShowNative(int ID, Action<AdNativeObject> callBack = null)
         {
+            if (_offAdPosition[(int)AD_TYPE.native])
+                return;
+
             if (ID >= _adNativePanel.Count || ID >= _nativeAd.Count)
                 return;
             if (_adNativePanel[ID] == null)
