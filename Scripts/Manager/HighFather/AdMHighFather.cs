@@ -802,7 +802,8 @@ namespace DVAH
                 await Task.Delay(50);
             }
 
-            _callbackLoadNativeAd = callback;
+             
+            _callbackLoadNativeAd += callback;
 
             foreach (int index in indexes)
             {
