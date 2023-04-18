@@ -9,6 +9,9 @@ namespace DVAH
 
     public class AdManager: Singleton<AdManager> {
 
+
+        public bool[] offAdPositions => AdMHighFather.Instant.offAdPosition;
+
         #region INJECT FUNCTION
         public AdManager AssignClickCallBack(Action callback, AD_TYPE adType)
         {

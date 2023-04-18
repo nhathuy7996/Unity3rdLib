@@ -53,7 +53,10 @@ namespace DVAH
         /// <returns> LoadingManager component</returns>
         public LoadingManager Init(Action<List<bool>> onDone = null)
         {
-           
+            if(_maxTimeLoading == 0.2f)
+            {
+                Debug.Log(CONSTANT.Prefix + $"==><color=yellow>Your time loading is to fast! You should call SetMaxTimeLoading first!</color><==");
+            }
             _conditionDone.Clear();
             for (int i = 0; i < _numberCondition; i++)
             {
@@ -79,7 +82,7 @@ namespace DVAH
                             {"id_screen","loading_end" }
                         });
 
-                                _ = FireBaseManager.Instant.LogEventWithParameter("screen_view_data", new Hashtable()
+                        _ = FireBaseManager.Instant.LogEventWithParameter("screen_view_data", new Hashtable()
                         {
                             {"id_screen","lobby_start" }
                         });
@@ -95,12 +98,16 @@ namespace DVAH
                 }
             });
 
+            _loadingPopUp.SetActive(true);
             _isLoadingStart = true;
             return this;
         }
 
         /// <summary>
-        /// You can set number of condition fight before start loading
+        /// Start Loading bar with an action call back
+        /// action will trigger when loading done (time out or done on condition)
+        /// action get a list<bool> stand for list of condition done or not
+        /// RECOMMEND: using enum to define condition ID
         /// </summary>
         /// <param name="numberCondition">number of condition which loading will wait all done then stop (in amout of time)</param>
         /// <param name="onDone">callback when all condition done or timeout</param>
@@ -110,6 +117,13 @@ namespace DVAH
             _numberCondition = numberCondition;
             return Init(onDone);
         }
+
+        public LoadingManager SetMaxTimeLoading(float maxTime)
+        {
+            _maxTimeLoading = maxTime;
+            return this;
+        }
+
         // Update is called once per frame
         void Update()
         {
@@ -124,7 +138,7 @@ namespace DVAH
         { 
             if (_maxTimeLoading == 0.2f)
                 return;
-            Debug.Log(CONSTANT.Prefix + $"==> Force stop loading! <==");
+            Debug.Log(CONSTANT.Prefix + $"==> <color=red>Force stop loading!</color> <==");
             _loadingMaxvalue = _loading.maxValue - _loading.value;
             _maxTimeLoading = 0.2f;
 
@@ -156,6 +170,34 @@ namespace DVAH
         {
             _ = waitToSetDoneCondition(id);
             return this;
+        }
+
+        /// <summary>
+        /// Using this to wait and set a condition is done. If all condition is done,
+        /// then loading will stop immediately
+        /// It simmilar using Coroutine to wait
+        /// </summary>
+        /// <param name="id">ID of condition you wanna mark done</param>
+        /// <param name="predicate">like wait until of coroutine</param>
+        /// <returns>LoadingManager</returns>
+        /// <code>
+        /// LoadingManager.Instant.DoneConditionSelf(0,()=> AdManager.Instant.AdsOpenIsLoaded(0));
+        /// </code>
+        public LoadingManager DoneConditionSelf(int id, Func<bool> predicate)
+        {
+            _ = waitSelfDoneCondition(id, predicate);
+            return this;
+        }
+
+        async Task waitSelfDoneCondition(int id, Func<bool> predicate)
+        {
+            do
+            {
+                await Task.Delay(500);
+            } while ((!predicate.Invoke()));
+
+            await Task.Delay(500);
+            DoneCondition(id);
         }
 
         async Task waitToSetDoneCondition(int id)

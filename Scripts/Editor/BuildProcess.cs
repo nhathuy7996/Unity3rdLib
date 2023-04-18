@@ -42,12 +42,22 @@ class BuildProcess : IPreprocessBuildWithReport
             }
         }
 
-         if (EditorUserBuildSettings.buildAppBundle && !PlayerSettings.Android.useCustomKeystore)
+        if (EditorUserBuildSettings.buildAppBundle && !PlayerSettings.Android.useCustomKeystore)
         {
             if(!EditorUtility.DisplayDialog("Attention Please?",
                "Are you sure wanna build an .aab file with DEBUG keystore? It's definitely can't upload to google play!", "Continue Build!", "Stop build!"))
             {
                 MenuEditor.StopBuildWithMessage("build aab with debug keystore!");
+            }
+        }
+
+        Adjust adjustGameObject = GameObject.FindObjectOfType<Adjust>();
+        if (EditorUserBuildSettings.buildAppBundle && adjustGameObject && adjustGameObject.environment == AdjustEnvironment.Sandbox)
+        {
+            if (!EditorUtility.DisplayDialog("Attention Please?",
+               "Are you sure wanna build an .aab file with adjut on SANDBOX mode?", "Continue Build!", "Stop build!"))
+            {
+                MenuEditor.StopBuildWithMessage("build aab with adjut on SANDBOX mode!");
             }
         }
 
