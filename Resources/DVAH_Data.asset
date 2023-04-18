@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 640af7f2ec79a4391a239a838ba259b4, type: 3}
   m_Name: DVAH_Data
   m_EditorClassIdentifier: 
-  Adjust_token: ffff
+  Adjust_token: token
   AdjustMode: 0
   EventsToken_AdValue: 
   EventsToken_LevelAchives: 
@@ -21,9 +21,19 @@ MonoBehaviour:
   Facebook_AppID: 
   Facebook_ClientToken: 
   AppLovin_SDK_Key: 
-  AppLovin_BannerID: 123
-  AppLovin_InterID: 123
-  AppLovin_RewardID: 
+  AppLovin_BannerID: bannerID
+  AppLovin_InterID: interID
+  AppLovin_RewardID: rewardID
   AppLovin_ADOpenIDs:
-  - vvvv
-  AppLovin_NativeAdIDs: []
+  - appopen(adopen)ID
+  AppLovin_NativeAdIDs:
+  - ca-app-pub-3940256099942544/2247696110
+  - ca-app-pub-3940256099942544/2247696110
+  - ca-app-pub-3940256099942544/2247696110
+  - ca-app-pub-3940256099942544/2247696110
+  - ca-app-pub-3940256099942544/2247696110
+  - ca-app-pub-3940256099942544/2247696110
+  - ca-app-pub-3940256099942544/2247696110
+  - ca-app-pub-3940256099942544/2247696110
+  - ca-app-pub-3940256099942544/2247696110
+  - ca-app-pub-3940256099942544/2247696110

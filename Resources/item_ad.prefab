@@ -628,9 +628,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   adIcon: {fileID: 7373984932087215311}
   adChoice: {fileID: 7373984933036250084}
-  adBGRawImage: {fileID: 0}
-  adBGFitter: {fileID: 4880001147201085414}
-  adBGAspect: {fileID: 0}
+  adBGFitter: {fileID: 7373984933992471942}
   callToAction: {fileID: 7373984932797704953}
   advertiser: {fileID: 7373984932917597945}
   headLine: {fileID: 7373984932437552985}
@@ -719,7 +717,7 @@ RectTransform:
   m_AnchorMin: {x: 0.051272344, y: 0.85800004}
   m_AnchorMax: {x: 0.10358952, y: 0.9657603}
   m_AnchoredPosition: {x: -0.044555664, y: 0.38809204}
-  m_SizeDelta: {x: -0.059212126, y: -71.095406}
+  m_SizeDelta: {x: -0.059212126, y: -85.48986}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7373984932087215310
 CanvasRenderer:
@@ -834,7 +832,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.95378053}
   m_AnchorMax: {x: 0.044000003, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -0.13000107, y: -44.691563}
+  m_SizeDelta: {x: -0.13000107, y: -53.63766}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &7373984932370596494
 CanvasRenderer:
@@ -1320,7 +1318,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: -46.479614}
+  m_SizeDelta: {x: 0, y: -58.65686}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7373984933036250083
 CanvasRenderer:
@@ -1585,7 +1583,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AspectMode: 0
-  m_AspectRatio: 1.0932945
+  m_AspectRatio: 0.81997085
 --- !u!1 &7373984933664463484
 GameObject:
   m_ObjectHideFlags: 0

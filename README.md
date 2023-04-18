@@ -106,6 +106,9 @@ if some condition still false but loading reach max time then loading still stop
       });
 
 ## Call function:
+
+![enter ID adopen](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/6.png) 
+
 #### ***Buy product***
         IAPManager.Instant.BuyProductID("IDProduct", () =>
         {
@@ -162,11 +165,16 @@ if some condition still false but loading reach max time then loading still stop
         DVAH3rdLib.Instant.ShowPopUpRate(false) //==> Hide
 
 #### ***AdManager***
+        AdManager.Instant.InitializeBannerAdsAsync(); // If you wanna call init banner manually
         AdManager.Instant.ShowBanner();
         AdManager.Instant.DestroyBanner();
-        //Call anywhwre you need show or hide banner, admanager auto load and show or hide!
-        //On inspector, set bannerADID = blank if game dont have banner
-        
+####
+
+Call anywhwre you need show or hide banner, admanager auto load and show or hide!
+
+On inspector, set bannerADID = blank if game dont have banner
+   
+####
         AdManager.Instant.ShowInterstitial((status) =>
         {
             //Do sth when user watched inter
@@ -181,8 +189,9 @@ if some condition still false but loading reach max time then loading still stop
 
 
         }, showNoAds: true);
-        // showNoAds: true ==> if you wanna show popup "AD not avaiable" - flase or just leave it blank if you dont need popup
-
+####
+showNoAds: true ==> if you wanna show popup "AD not avaiable" - flase or just leave it blank if you dont need popup
+####
         AdManager.Instant.ShowRewardVideo((status) =>
         {
             //Do sth when user watched reward
@@ -197,17 +206,41 @@ if some condition still false but loading reach max time then loading still stop
 
 
         }, showNoAds: true);
-        // showNoAds: true ==> if you wanna show popup "AD not avaiable" - flase or just leave it blank if you dont need popup
-        
-        //Some game have more than one ad open then, you must pass ID for loading/showing
-        //If game have more than one ad open then Ad ID 0 will auto use for open game and the last one use for resume game
-         _= AdManager.Instant.LoadAdOpen(ID); 
+####
+showNoAds: true ==> if you wanna show popup "AD not avaiable" - flase or just leave it blank if you dont need popup
 
+****AD OPEN/RESUME*****
+![enter ID adopen](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/5.png) 
+
+Some game have more than one ad open then, you must pass ID for showing
+
+If game have more than one ad open then Ad ID 1 will auto use for open game and the last one use for resume game
+
+####
             AdManager.Instant.ShowAdOpen(ID,true, (isSuccess) =>
             {
                 
             }); 
-            // true then lib will know AdOpen treated as Ad open when open game, or as an AD when user return game.
-            //You call check on callback Ad show success or not using isSuccess
-            
-        ![enter ID adopen](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/5.png)
+####
+
+true then lib will know AdOpen treated as Ad open when open game, or as an AD when user return game.
+
+You call check on callback Ad show success or not using isSuccess
+
+####
+            AdManager.Instant.LoadNativeADsAsync(0,1,2);
+            AdManager.Instant.ShowNativeAsync(ID,true, (isSuccess) =>
+            {
+                 nativePanel.transform.SetParent(canvas.transform);
+                 nativePanel.transform.localScale = Vector3.one;
+                 nativePanel.transform.localPosition = Vector3.zero;
+                 nativePanel.rectTransform.sizeDelta = Vector2.zero;
+                 nativePanel.rectTransform.anchorMax = new Vector2(1, 0.4f);
+            }); 
+####
+
+ID is index of ID native AD
+
+Actually, Native AD object already create right when native AD success!
+
+Show function using callback for assign Native AD object into right canvas

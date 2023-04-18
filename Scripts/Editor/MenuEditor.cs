@@ -222,6 +222,10 @@ public class MenuEditor
         facebookAppIDProp = appIds.GetValue(facebookAppIDProp, null);
         string fbAppID = ((List<string>)facebookAppIDProp)[0];
 
+        if (string.IsNullOrEmpty(fbAppID))
+        {
+            fbAppID = PlayerSettings.applicationIdentifier;
+        }
 
 
         string[] files = Directory.GetFiles(Application.dataPath, "AndroidManifest.xml", SearchOption.AllDirectories).ToArray();
@@ -230,40 +234,44 @@ public class MenuEditor
             return;
         }
 
-        XmlDocument xmlDoc = new XmlDocument();
-        xmlDoc.Load(files[0]);
-
-
-        foreach (XmlNode e in xmlDoc.GetElementsByTagName("meta-data"))
+        foreach (string filePath in files)
         {
-            if (!e.Attributes["android:name"].Value.Equals("com.facebook.sdk.ApplicationId"))
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(filePath);
+
+
+            foreach (XmlNode e in xmlDoc.GetElementsByTagName("meta-data"))
             {
-                continue;
+                if (!e.Attributes["android:name"].Value.Equals("com.facebook.sdk.ApplicationId"))
+                {
+                    continue;
+                }
+
+                if (e.Attributes["android:value"].Value.Equals("fb" + fbAppID))
+                {
+                    break;
+                }
+
+                e.Attributes["android:value"].Value = ("fb" + fbAppID);
             }
 
-            if (e.Attributes["android:value"].Value.Equals("fb" + fbAppID))
+
+            foreach (XmlNode e in xmlDoc.GetElementsByTagName("provider"))
             {
-                break;
+
+                if (e.Attributes["android:authorities"].Value.Equals("com.facebook.app.FacebookContentProvider" + fbAppID))
+                {
+                    continue;
+                }
+
+                e.Attributes["android:authorities"].Value = ("com.facebook.app.FacebookContentProvider" + fbAppID);
             }
 
-            e.Attributes["android:value"].Value = ("fb" + fbAppID);
+            FileStream stream = new FileStream(filePath, FileMode.Create);
+
+            xmlDoc.Save(stream);
         }
-
-
-        foreach (XmlNode e in xmlDoc.GetElementsByTagName("provider"))
-        {
-
-            if (e.Attributes["android:authorities"].Value.Equals("com.facebook.app.FacebookContentProvider" + fbAppID))
-            {
-                continue;
-            }
-
-            e.Attributes["android:authorities"].Value = ("com.facebook.app.FacebookContentProvider" + fbAppID);
-        }
-
-        FileStream stream = new FileStream(files[0], FileMode.Create);
-
-        xmlDoc.Save(stream);
+        
     }
 
     public static void FixGoogleXml(bool isShowOk = true)
@@ -408,7 +416,7 @@ public class MenuEditor
                             .Where(f => f.EndsWith("google-services.json")).ToArray();
         if (files.Length == 0)
         {
-            UnityEngine.Debug.LogError("[Huynn3rdLib]==>Project doesnt contain google-services.json. Firebase may not work!!!!!<==");
+            UnityEngine.Debug.LogError(CONSTANT.Prefix + $"==>Project doesnt contain google-services.json. Firebase may not work!!!!!<==");
             if (!EditorUtility.DisplayDialog("Oop, something wrong?",
                 "Missing google-service.js. All firebase services may not work?", "Continue", "Stop"))
             {
@@ -420,7 +428,7 @@ public class MenuEditor
 
         if (files.Length > 1)
         {
-            UnityEngine.Debug.LogError("[Huynn3rdLib]==>Project contain more than one file google-services.json. Firebase may not work wrong!!!!!<==");
+            UnityEngine.Debug.LogError(CONSTANT.Prefix + $"==>Project contain more than one file google-services.json. Firebase may not work wrong!!!!!<==");
             if (!EditorUtility.DisplayDialog("Oop, something wrong?",
                 "Too many google-service.js. All firebase services may not work?", "Continue", "Stop"))
             {
@@ -444,7 +452,7 @@ public class MenuEditor
             return files[0];
         }
 
-        UnityEngine.Debug.LogError("[Huynn3rdLib]==>Project error google-services.xml. Firebase may not work wrong!!!!!<==");
+        UnityEngine.Debug.LogError(CONSTANT.Prefix + $"==>Project error google-services.xml. Firebase may not work wrong!!!!!<==");
         return null;
     }
 
@@ -495,7 +503,7 @@ public class MenuEditor
         }
         else
         {
-            EditorGUILayout.LabelField("[Huynn3rdLib]:Can not find GoogleMobileAdsSettings!");
+            EditorGUILayout.LabelField(CONSTANT.Prefix + $":Can not find GoogleMobileAdsSettings!");
         }
 
         if (gg && adManagerObject)
@@ -518,7 +526,7 @@ public class MenuEditor
         }
         else
         {
-            UnityEngine.Debug.LogError("[Huynn3rdLib]:Can not find MaxSdkSetting!");
+            UnityEngine.Debug.LogError(CONSTANT.Prefix + $":Can not find MaxSdkSetting!");
         }
 
         if (max != null)
@@ -580,7 +588,7 @@ public class MenuEditor
         }
         else
         {
-            UnityEngine.Debug.LogError("[Huynn3rdLib]:Can not find MaxSdkSetting!");
+            UnityEngine.Debug.LogError(CONSTANT.Prefix + $":Can not find MaxSdkSetting!");
         }
 
         if (facebook != null)
@@ -595,7 +603,7 @@ public class MenuEditor
 
             }
             else
-                UnityEngine.Debug.LogError("[Huynn3rdLib]:Can not find FB app ID field!");
+                UnityEngine.Debug.LogError(CONSTANT.Prefix + $":Can not find FB app ID field!");
 
 
             var clientToken = facebook.GetType().GetProperty("ClientTokens");
@@ -607,7 +615,7 @@ public class MenuEditor
                 fbClientToken = ((List<string>)facebookClientTokenProps)[0];
             }
             else
-                UnityEngine.Debug.LogError("[Huynn3rdLib]:Can not find FB client token field!");
+                UnityEngine.Debug.LogError(CONSTANT.Prefix + $":Can not find FB client token field!");
 
             string facebookReport = string.Format("               -------------FACEBOOK--------------\n" +
                 "FB AppID: {0} \n" +
@@ -623,7 +631,7 @@ public class MenuEditor
 
     public static void StopBuildWithMessage(string message)
     {
-        string prefix = "[Huynn3rdLib]";
+        string prefix = CONSTANT.Prefix + $"";
 #if UNITY_2017_1_OR_NEWER
         throw new BuildFailedException(prefix + message);
 #else
@@ -640,7 +648,7 @@ public class MenuEditor
             return files[0];
         }
 
-        UnityEngine.Debug.LogError("[Huynn3rdLib]==>Project dont have require .sh file. Can't auto push git!!!!!<==");
+        UnityEngine.Debug.LogError(CONSTANT.Prefix + $"==>Project dont have require .sh file. Can't auto push git!!!!!<==");
         return null;
     }
 

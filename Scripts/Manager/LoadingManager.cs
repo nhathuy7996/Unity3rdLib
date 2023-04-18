@@ -53,7 +53,10 @@ namespace DVAH
         /// <returns> LoadingManager component</returns>
         public LoadingManager Init(Action<List<bool>> onDone = null)
         {
-            _isLoadingStart = true;
+            if(_maxTimeLoading == 0.2f)
+            {
+                Debug.Log(CONSTANT.Prefix + $"==><color=yellow>Your time loading is to fast! You should call SetMaxTimeLoading first!</color><==");
+            }
             _conditionDone.Clear();
             for (int i = 0; i < _numberCondition; i++)
             {
@@ -68,7 +71,7 @@ namespace DVAH
             {
                 if (value == 100)
                 {
-                    Debug.Log("[Huynn3rdLib]==>Loading Done!<==");
+                    Debug.Log(CONSTANT.Prefix + $"==>Loading Done!<==");
                     _loadingPopUp.SetActive(false);
                     _isLoadingStart = false;
                     try
@@ -79,7 +82,7 @@ namespace DVAH
                             {"id_screen","loading_end" }
                         });
 
-                                _ = FireBaseManager.Instant.LogEventWithParameter("screen_view_data", new Hashtable()
+                        _ = FireBaseManager.Instant.LogEventWithParameter("screen_view_data", new Hashtable()
                         {
                             {"id_screen","lobby_start" }
                         });
@@ -87,18 +90,24 @@ namespace DVAH
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError("[Huynn3rdLib]==> callback ondone loading error: " + e.ToString() + " <==");
+                        Debug.LogError(CONSTANT.Prefix + $"==> callback ondone loading error: " + e.ToString() + " <==");
                     }
 
                     _loading.onValueChanged.RemoveAllListeners();
 
                 }
             });
+
+            _loadingPopUp.SetActive(true);
+            _isLoadingStart = true;
             return this;
         }
 
         /// <summary>
-        /// You can set number of condition fight before start loading
+        /// Start Loading bar with an action call back
+        /// action will trigger when loading done (time out or done on condition)
+        /// action get a list<bool> stand for list of condition done or not
+        /// RECOMMEND: using enum to define condition ID
         /// </summary>
         /// <param name="numberCondition">number of condition which loading will wait all done then stop (in amout of time)</param>
         /// <param name="onDone">callback when all condition done or timeout</param>
@@ -108,6 +117,13 @@ namespace DVAH
             _numberCondition = numberCondition;
             return Init(onDone);
         }
+
+        public LoadingManager SetMaxTimeLoading(float maxTime)
+        {
+            _maxTimeLoading = maxTime;
+            return this;
+        }
+
         // Update is called once per frame
         void Update()
         {
@@ -122,7 +138,7 @@ namespace DVAH
         { 
             if (_maxTimeLoading == 0.2f)
                 return;
-            Debug.Log("[Huynn3rdLib]==> Force stop loading! <==");
+            Debug.Log(CONSTANT.Prefix + $"==> <color=red>Force stop loading!</color> <==");
             _loadingMaxvalue = _loading.maxValue - _loading.value;
             _maxTimeLoading = 0.2f;
 
@@ -156,6 +172,34 @@ namespace DVAH
             return this;
         }
 
+        /// <summary>
+        /// Using this to wait and set a condition is done. If all condition is done,
+        /// then loading will stop immediately
+        /// It simmilar using Coroutine to wait
+        /// </summary>
+        /// <param name="id">ID of condition you wanna mark done</param>
+        /// <param name="predicate">like wait until of coroutine</param>
+        /// <returns>LoadingManager</returns>
+        /// <code>
+        /// LoadingManager.Instant.DoneConditionSelf(0,()=> AdManager.Instant.AdsOpenIsLoaded(0));
+        /// </code>
+        public LoadingManager DoneConditionSelf(int id, Func<bool> predicate)
+        {
+            _ = waitSelfDoneCondition(id, predicate);
+            return this;
+        }
+
+        async Task waitSelfDoneCondition(int id, Func<bool> predicate)
+        {
+            do
+            {
+                await Task.Delay(500);
+            } while ((!predicate.Invoke()));
+
+            await Task.Delay(500);
+            DoneCondition(id);
+        }
+
         async Task waitToSetDoneCondition(int id)
         {
             while (!_isLoadingStart)
@@ -165,20 +209,20 @@ namespace DVAH
 
             if (id >= _conditionDone.Count)
             {
-                Debug.LogError("[Huynn3rdLib]==> ID condition not exist, check number of conditon on inspector! <==");
+                Debug.LogError(CONSTANT.Prefix + $"==> ID condition not exist, check number of conditon on inspector! <==");
                 return;
             }
 
             if (_loading.value >= 99f)
             {
-                Debug.LogWarning("[Huynn3rdLib]==> Loading already stop, maybe check your game flow! <==");
+                Debug.LogWarning(CONSTANT.Prefix + $"==> Loading already stop, maybe check your game flow! <==");
                 return;
             }
 
             _conditionDone[id] = true;
             if (_conditionDone.Where(c => c == false).Count() == 0)
             {
-                Debug.Log("[Huynn3rdLib]==> All condition is done! stop loading! <==");
+                Debug.Log(CONSTANT.Prefix + $"==> All condition is done! stop loading! <==");
                 StopLoading();
             }
         }

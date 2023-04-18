@@ -1,5 +1,4 @@
- 
-using System;
+ using System;
 using System.Collections;
 using System.Collections.Generic;
 using GoogleMobileAds.Api;
@@ -9,6 +8,9 @@ namespace DVAH
 { 
 
     public class AdManager: Singleton<AdManager> {
+
+
+        public bool[] offAdPositions => AdMHighFather.Instant.offAdPosition;
 
         #region INJECT FUNCTION
         public AdManager AssignClickCallBack(Action callback, AD_TYPE adType)
@@ -69,7 +71,7 @@ namespace DVAH
         /// </summary>
         public void DestroyBanner()
         {
-            _= AdMHighFather.Instant.ShowBanner();
+            AdMHighFather.Instant.DestroyBanner();
         }
 
 

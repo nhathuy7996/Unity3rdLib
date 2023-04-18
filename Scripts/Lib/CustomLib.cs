@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using DVAH;
-using static Facebook.Unity.FB;
+using DVAH; 
+
+public enum CONDITON_LOADING
+{
+    load_ad_open_done,
+    load_native_done
+}
 
 public class CustomLib : MonoBehaviour
 {
@@ -13,13 +18,15 @@ public class CustomLib : MonoBehaviour
     void Start()
     {
         //Wait until ad open load done then set first condition to true
-        StartCoroutine(waitLoadOpenAd());
+        LoadingManager.Instant.DoneConditionSelf((int)CONDITON_LOADING.load_ad_open_done, ()=> AdManager.Instant.AdsOpenIsLoaded(0));
 
         //get current scene (loading scene) then after loading done -> show ad open -> user close -> unload scene loading
         oldScene = SceneManager.GetActiveScene();
 
-        //Start running loading bar with 2 condition to skip loading before maxtime 
-        LoadingManager.Instant.Init(2,LoadingCompleteCallback);
+        //Start running loading bar with 2 condition to skip loading before maxtime
+        //condition 1 is loading ad open done
+        //condition 2 is loading ad native ID 0 done or dont need load ad native ID 0
+        LoadingManager.Instant.SetMaxTimeLoading(30).Init(2,LoadingCompleteCallback);
 
         //Start loadscene Gameplay async and additive
         SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
@@ -37,6 +44,16 @@ public class CustomLib : MonoBehaviour
         {
             SceneManager.UnloadSceneAsync(oldScene);
             AdManager.Instant.InitializeBannerAdsAsync();
+
+            if (doneCondition[(int)CONDITON_LOADING.load_ad_open_done]) // It's mean when loading stop, ad open is load success
+            {
+                
+            }
+
+            if (doneCondition[(int)CONDITON_LOADING.load_native_done]) // It's mean when loading stop, ad native is load success or dont need to load ad native
+            {
+
+            }
         });
     }
 
@@ -49,7 +66,8 @@ public class CustomLib : MonoBehaviour
         else
         {
             AdManager.Instant.LoadNativeADsAsync(1, 2, 3, 4, 5, 6, 7, 8, 9);
-            LoadingManager.Instant.DoneCondition(1);
+            // Incase user open app second time, language popup doesnt show up, then we should skip load ad native ID 0 to increase show rate
+            LoadingManager.Instant.DoneCondition((int)CONDITON_LOADING.load_native_done);
         }
 
         //listen event from language manager,
@@ -68,19 +86,11 @@ public class CustomLib : MonoBehaviour
                     nativePanel.rectTransform.sizeDelta = Vector2.zero;
                     nativePanel.rectTransform.anchorMax = new Vector2(1, 0.4f);
 
-                    LoadingManager.Instant.DoneCondition(1);
+                    LoadingManager.Instant.DoneCondition((int)CONDITON_LOADING.load_native_done);
                 });
             }
         });
     }
 
-    IEnumerator waitLoadOpenAd()
-    {
-        yield return new WaitUntil(() => AdManager.Instant.AdsOpenIsLoaded(0));
-        yield return new WaitForSeconds(0.5f);
-        yield return new WaitForEndOfFrame();
-
-        LoadingManager.Instant.DoneCondition(0);
-    }
-  
+    
 }

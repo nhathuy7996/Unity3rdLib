@@ -72,6 +72,8 @@ class ProjectInfoEditor : EditorWindow
 
     int numberNativeADID = 0, numberAddOpenAdID = 0;
 
+    MasterLib masterLib;
+
     // Add menu named "My Window" to the Window menu
     [MenuItem("3rdLib/Checklist APERO",priority = 0)]
     public static void InitWindowEditor()
@@ -96,7 +98,7 @@ class ProjectInfoEditor : EditorWindow
 
     void OnGUI()
     {
-         
+        
         if (TextRedStyles == null)
         {
             TextRedStyles = new GUIStyle(EditorStyles.label);
@@ -229,6 +231,8 @@ class ProjectInfoEditor : EditorWindow
 
             }
         }
+ 
+
         PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android, symbols);
 
         if (PlayerSettings.Android.useCustomKeystore)
@@ -398,6 +402,10 @@ class ProjectInfoEditor : EditorWindow
                 fireBaseManager.Level_Achived = DVAH_Data.EventsToken_LevelAchives;
                 PrefabUtility.RecordPrefabInstancePropertyModifications(fireBaseManager);
             }
+            else
+            {
+                fireBaseManager = GameObject.FindObjectOfType<FireBaseManager>();
+            }
            
             PrefabUtility.RecordPrefabInstancePropertyModifications(adjustGameObject);
         }
@@ -464,7 +472,7 @@ class ProjectInfoEditor : EditorWindow
             }
             else
             {
-                Debug.LogError("[Huynn3rdLib]:Can not find MaxSdkSetting!");
+                Debug.LogError(CONSTANT.Prefix + $":Can not find MaxSdkSetting!");
             }
         }
 
@@ -483,7 +491,7 @@ class ProjectInfoEditor : EditorWindow
             }
             else
             {
-                Debug.LogError("[Huynn3rdLib]:Can not find MaxSdkSetting!");
+                Debug.LogError(CONSTANT.Prefix + $":Can not find MaxSdkSetting!");
             }
         }
         else
@@ -502,7 +510,7 @@ class ProjectInfoEditor : EditorWindow
                 appIds.SetValue(facebook, new List<string>() { DVAH_Data.Facebook_AppID }, null);
             }
             else
-                Debug.LogError("[Huynn3rdLib]:Can not find FB app ID field!");
+                Debug.LogError(CONSTANT.Prefix + $":Can not find FB app ID field!");
 
             
             var clientToken = facebook.GetType().GetProperty("ClientTokens");
@@ -519,7 +527,7 @@ class ProjectInfoEditor : EditorWindow
                 clientToken.SetValue(facebook, new List<string>() { DVAH_Data.Facebook_ClientToken }, null);
             }
             else
-                Debug.LogError("[Huynn3rdLib]:Can not find FB client token field!");
+                Debug.LogError(CONSTANT.Prefix + $":Can not find FB client token field!");
 
             var keyStorePath = facebook.GetType().GetProperty("AndroidKeystorePath");
             if (keyStorePath != null)
