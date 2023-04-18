@@ -58,7 +58,7 @@ public class MenuEditor
         PushGit(null);
     }
 
-    [MenuItem("3rdLib/Git/Update Lib/production")]
+    [MenuItem("3rdLib/Git/Update Lib/production*")]
     public static void UpdateLib()
     {
         if (!EditorUtility.DisplayDialog("Attention Please!", "Before update, all change will be commit (not push yet)!", "Got it!", "Stop"))

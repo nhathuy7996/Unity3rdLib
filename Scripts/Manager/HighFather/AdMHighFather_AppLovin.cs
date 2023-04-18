@@ -918,7 +918,7 @@ namespace DVAH
             int ID = _NativeAdID.IndexOf(((AdLoader)sender).AdUnitId);
             if (ID < 0)
             {
-                Debug.LogErrorFormat(CONSTANT.Prefix + $"===> HandleAdFailedToLoad cant find ID _{0}_ from sender", ((AdLoader)sender).AdUnitId);
+                Debug.LogErrorFormat(CONSTANT.Prefix + "===> HandleAdFailedToLoad cant find ID _{0}_ from sender", ((AdLoader)sender).AdUnitId);
                 return;
             }
 
@@ -944,13 +944,13 @@ namespace DVAH
             int ID = _nativeADLoader.IndexOf((AdLoader)sender);
             if (ID < 0)
             {
-                Debug.LogErrorFormat(CONSTANT.Prefix + $"===> HandleAdLoaded cant find ID _{0}_ from sender", ((AdLoader)sender).AdUnitId);
+                Debug.LogErrorFormat(CONSTANT.Prefix + "===> HandleAdLoaded cant find ID _{0}_ from sender", ((AdLoader)sender).AdUnitId);
                 return;
             }
 
             if (!_nativeADLoader[ID].AdUnitId.Equals(_NativeAdID[ID]))
             {
-                Debug.LogErrorFormat(CONSTANT.Prefix + $"===> adloaderID {0} doesnt == senderID {1}", _nativeADLoader[ID].AdUnitId, ((AdLoader)sender).AdUnitId);
+                Debug.LogErrorFormat(CONSTANT.Prefix + "===> adloaderID {0} doesnt == senderID {1}", _nativeADLoader[ID].AdUnitId, ((AdLoader)sender).AdUnitId);
                 return;
             }
 
@@ -1279,7 +1279,7 @@ namespace DVAH
         {
             if (ID >= _adNativePanel.Count || _adNativePanel[ID] == null)
             {
-                Debug.LogErrorFormat(CONSTANT.Prefix + $"===> item ad native ID {0} doesnt exist! ", ID);
+                Debug.LogErrorFormat(CONSTANT.Prefix + "===> item ad native ID {0} doesnt exist! ", ID);
             }
 
 

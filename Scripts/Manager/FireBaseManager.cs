@@ -133,13 +133,13 @@ namespace DVAH
 
             if (countTime >= 360000f)
             {
-                Debug.LogError(string.Format(CONSTANT.Prefix + $"==>Fetch data {0} fail, becuz time out! Check your network please!<==", key));
+                Debug.LogError(string.Format(CONSTANT.Prefix + "==>Fetch data {0} fail, becuz time out! Check your network please!<==", key));
                 return;
             }
 
             if (!_keyConfigs.Contains(key))
             {
-                Debug.LogError(string.Format(CONSTANT.Prefix + $"==>Remote dont have key {0} !<==", key));
+                Debug.LogError(string.Format(CONSTANT.Prefix + "==>Remote dont have key {0} !<==", key));
                 return;
             }
 
@@ -184,7 +184,7 @@ namespace DVAH
                     _isFetchDone = true;
 
                     _keyConfigs = FirebaseRemoteConfig.DefaultInstance.AllValues.Keys.ToList();
-                    Debug.Log(String.Format(CONSTANT.Prefix + $"==> Remote data loaded and ready (last fetch time {0}).<==",
+                    Debug.Log(String.Format(CONSTANT.Prefix + "==> Remote data loaded and ready (last fetch time {0}).<==",
                         info.FetchTime));
 
                     break;
@@ -192,15 +192,15 @@ namespace DVAH
                     switch (info.LastFetchFailureReason)
                     {
                         case Firebase.RemoteConfig.FetchFailureReason.Error:
-                            Debug.Log(CONSTANT.Prefix + $"==> Fetch failed for unknown reason <==");
+                            Debug.Log(CONSTANT.Prefix + "==> Fetch failed for unknown reason <==");
                             break;
                         case Firebase.RemoteConfig.FetchFailureReason.Throttled:
-                            Debug.Log(CONSTANT.Prefix + $"==> Fetch throttled until " + info.ThrottledEndTime+" <==");
+                            Debug.Log(CONSTANT.Prefix + "==> Fetch throttled until " + info.ThrottledEndTime+" <==");
                             break;
                     }
                     break;
                 case Firebase.RemoteConfig.LastFetchStatus.Pending:
-                    Debug.Log(CONSTANT.Prefix + $"==> Latest Fetch call still pending. <==");
+                    Debug.Log(CONSTANT.Prefix + "==> Latest Fetch call still pending. <==");
                     break;
             }
         }
@@ -236,7 +236,7 @@ namespace DVAH
 
             if (countTime >= 360000f)
             {
-                Debug.LogError(string.Format(CONSTANT.Prefix + $"==>Logevent {0} fail, becuz time out! Check your network please!<==", event_name));
+                Debug.LogError(string.Format(CONSTANT.Prefix + "==>Logevent {0} fail, becuz time out! Check your network please!<==", event_name));
                 return;
             }
 
