@@ -58,7 +58,7 @@ public class MenuEditor
         PushGit(null);
     }
 
-    [MenuItem("3rdLib/Git/Update Lib")]
+    [MenuItem("3rdLib/Git/Update Lib/production")]
     public static void UpdateLib()
     {
         if (!EditorUtility.DisplayDialog("Attention Please!", "Before update, all change will be commit (not push yet)!", "Got it!", "Stop"))
@@ -66,10 +66,21 @@ public class MenuEditor
             return;
         }
 
-        UpdateLibCommand();
+        UpdateLibCommand("production");
     }
 
-    public static void UpdateLibCommand()
+    [MenuItem("3rdLib/Git/Update Lib/develop")]
+    public static void UpdateLibDev()
+    {
+        if (!EditorUtility.DisplayDialog("Attention Please!", "Before update, all change will be commit (not push yet)!", "Got it!", "Stop"))
+        {
+            return;
+        }
+
+        UpdateLibCommand("develop");
+    }
+
+    public static void UpdateLibCommand(string branch)
     {
         string cmdPath = FindCommand();
         if (string.IsNullOrEmpty(cmdPath))
@@ -96,14 +107,14 @@ public class MenuEditor
             "cd $(git rev-parse --show-cdup)\n" +
             "git add -A\n" +
             "git commit -m \"prepare update lib!!!!!!\"\n" +
-            "git subtree pull --prefix " + Application.dataPath.Replace(repositoryPath + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash";
+            "git subtree pull --prefix " + Application.dataPath.Replace(repositoryPath + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git "+ branch + " --squash";
         }
         else
         {
             cmdLines = "/K cd " + repositoryPath + "&" +
             "git add -A&" +
             "git commit -m \"prepare update lib!!!!!!\"&" +
-            "git subtree pull --prefix " + Application.dataPath.Replace(repositoryPath.Replace("\\", "/") + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git develop --squash";
+            "git subtree pull --prefix " + Application.dataPath.Replace(repositoryPath.Replace("\\", "/") + "/", "") + "/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git "+ branch + " --squash";
         }
 
         string terminal = @"cmd.exe";
