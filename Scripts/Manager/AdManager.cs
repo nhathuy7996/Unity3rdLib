@@ -10,7 +10,7 @@ namespace DVAH
     public class AdManager: Singleton<AdManager> {
 
 
-        public bool[] offAdPositions => AdMHighFather.Instant.offAdPosition;
+        public bool[] offAdPositions => AdMHighFather.Instant.getOffAdPosition();
 
         #region INJECT FUNCTION
         public AdManager AssignClickCallBack(Action callback, AD_TYPE adType)
@@ -35,16 +35,16 @@ namespace DVAH
 
         #region FUNCTION LOAD ADs
         public void InitializeBannerAdsAsync() {
-            _ =AdMHighFather.Instant.InitializeBannerAds();
+            AdMHighFather.Instant.InitializeBannerAdsAsync();
         }
 
 #if NATIVE_AD
         public void LoadNativeADsAsync(params int[] IDs) {
-            _ = AdMHighFather.Instant.LoadNativeADs(IDs);
+            AdMHighFather.Instant.LoadNativeADsAsync(IDs);
         }
 
         public void LoadNativeADsAsync(Action<int, bool> callback, params int[] indexes) {
-            _ = AdMHighFather.Instant.LoadNativeADs(callback,indexes);
+            AdMHighFather.Instant.LoadNativeADsAsync(callback,indexes);
         }
 #endif
 
@@ -60,7 +60,7 @@ namespace DVAH
         /// </summary>
         public void ShowBanner()
         {
-            _= AdMHighFather.Instant.ShowBanner();
+            AdMHighFather.Instant.ShowBanner();
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace DVAH
         /// <param name="callback">Callback using for assign Native AD object into right canvas</param>
         public void ShowNativeAsync(int ID, Action<AdNativeObject> callBack = null)
         {
-            _= AdMHighFather.Instant.ShowNative(ID, callBack);
+            AdMHighFather.Instant.ShowNativeAsync(ID, callBack);
 
         }
 
@@ -177,7 +177,7 @@ namespace DVAH
         /// <param name="callback">Callback return adNative panel, dont destroy it!!</param>
         public void HideNativeAsync(int ID, Action<AdNativeObject> callBack = null)
         {
-            _ = AdMHighFather.Instant.HideNative(ID, callBack);
+            AdMHighFather.Instant.HideNativeAsync(ID, callBack);
         }
 
 #endif //NATIVE_AD

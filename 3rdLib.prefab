@@ -756,7 +756,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.0501236, y: 0.38168427}
   m_AnchorMax: {x: 0.9425776, y: 0.66942984}
-  m_AnchoredPosition: {x: 1.7742004, y: -1}
+  m_AnchoredPosition: {x: 1.7741699, y: -1}
   m_SizeDelta: {x: -0.6154022, y: -0.3887024}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1724635263
@@ -1089,8 +1089,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1013534893270802609}
-  - component: {fileID: 5391786804495112896}
   - component: {fileID: 7773294732819327248}
+  - component: {fileID: 7500687726892628401}
   m_Layer: 0
   m_Name: AdManager
   m_TagString: Untagged
@@ -1113,30 +1113,6 @@ Transform:
   m_Father: {fileID: 7840570762973479108}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5391786804495112896
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 337766984811589102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af8a600745b8b455bb9ce74fe4b3f2aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _paid_ad_revenue: paid_ad_impression_value
-  _isBannerAutoShow: 0
-  _initBannerManually: 0
-  _bannerPosition: 7
-  _popUpNoAd: {fileID: 4050982469769303766}
-  _MaxSdkKey: 3N4Mt8SNhOzkQnGb9oHsRRG1ItybcZDpJWN1fVAHLdRagxP-_k_ZXVaMAdMe5Otsmp6qJSXskfsrtakfRmPAGW
-  _BannerAdUnitID: df980c4d809fc01e
-  _InterstitialAdUnitID: 3a70c7be99dade7d
-  _RewardedAdUnitID: 6b7094c5d21fcfe5
-  _OpenAdUnitIDs: []
-  _NativeAdID: []
-  _adNativePanel: []
 --- !u!114 &7773294732819327248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1149,6 +1125,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2c0e01aed4dc4686b604bf781145a84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7500687726892628401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 337766984811589102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d491aac448689418cbc1ba4b75ff55e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _paid_ad_revenue: paid_ad_impression_value
+  _MaxSdkKey: 3N4Mt8SNhOzkQnGb9oHsRRG1ItybcZDpJWN1fVAHLdRagxP-_k_ZXVaMAdMe5Otsmp6qJSXskfsrtakfRmPAGW
+  _BannerAdUnitID: df980c4d809fc01e
+  _InterstitialAdUnitID: 3a70c7be99dade7d
+  _RewardedAdUnitID: 6b7094c5d21fcfe5
+  _OpenAdUnitIDs: []
+  _NativeAdID: []
+  _adNativePanel: []
+  _isBannerAutoShow: 1
+  _initBannerManually: 1
+  _bannerPosition: 7
+  _popUpNoAd: {fileID: 4050982469769303766}
 --- !u!1 &375057543647880371
 GameObject:
   m_ObjectHideFlags: 0
@@ -2433,7 +2433,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.20300001, y: 0.3561719}
   m_AnchorMax: {x: 0.79700005, y: 0.606}
-  m_AnchoredPosition: {x: 1.5, y: -1.8215942}
+  m_AnchoredPosition: {x: 1.5, y: -1.8215332}
   m_SizeDelta: {x: -4.5, y: 2.692688}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4098362967633051877
@@ -2894,7 +2894,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.124000005, y: 0.47500002}
   m_AnchorMax: {x: 0.87600005, y: 0.52500004}
-  m_AnchoredPosition: {x: -0.000061035156, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -631.67993, y: -56.000122}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1356035740230579832
@@ -5772,7 +5772,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.3413125, y: 0.19812112}
   m_AnchorMax: {x: 0.65900004, y: 0.23565626}
-  m_AnchoredPosition: {x: -0.8782959, y: 1.2043457}
+  m_AnchoredPosition: {x: -0.8782959, y: 1.2041016}
   m_SizeDelta: {x: -5.880661, y: -4.444458}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5443577699425874297
