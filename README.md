@@ -61,11 +61,11 @@ After build aab, a branch production will auto create and push your code to ther
         // Start is called before the first frame update
         void Start()
         {
-            StartCoroutine(waitAdOpen());
+            LoadingManager.Instant.DoneConditionSelf(0, ()=> AdManager.Instant.AdsOpenIsLoaded(0));
             Scene currentScene = SceneManager.GetActiveScene();
             AsyncOperation loadingScene = SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
             loadingScene.allowSceneActivation = true;
-            LoadingManager.Instant.Init((conditionDone) =>
+            LoadingManager.Instant.SetMaxTimeLoading(30).Init((conditionDone) =>
             {
                 AdManager.Instant.ShowAdOpen(0,true, (isSuccess) =>
                 {
@@ -78,19 +78,13 @@ After build aab, a branch production will auto create and push your code to ther
             });
         }
 
-
-        IEnumerator waitAdOpen()
-        {
-            yield return new WaitUntil(()=> AdManager.Instant.AdsOpenIsLoaded());
-            LoadingManager.Instant.DoneCondition(0);
-        }
-
-
     }
 
 - As you can see, our Loading systems contain a max time loading and a list boolean of condition
 
 Call ***LoadingManager.Instant.DoneCondition(ID);*** for set a condition is success
+You can use Coroutine to waitUntil then set done condition or using
+***LoadingManager.Instant.DoneConditionSelf(ID, Func);*** 
 
 if all condition is done then loading will stop and invoke callback, which already define in  ***LoadingManager.Instant.Init(callbackDone);***
 
