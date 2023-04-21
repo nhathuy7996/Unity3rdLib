@@ -121,7 +121,7 @@ namespace DVAH
                     InitializeBannerAdsAsync();
 
                 if (!_offAdPosition[(int)AD_TYPE.reward])
-                    InitializeBannerAdsAsync();
+                    InitializeRewardedAds();
 
             };
             MaxSdk.SetSdkKey(_MaxSdkKey);
