@@ -51,8 +51,21 @@ class BuildProcess : IPreprocessBuildWithReport
             }
         }
 
-        Adjust adjustGameObject = GameObject.FindObjectOfType<Adjust>();
-        if (EditorUserBuildSettings.buildAppBundle && adjustGameObject && adjustGameObject.environment == AdjustEnvironment.Sandbox)
+        DVAH_Data DVAH_Data;
+        string[] DVAH_Datas = UnityEditor.AssetDatabase.FindAssets("t:DVAH_Data");
+        if (DVAH_Datas.Length != 0)
+        {
+            string path = UnityEditor.AssetDatabase.GUIDToAssetPath(DVAH_Datas[0]);
+            DVAH_Data = UnityEditor.AssetDatabase.LoadAssetAtPath<DVAH_Data>(path);
+
+        }
+        else
+        {
+            MenuEditor.StopBuildWithMessage("Cannot find DVAH_Data!");
+            return;
+        }
+
+        if (EditorUserBuildSettings.buildAppBundle && DVAH_Data.AdjustMode == ADJUST_MODE.Sandbox)
         {
             if (!EditorUtility.DisplayDialog("Attention Please?",
                "Are you sure wanna build an .aab file with adjut on SANDBOX mode?", "Continue Build!", "Stop build!"))
@@ -61,11 +74,11 @@ class BuildProcess : IPreprocessBuildWithReport
             }
         }
 
+
         if (!MenuEditor.CheckFirebaseJson(false))
-        {
-            
+        { 
             return;
-        }
+        } 
 
         MenuEditor.FixAndroidManifestFB();
 
