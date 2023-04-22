@@ -1087,7 +1087,10 @@ namespace DVAH
         public override void ShowInterstitial(Action<InterVideoState> callback = null, bool showNoAds = false)
         {
             if (_offAdPosition[(int)AD_TYPE.inter])
+            {
+                callback?.Invoke(InterVideoState.None);
                 return;
+            }
             if (InterstitialIsLoaded())
             {
                 isShowingAd = true;
@@ -1120,7 +1123,10 @@ namespace DVAH
         public override void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false)
         {
             if (_offAdPosition[(int)AD_TYPE.reward])
+            {
+                callback?.Invoke(RewardVideoState.None);
                 return;
+            }
 
             if (VideoRewardIsLoaded())
             {
