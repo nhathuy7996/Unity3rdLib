@@ -189,6 +189,8 @@ class ProjectInfoEditor : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
         PlayerSettings.Android.useCustomKeystore = EditorGUILayout.Toggle("Custom KeyStore", PlayerSettings.Android.useCustomKeystore);
+
+
         usingAdNative = EditorGUILayout.Toggle("Using Ad Native", usingAdNative);
         usingIAP = EditorGUILayout.Toggle("Using IAP", usingIAP);
 
@@ -236,6 +238,9 @@ class ProjectInfoEditor : EditorWindow
 
         PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android, symbols);
 
+        
+        EditorGUILayout.EndHorizontal();
+
         if (PlayerSettings.Android.useCustomKeystore)
         {
             if (EditorGUILayout.LinkButton("Select"))
@@ -246,14 +251,14 @@ class ProjectInfoEditor : EditorWindow
                     PlayerSettings.Android.keystoreName = path;
                 }
             }
-            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.LabelField("KeyStore Path:                      " + PlayerSettings.Android.keystoreName);
 
             KeyStoreInfo();
         }
         else
         {
-            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.LabelField("KeyStore Path:                      Debug keystore!!!");
         }
 
