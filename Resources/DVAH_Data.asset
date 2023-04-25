@@ -17,7 +17,7 @@ MonoBehaviour:
   EventsToken_AdValue: 
   EventsToken_LevelAchives: 
   Google_Android_AppID: 
-  Google_Event_Paid_AD: 
+  Google_Event_Paid_AD: paid_ad_impression_value
   Facebook_AppID: 
   Facebook_ClientToken: 
   AppLovin_SDK_Key: 
@@ -28,3 +28,4 @@ MonoBehaviour:
   - vvvv
   AppLovin_NativeAdIDs:
   - ca-app-pub-3940256099942544/2247696110
+  CHEAT_BUILD: 0

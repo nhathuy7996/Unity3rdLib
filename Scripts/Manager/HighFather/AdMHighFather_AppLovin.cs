@@ -10,6 +10,7 @@ using static MaxSdkBase;
 using System.Threading.Tasks;
 using System.Linq;
 using UnityEngine.UI;
+using UnityEditor;
 
 namespace DVAH
 { 
@@ -70,6 +71,25 @@ namespace DVAH
         public override void Init(Action _onInitDone = null)
         {
             Debug.Log(CONSTANT.Prefix + $"==========><color=#00FF00>Ad start Init!</color><==========");
+
+            if (!DVAH_Data)
+            {
+                string[] DVAH_Datas = UnityEditor.AssetDatabase.FindAssets("t:DVAH_Data");
+                if (DVAH_Datas.Length != 0)
+                {
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(DVAH_Datas[0]);
+                    DVAH_Data = UnityEditor.AssetDatabase.LoadAssetAtPath<DVAH_Data>(path);
+                }
+                else
+                {
+                    EditorGUILayout.LabelField("Can not find DVAH data file!");
+                }
+            }
+
+            if (DVAH_Data.CHEAT_BUILD)
+            {
+                this.setOffAdPosition(true,AD_TYPE.banner, AD_TYPE.inter,AD_TYPE.reward, AD_TYPE.open, AD_TYPE.resume, AD_TYPE.native);
+            }
 
             InitMAX();
             InitAdMob();
@@ -1124,7 +1144,7 @@ namespace DVAH
         {
             if (_offAdPosition[(int)AD_TYPE.reward])
             {
-                callback?.Invoke(RewardVideoState.None);
+                callback?.Invoke(RewardVideoState.Watched);
                 return;
             }
 

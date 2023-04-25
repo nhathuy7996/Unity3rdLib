@@ -33,6 +33,8 @@ public class DVAH_Data : ScriptableObject
 #if NATIVE_AD
     public List<string> AppLovin_NativeAdIDs = new List<string>();
 #endif
+
+    public bool CHEAT_BUILD = false;
 }
 
 public enum ADJUST_MODE

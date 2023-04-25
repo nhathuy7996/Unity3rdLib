@@ -657,6 +657,9 @@ class ProjectInfoEditor : EditorWindow
 
             EditorWindow.GetWindow(Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
         }
+
+        DVAH_Data.CHEAT_BUILD = EditorGUILayout.Toggle("Build Cheat", DVAH_Data.CHEAT_BUILD);
+
         EditorGUILayout.EndHorizontal();
 
         if (GUILayout.Button("Close"))

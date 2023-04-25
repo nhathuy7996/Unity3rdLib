@@ -41,6 +41,7 @@ namespace DVAH
     {
 
         #region Properties
+        protected DVAH_Data DVAH_Data;
         [SerializeField]
         protected string _paid_ad_revenue = "paid_ad_impression_value";
 #if UNITY_EDITOR
