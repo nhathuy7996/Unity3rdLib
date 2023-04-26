@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using UnityEngine.UI;
 using UnityEditor;
+using System.IO;
 
 namespace DVAH
 { 
@@ -72,18 +73,10 @@ namespace DVAH
         {
             Debug.Log(CONSTANT.Prefix + $"==========><color=#00FF00>Ad start Init!</color><==========");
 
+            DVAH_Data = Resources.Load<DVAH_Data>("DVAH_Data");
             if (!DVAH_Data)
             {
-                string[] DVAH_Datas = UnityEditor.AssetDatabase.FindAssets("t:DVAH_Data");
-                if (DVAH_Datas.Length != 0)
-                {
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(DVAH_Datas[0]);
-                    DVAH_Data = UnityEditor.AssetDatabase.LoadAssetAtPath<DVAH_Data>(path);
-                }
-                else
-                {
-                    EditorGUILayout.LabelField("Can not find DVAH data file!");
-                }
+               Debug.LogError(CONSTANT.Prefix + "===>Can not find DVAH data file!<====");
             }
 
             if (DVAH_Data.CHEAT_BUILD)
