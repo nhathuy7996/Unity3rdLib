@@ -1,10 +1,24 @@
 ﻿using UnityEngine;
+using System.Threading.Tasks;
+using System;
 #if !IAP
 namespace DVAH
 {
 
     public class IAPManager : Singleton<IAPManager>
     {
+        public void BuyProductID(string productId, Action<bool> onBuyDone = null) {
+            Debug.LogError(CONSTANT.Prefix + "==>Mark using IAP on checklist menu or add IAP on define symbols!<==");
+        }
+
+        public async Task<bool> TryAddRestoreEvent(string productID, Action eventRestore = null, bool isTimeOut = false)
+        {
+            Debug.LogError(CONSTANT.Prefix + "==>Mark using IAP on checklist menu or add IAP on define symbols!<==");
+            await Task.Delay(1000);
+
+            return false;
+        }    
+
     }
 }
 #else
