@@ -46,7 +46,7 @@ namespace DVAH
             if (_isDontDestroyOnLoad)
                 DontDestroyOnLoad(this.gameObject);
 
-            _= FireBaseManager.Instant.GetValueRemoteAsync(CONSTANT.FORCE_UPDATE, (value) =>
+            FireBaseManager.Instant.GetValueRemoteAsync(CONSTANT.FORCE_UPDATE, (value) =>
             {
                 try
                 {
