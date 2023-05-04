@@ -196,7 +196,7 @@ namespace DVAH
                 await Task.Delay(500);
             } while ((!predicate.Invoke()));
 
-            await Task.Delay(500);
+            await Task.Delay(1500);
             DoneCondition(id);
         }
 
