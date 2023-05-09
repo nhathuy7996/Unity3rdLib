@@ -1041,7 +1041,8 @@ namespace DVAH
 
         public override bool NativeAdLoaded(int ID)
         {
-
+            if (ID >= this._nativeAd.Count)
+                return false;
 #if UNITY_EDITOR
             return true;
 #elif NATIVE_AD
