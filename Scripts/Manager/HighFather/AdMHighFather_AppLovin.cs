@@ -580,7 +580,17 @@ namespace DVAH
             Debug.Log(CONSTANT.Prefix + $"==> Show ad open/resume success! <==");
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show, adNetwork: arg2.NetworkName);
             isShowingAd = true;
-
+            int ID = _OpenAdUnitIDs.IndexOf(arg1);
+            if (ID < 0)
+                return;
+            try
+            {
+                _callbackOpenAD?.Invoke(ID, OpenAdState.Open); 
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(CONSTANT.Prefix + $"==>Callback click ad open error: " + e.ToString() + "<==");
+            }
         }
 
         private void AppOpen_OnAdClickedEvent(string arg1, AdInfo adInfo)
