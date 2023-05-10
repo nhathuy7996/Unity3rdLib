@@ -118,7 +118,7 @@ namespace DVAH
         /// </summary>
         /// <param name="isAdOpen">Is Ads treated as an open AD</param>
         /// <param name="callback">Callback when adopen show done or fail pass true if ad show success and false if ad fail</param>
-        public void ShowAdOpen(int ID = 0, bool isAdOpen = false, Action<bool> callback = null)
+        public void ShowAdOpen(int ID = 0, bool isAdOpen = false, Action<int, OpenAdState> callback = null)
         {
             AdMHighFather.Instant.ShowAdOpen(ID, isAdOpen,callback);
         }
@@ -136,7 +136,7 @@ namespace DVAH
         /// </code>
         /// </summary> 
         /// <param name="callback">Callback when adopen show done or fail pass true if ad show success and false if ad fail</param>
-        public void ShowAdOpen(Action<bool> callback = null)
+        public void ShowAdOpen(Action<int, OpenAdState> callback = null)
         {
             AdMHighFather.Instant.ShowAdOpen(callback);
         }

@@ -17,51 +17,24 @@ namespace DVAH
 { 
     public class AdMHighFather_AppLovin : AdMHighFather
     {
-        #region Lib Properties
-
-    
-        [SerializeField]
-        bool _isBannerAutoShow = false, _initBannerManually;
-
-        #region control AD is Allow
-        bool _isBannerCurrentlyAllow = false;
-        bool[] _offAdPosition = new bool[] { false, false, false, false, false, false };
-
-        public bool isAdBanner => _isBannerCurrentlyAllow;
-        #endregion
-
+          
         [SerializeField]
         MaxSdkBase.BannerPosition _bannerPosition = MaxSdkBase.BannerPosition.BottomCenter;
         public MaxSdkBase.BannerPosition BannerPosition => _bannerPosition;
-
-        [SerializeField] GameObject _popUpNoAd; 
-        
 
         private int bannerRetryAttempt,
             interstitialRetryAttempt,
             rewardedRetryAttempt,
             NativeAdRetryAttemp = 1;
 
-        List<int> AdOpenRetryAttemp = new List<int>();
-
-        #region CallBack
-        private Action<InterVideoState> _callbackInter = null;
-        private Action<RewardVideoState> _callbackReward = null;
-        private Action<bool> _callbackOpenAD = null;
-        private Action<int, bool> _callbackLoadNativeAd = null;
-
-        private Action[] _clickADCallback = new Action[6];
-
-        #endregion
+        List<int> AdOpenRetryAttemp = new List<int>(); 
 
         private bool isShowingAd = false, _isSDKMaxInitDone = false,
             _isSDKAdMobInitDone = false,
             _isBannerInitDone = false;
 
         bool[] _isnativeKeepReload;
-
-        #endregion
-
+          
 
         #region CUSTOM PROPERTIES
         #endregion
@@ -273,7 +246,7 @@ namespace DVAH
             {
                 Debug.LogError(CONSTANT.Prefix + $"==> invoke banner click callback error: " + e.ToString() + " <==");
             }
-            _clickADCallback[(int)AD_TYPE.banner] = null;
+             
         }
 
 
@@ -333,6 +306,7 @@ namespace DVAH
         private void Interstitial_OnAdDisplayedEvent(string arg1, AdInfo adInfo)
         {
             Debug.Log(CONSTANT.Prefix + $"==> Interstitial show! <==");
+            _callbackInter?.Invoke(InterVideoState.Open);
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.show, adNetwork: adInfo.NetworkName);
         }
 
@@ -362,13 +336,14 @@ namespace DVAH
             FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.inter, adNetwork: adInfo.NetworkName);
             try
             {
+                _callbackInter?.Invoke(InterVideoState.Click);
                 _clickADCallback[(int)AD_TYPE.inter]?.Invoke();
             }
             catch (Exception e)
             {
                 Debug.LogError(CONSTANT.Prefix + $"==> Faild invoke click inter callback, error: " + e.ToString() + " <==");
             }
-            _clickADCallback[(int)AD_TYPE.inter] = null;
+             
         }
 
         private void OnInterstitialDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -467,6 +442,15 @@ namespace DVAH
         {
             Debug.Log(CONSTANT.Prefix + $"==> Reward display success! <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.show, adInfo.NetworkName);
+            try
+            {
+                _callbackReward?.Invoke(RewardVideoState.Open);
+
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(CONSTANT.Prefix + $"==> Faild invoke callback display reward, error: " + e.ToString() + " <==");
+            }
         }
 
         private void OnRewardedAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -476,20 +460,31 @@ namespace DVAH
             try
             {
                 _clickADCallback[(int)AD_TYPE.reward]?.Invoke();
-
+                _callbackReward?.Invoke(RewardVideoState.Click);
             }
             catch (Exception e)
             {
                 Debug.LogError(CONSTANT.Prefix + $"==> Faild invoke reward click callback, error: " + e.ToString() + " <==");
             }
 
-            _clickADCallback[(int)AD_TYPE.reward] = null;
+             
         }
 
         private void OnRewardedAdDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             LoadRewardedAd();
             isShowingAd = false;
+          
+            try
+            {
+                _callbackReward?.Invoke(RewardVideoState.Closed);
+
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(CONSTANT.Prefix + $"==> Faild invoke callback reward, error: " + e.ToString() + " <==");
+            }
+
             _callbackReward = null;
             Debug.Log(CONSTANT.Prefix + $"==> Reward closed! <==");
         }
@@ -506,8 +501,7 @@ namespace DVAH
             {
                 Debug.LogError(CONSTANT.Prefix + $"==> Faild invoke callback reward, error: " + e.ToString() + " <==");
             }
-
-            _callbackReward = null;
+             
             Debug.Log(CONSTANT.Prefix + $"==> Reward recived!! <==");
         }
         #endregion
@@ -586,32 +580,54 @@ namespace DVAH
             Debug.Log(CONSTANT.Prefix + $"==> Show ad open/resume success! <==");
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show, adNetwork: arg2.NetworkName);
             isShowingAd = true;
-
+            int ID = _OpenAdUnitIDs.IndexOf(arg1);
+            if (ID < 0)
+                return;
+            try
+            {
+                _callbackOpenAD?.Invoke(ID, OpenAdState.Open); 
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(CONSTANT.Prefix + $"==>Callback click ad open error: " + e.ToString() + "<==");
+            }
         }
 
         private void AppOpen_OnAdClickedEvent(string arg1, AdInfo adInfo)
         {
             Debug.Log(CONSTANT.Prefix + $"==>Click open/resume success! <==");
             FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.open, adNetwork: adInfo.NetworkName);
+            int ID = _OpenAdUnitIDs.IndexOf(arg1);
+            if (ID < 0)
+                return;
             try
             {
+                _callbackOpenAD?.Invoke(ID, OpenAdState.Click);
                 _clickADCallback[(int)AD_TYPE.open]?.Invoke();
+
             }
             catch (Exception e)
             {
                 Debug.LogError(CONSTANT.Prefix + $"==>Callback click ad open error: " + e.ToString() + "<==");
             }
 
-            _clickADCallback[(int)AD_TYPE.open] = null;
+            
         }
 
         private void AppOpen_OnAdDisplayFailedEvent(string arg1, ErrorInfo errorInfo, AdInfo arg3)
         {
             Debug.LogError(CONSTANT.Prefix + $"==> Show ad open/resume failed, code: " + errorInfo.Code + " <==");
+             
+            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show_fail);
+
+            int ID = _OpenAdUnitIDs.IndexOf(arg1);
+            if (ID < 0)
+                return;
 
             try
             {
-                _callbackOpenAD?.Invoke(false);
+
+                _callbackOpenAD?.Invoke(ID, OpenAdState.None);
                 _callbackOpenAD = null;
             }
             catch (Exception e)
@@ -619,11 +635,6 @@ namespace DVAH
                 Debug.LogError(CONSTANT.Prefix + $"==>Callback ad open error: " + e.ToString() + "<==");
             }
 
-            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show_fail);
-
-            int ID = _OpenAdUnitIDs.IndexOf(arg1);
-            if (ID < 0)
-                return;
             AdOpenRetryAttemp[ID]++;
             double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
             isShowingAd = false;
@@ -636,19 +647,21 @@ namespace DVAH
         public void OnAppOpenDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             Debug.Log(CONSTANT.Prefix + $"==> Ad open/resume close! <==");
+           
+            isShowingAd = false;
+            int ID = _OpenAdUnitIDs.IndexOf(adUnitId);
+            if (ID < 0)
+                return;
+
             try
             {
-                _callbackOpenAD?.Invoke(true);
+                _callbackOpenAD?.Invoke(ID, OpenAdState.Closed);
                 _callbackOpenAD = null;
             }
             catch (Exception e)
             {
                 Debug.LogError(CONSTANT.Prefix + $"==>Callback ad open error: " + e.ToString() + "<==");
             }
-            isShowingAd = false;
-            int ID = _OpenAdUnitIDs.IndexOf(adUnitId);
-            if (ID < 0)
-                return;
             AdOpenRetryAttemp[ID]++;
             double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
             isShowingAd = false;
@@ -1002,7 +1015,7 @@ namespace DVAH
             {
                 Debug.LogError(CONSTANT.Prefix + $"==> Faild invoke click inter callback, error: " + exception.Message + " <==");
             }
-            _clickADCallback[(int)AD_TYPE.native] = null;
+           
         }
 
 
@@ -1028,7 +1041,8 @@ namespace DVAH
 
         public override bool NativeAdLoaded(int ID)
         {
-
+            if (ID >= this._nativeAd.Count)
+                return false;
 #if UNITY_EDITOR
             return true;
 #elif NATIVE_AD
@@ -1175,17 +1189,17 @@ namespace DVAH
         /// </summary>
         /// <param name="isAdOpen">Is Ads treated as an open AD</param>
         /// <param name="callback">Callback when adopen show done or fail pass true if ad show success and false if ad fail</param>
-        public override void ShowAdOpen(int ID = 0, bool isAdOpen = false, Action<bool> callback = null)
+        public override void ShowAdOpen(int ID = 0, bool isAdOpen = false, Action<int, OpenAdState> callback = null)
         {
             if (isAdOpen && _offAdPosition[(int)AD_TYPE.open])
             {
-                callback?.Invoke(false);
+                callback?.Invoke(ID, OpenAdState.None);
                 return;
             }
 
             if (!isAdOpen && _offAdPosition[(int)AD_TYPE.resume])
             {
-                callback?.Invoke(false);
+                callback?.Invoke(ID, OpenAdState.None);
                 return;
             }
 
@@ -1206,7 +1220,7 @@ namespace DVAH
                 FireBaseManager.Instant.adTypeShow = AD_TYPE.resume;
                 try
                 {
-                    callback?.Invoke(false);
+                    callback?.Invoke(ID, OpenAdState.None);
                 }
                 catch (Exception e)
                 {
@@ -1228,7 +1242,7 @@ namespace DVAH
         /// </code>
         /// </summary> 
         /// <param name="callback">Callback when adopen show done or fail pass true if ad show success and false if ad fail</param>
-        public override void ShowAdOpen(Action<bool> callback = null)
+        public override void ShowAdOpen(Action<int, OpenAdState> callback = null)
         {
             int ID = _OpenAdUnitIDs.Count - 1;
             if (ID < 0)
