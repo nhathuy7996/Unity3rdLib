@@ -183,7 +183,11 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.BeginHorizontal();
         string applicationIdentifier = EditorGUILayout.TextField("Package Name", PlayerSettings.applicationIdentifier);
 
-        EditorGUILayout.LabelField("Package name should in form \"com.X.Y\" other can cost a build error!", TextRedStyles);
+        if (!PlayerSettings.applicationIdentifier.StartsWith("com.") || PlayerSettings.applicationIdentifier.Split('.').Count() < 3)
+        {
+            EditorGUILayout.LabelField("Package name should in form \"com.X.Y\" other can cost a build error!", TextRedStyles);
+        } 
+        
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, applicationIdentifier);
         EditorGUILayout.EndHorizontal();
 
@@ -286,6 +290,11 @@ class ProjectInfoEditor : EditorWindow
             AddMenuItemForAdjust(menu, ADJUST_MODE.Sandbox.ToString(), ADJUST_MODE.Sandbox,
                  DVAH_Data.AdjustMode == ADJUST_MODE.Sandbox);
             menu.ShowAsContext();
+        }
+
+        if (EditorUserBuildSettings.buildAppBundle && DVAH_Data.AdjustMode == ADJUST_MODE.Sandbox)
+        {
+            EditorGUILayout.LabelField("Are you sure wanna build an .aab file with adjut on SANDBOX mode?", TextRedStyles);
         }
 
         EditorGUILayout.Space(20);
