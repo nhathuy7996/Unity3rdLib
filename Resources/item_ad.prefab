@@ -628,7 +628,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   adIcon: {fileID: 7373984932087215311}
   adChoice: {fileID: 7373984933036250084}
-  adBGFitter: {fileID: 7373984933992471942}
+  adBGFitter: {fileID: 4880001147201085414}
   callToAction: {fileID: 7373984932797704953}
   advertiser: {fileID: 7373984932917597945}
   headLine: {fileID: 7373984932437552985}

@@ -109,7 +109,7 @@ namespace DVAH
                 if(isTimeOut)
                     if (countTime >= 360000f)
                     {
-                        Debug.LogError(string.Format(CONSTANT.Prefix + $"==>Restored product {0} fail, becuz time out! Check your network please!<==", productID));
+                        Debug.LogError(string.Format(CONSTANT.Prefix + "==>Restored product {0} fail, becuz time out! Check your network please!<==", productID));
                         return false;
                     }
                 await Task.Delay(500);
@@ -121,7 +121,7 @@ namespace DVAH
                 return true;
             }
 
-            Debug.LogError(string.Format(CONSTANT.Prefix + $"==>Restored product {0} fail, Check product ID!<==", productID));
+            Debug.LogError(string.Format(CONSTANT.Prefix + "==>Restored product {0} fail, Check product ID!<==", productID));
             return false;
         }
 
@@ -257,7 +257,7 @@ namespace DVAH
 
                 if (String.Equals(args.purchasedProduct.definition.id, product.id, StringComparison.Ordinal))
                 {
-                    Debug.Log(string.Format(CONSTANT.Prefix + $"==> ProcessPurchase: PASS. Product: '{0}' <==", args.purchasedProduct.definition.id));
+                    Debug.Log(string.Format(CONSTANT.Prefix + "==> ProcessPurchase: PASS. Product: '{0}' <==", args.purchasedProduct.definition.id));
                     //NoticeManager.Instance.LogNotice(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));
                     //#if  UNITY_EDITOR
                      
@@ -291,7 +291,7 @@ namespace DVAH
             // A product purchase attempt did not succeed. Check failureReason for more detail. Consider sharing 
             // this reason with the user to guide their troubleshooting actions.
             _isBuying = false;
-            Debug.LogError(string.Format(CONSTANT.Prefix + $"==> OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1} <==", product.definition.storeSpecificId, failureReason));
+            Debug.LogError(string.Format(CONSTANT.Prefix + "==> OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1} <==", product.definition.storeSpecificId, failureReason));
 
             try
             {
