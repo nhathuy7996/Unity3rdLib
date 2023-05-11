@@ -40,8 +40,29 @@ public class CustomLib : MonoBehaviour
     void LoadingCompleteCallback(List<bool> doneCondition)
     {
         AdManager.Instant.SetAdNativeKeepReload(0, false);
-        AdManager.Instant.ShowAdOpen(0,true, (isSuccess) =>
+        AdManager.Instant.ShowAdOpen(0,true, (id,state) =>
         {
+            // id mean adOpen id
+            if (state == OpenAdState.None)
+            {
+                //adOpen show fail or something wrong
+            }
+
+            if (state == OpenAdState.Open)
+            {
+                //trigger callback when ad open start show
+            }
+
+            if (state == OpenAdState.Click)
+            {
+                //trigger callback when user click ad
+            }
+
+            if (state == OpenAdState.Closed)
+            {
+                //trigger when ad open close
+            }
+
             SceneManager.UnloadSceneAsync(oldScene);
             AdManager.Instant.InitializeBannerAdsAsync();
 

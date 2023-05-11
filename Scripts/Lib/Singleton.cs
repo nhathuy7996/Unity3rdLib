@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using System.Threading.Tasks;
+using UnityEngine; 
 
 namespace DVAH
 {
-    public class Singleton<T> : MonoBehaviour where T : MonoBehaviour 
+    public class Singleton<T> : MonoBehaviour where T : MonoBehaviour  
     {
 
+      
         private static T _instant = null;
         public static T Instant
         {
@@ -15,14 +15,18 @@ namespace DVAH
             {
                 if (_instant == null)
                 {
-                    Debug.LogError("==> Singleton doesnt exist!!! <==");
+                    Debug.LogWarning(CONSTANT.Prefix + "==> Singleton doesnt exist!!! <==");
                     _instant = FindObjectOfType<T>();
-                    //new GameObject().AddComponent<T>().name = "Singleton_"+  typeof(T).ToString();
+                    //if (B == true)
+                    //{
+                    //    new GameObject().AddComponent<T>().name = "Singleton_" + typeof(T).ToString();
+                    //    Debug.LogWarning(CONSTANT.Prefix + "==> Auto create "+typeof(T).Name+" !!! <==");
+                    //}
                 }
                 
                 return _instant;
             }
-        }
+        } 
        
         protected virtual void Awake()
         {

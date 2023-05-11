@@ -48,7 +48,7 @@ namespace DVAH
                 }
                 catch (Exception e)
                 {
-                    Debug.LogErrorFormat(CONSTANT.Prefix + $"====>Notify action on key {0} error: {1}<====", key, e.ToString());
+                    Debug.LogErrorFormat(CONSTANT.Prefix + "====>Notify action on key {0} error: {1}<====", key, e.ToString());
                 }
                
             }

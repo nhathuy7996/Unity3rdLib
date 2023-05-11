@@ -39,7 +39,7 @@ using DVAH;
 using Facebook.Unity.Settings;
 using Codice.Client.BaseCommands;
 using System.IO;
-using NUnit.Framework.Internal; 
+using NUnit.Framework.Internal;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.SceneManagement;
@@ -66,7 +66,7 @@ class ProjectInfoEditor : EditorWindow
 
     FacebookSettings facebook;
 
-    string fbAppID = null, fbClientToken = null ,fbKeyStore = null;
+    string fbAppID = null, fbAppLabels, fbClientToken = null, fbKeyStore = null;
     static EditorWindow wnd;
     GUIStyle TextRedStyles, TextGreenStyles, ButtonTextStyles;
 
@@ -75,7 +75,7 @@ class ProjectInfoEditor : EditorWindow
     MasterLib masterLib;
 
     // Add menu named "My Window" to the Window menu
-    [MenuItem("3rdLib/Checklist APERO",priority = 0)]
+    [MenuItem("3rdLib/Checklist APERO", priority = 0)]
     public static void InitWindowEditor()
     {
         // This method is called when the user selects the menu item in the Editor
@@ -89,7 +89,7 @@ class ProjectInfoEditor : EditorWindow
         }
 
         string[] symbolsList;
-        PlayerSettings.GetScriptingDefineSymbols(UnityEditor.Build.NamedBuildTarget.Android,out symbolsList);
+        PlayerSettings.GetScriptingDefineSymbols(UnityEditor.Build.NamedBuildTarget.Android, out symbolsList);
         if (symbolsList.ToList().Contains("NATIVE_AD"))
             usingAdNative = true;
         if (symbolsList.ToList().Contains("IAP"))
@@ -98,7 +98,7 @@ class ProjectInfoEditor : EditorWindow
 
     void OnGUI()
     {
-        
+
         if (TextRedStyles == null)
         {
             TextRedStyles = new GUIStyle(EditorStyles.label);
@@ -117,7 +117,7 @@ class ProjectInfoEditor : EditorWindow
             ButtonTextStyles.normal.textColor = Color.green;
         }
 
-      
+
         if (!wnd || EditorApplication.isPlaying)
         {
             Close();
@@ -125,7 +125,8 @@ class ProjectInfoEditor : EditorWindow
             return;
         }
 
-        if (!DVAH_Data) {
+        if (!DVAH_Data)
+        {
             string[] DVAH_Datas = UnityEditor.AssetDatabase.FindAssets("t:DVAH_Data");
             if (DVAH_Datas.Length != 0)
             {
@@ -145,27 +146,27 @@ class ProjectInfoEditor : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Scene:", TextGreenStyles);
-        if(EditorGUILayout.DropdownButton(content: new GUIContent(EditorSceneManager.GetActiveScene().path), FocusType.Passive) && EditorBuildSettings.scenes.Count() > 0)
+        if (EditorGUILayout.DropdownButton(content: new GUIContent(EditorSceneManager.GetActiveScene().path), FocusType.Passive) && EditorBuildSettings.scenes.Count() > 0)
         {
             GenericMenu menu = new GenericMenu();
 
             foreach (var scene in EditorBuildSettings.scenes)
             {
-                AddMenuItemForScenes(menu,scene.path , scene, SceneManager.GetActiveScene().path.Equals(scene.path));
+                AddMenuItemForScenes(menu, scene.path, scene, SceneManager.GetActiveScene().path.Equals(scene.path));
             }
-            
-            
+
+
             menu.ShowAsContext();
         }
 
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginVertical();
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(wnd.position.width), GUILayout.Height(wnd.position.height-20));
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(wnd.position.width), GUILayout.Height(wnd.position.height - 20));
         if (!adManager)
         {
             adManager = GameObject.FindObjectOfType<DVAH.AdMHighFather>();
-          
+
         }
         #region EDITOR
         EditorGUILayout.LabelField("Build Version:", TextGreenStyles);
@@ -181,13 +182,19 @@ class ProjectInfoEditor : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
         string applicationIdentifier = EditorGUILayout.TextField("Package Name", PlayerSettings.applicationIdentifier);
+
+        if (!PlayerSettings.applicationIdentifier.StartsWith("com.") || PlayerSettings.applicationIdentifier.Split('.').Count() < 3)
+        {
+            EditorGUILayout.LabelField("Package name should in form \"com.X.Y\" other can cost a build error!", TextRedStyles);
+        } 
         
-        EditorGUILayout.LabelField("Package name should in form \"com.X.Y\" other can cost a build error!", TextRedStyles);
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, applicationIdentifier);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         PlayerSettings.Android.useCustomKeystore = EditorGUILayout.Toggle("Custom KeyStore", PlayerSettings.Android.useCustomKeystore);
+
+
         usingAdNative = EditorGUILayout.Toggle("Using Ad Native", usingAdNative);
         usingIAP = EditorGUILayout.Toggle("Using IAP", usingIAP);
 
@@ -195,7 +202,7 @@ class ProjectInfoEditor : EditorWindow
         PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android, out symbols);
         List<string> tmpSymbols = symbols.ToList();
         if (usingAdNative)
-        { 
+        {
             if (!tmpSymbols.Contains("NATIVE_AD"))
             {
                 tmpSymbols.Add("NATIVE_AD");
@@ -206,11 +213,11 @@ class ProjectInfoEditor : EditorWindow
         {
             if (symbols.Contains("NATIVE_AD"))
             {
-                
+
                 tmpSymbols.Remove("NATIVE_AD");
                 symbols = tmpSymbols.ToArray();
-                
-            } 
+
+            }
         }
 
         if (usingIAP)
@@ -225,15 +232,18 @@ class ProjectInfoEditor : EditorWindow
         {
             if (symbols.Contains("IAP"))
             {
-               
+
                 tmpSymbols.Remove("IAP");
                 symbols = tmpSymbols.ToArray();
 
             }
         }
- 
+
 
         PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android, symbols);
+
+        
+        EditorGUILayout.EndHorizontal();
 
         if (PlayerSettings.Android.useCustomKeystore)
         {
@@ -245,14 +255,14 @@ class ProjectInfoEditor : EditorWindow
                     PlayerSettings.Android.keystoreName = path;
                 }
             }
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.LabelField("KeyStore Path:                      "+ PlayerSettings.Android.keystoreName);
+
+            EditorGUILayout.LabelField("KeyStore Path:                      " + PlayerSettings.Android.keystoreName);
 
             KeyStoreInfo();
         }
         else
         {
-            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.LabelField("KeyStore Path:                      Debug keystore!!!");
         }
 
@@ -280,6 +290,11 @@ class ProjectInfoEditor : EditorWindow
             AddMenuItemForAdjust(menu, ADJUST_MODE.Sandbox.ToString(), ADJUST_MODE.Sandbox,
                  DVAH_Data.AdjustMode == ADJUST_MODE.Sandbox);
             menu.ShowAsContext();
+        }
+
+        if (EditorUserBuildSettings.buildAppBundle && DVAH_Data.AdjustMode == ADJUST_MODE.Sandbox)
+        {
+            EditorGUILayout.LabelField("Are you sure wanna build an .aab file with adjut on SANDBOX mode?", TextRedStyles);
         }
 
         EditorGUILayout.Space(20);
@@ -378,7 +393,7 @@ class ProjectInfoEditor : EditorWindow
         }
         EditorGUILayout.EndVertical();
 
-        EditorGUILayout.EndHorizontal(); 
+        EditorGUILayout.EndHorizontal();
 #endif
 
         PrefabUtility.RecordPrefabInstancePropertyModifications(DVAH_Data);
@@ -406,7 +421,7 @@ class ProjectInfoEditor : EditorWindow
             {
                 fireBaseManager = GameObject.FindObjectOfType<FireBaseManager>();
             }
-           
+
             PrefabUtility.RecordPrefabInstancePropertyModifications(adjustGameObject);
         }
         else
@@ -416,7 +431,7 @@ class ProjectInfoEditor : EditorWindow
         #endregion
 
         #region GOOGLE ADS SETTING
-         
+
 
         if (gg)
         {
@@ -446,7 +461,7 @@ class ProjectInfoEditor : EditorWindow
 
 
         #region APPLOVIN
-         
+
 
         if (max != null)
         {
@@ -456,9 +471,9 @@ class ProjectInfoEditor : EditorWindow
                 adManager.MaxSdkKey = max.SdkKey;
             if (gg != null)
             {
-                max.AdMobAndroidAppId = gg.GoogleMobileAdsAndroidAppId; 
+                max.AdMobAndroidAppId = gg.GoogleMobileAdsAndroidAppId;
             }
-            
+
             PrefabUtility.RecordPrefabInstancePropertyModifications(max);
             EditorUtility.SetDirty(max);
         }
@@ -479,7 +494,7 @@ class ProjectInfoEditor : EditorWindow
         #endregion
 
         #region FACEBOOK
-         
+
 
         if (facebook == null)
         {
@@ -495,7 +510,7 @@ class ProjectInfoEditor : EditorWindow
             }
         }
         else
-        {   
+        {
             var appIds = facebook.GetType().GetProperty("AppIds");
 
             if (appIds != null)
@@ -506,13 +521,13 @@ class ProjectInfoEditor : EditorWindow
                     facebookAppIDProp = appIds.GetValue(facebookAppIDProp, null);
                     fbAppID = ((List<string>)facebookAppIDProp)[0];
                 }
-                 
+
                 appIds.SetValue(facebook, new List<string>() { DVAH_Data.Facebook_AppID }, null);
             }
             else
                 Debug.LogError(CONSTANT.Prefix + $":Can not find FB app ID field!");
 
-            
+
             var clientToken = facebook.GetType().GetProperty("ClientTokens");
 
             if (clientToken != null)
@@ -523,16 +538,26 @@ class ProjectInfoEditor : EditorWindow
                     facebookClientTokenProps = clientToken.GetValue(facebookClientTokenProps, null);
                     fbClientToken = ((List<string>)facebookClientTokenProps)[0];
                 }
-               
+
                 clientToken.SetValue(facebook, new List<string>() { DVAH_Data.Facebook_ClientToken }, null);
             }
             else
                 Debug.LogError(CONSTANT.Prefix + $":Can not find FB client token field!");
 
+            var appsLabel = facebook.GetType().GetProperty("AppLabels");
+
+            if (appsLabel != null)
+            {
+
+                appsLabel.SetValue(facebook, new List<string>() { DVAH_Data.Facebook_AppID }, null);
+            }
+            else
+                Debug.LogError(CONSTANT.Prefix + $":Can not find FB labels field!");
+
             var keyStorePath = facebook.GetType().GetProperty("AndroidKeystorePath");
             if (keyStorePath != null)
             {
-                keyStorePath.SetValue(facebook,  PlayerSettings.Android.keystoreName , null);
+                keyStorePath.SetValue(facebook, PlayerSettings.Android.keystoreName, null);
             }
 
             EditorUtility.SetDirty(facebook);
@@ -543,35 +568,35 @@ class ProjectInfoEditor : EditorWindow
         #endregion
 
         #region AD ID SETTING
-       
+
 
         if (adManager)
         {
-            
+
             adManager.BannerAdUnitID = DVAH_Data.AppLovin_BannerID;
             adManager.InterstitialAdUnitID = DVAH_Data.AppLovin_InterID;
-            adManager.RewardedAdUnitID = DVAH_Data.AppLovin_RewardID; 
+            adManager.RewardedAdUnitID = DVAH_Data.AppLovin_RewardID;
 
             if (numberAddOpenAdID > adManager.OpenAdUnitIDs.Count)
             {
-                adManager.OpenAdUnitIDs.AddRange(new string[numberAddOpenAdID - adManager.OpenAdUnitIDs.Count]); 
+                adManager.OpenAdUnitIDs.AddRange(new string[numberAddOpenAdID - adManager.OpenAdUnitIDs.Count]);
             }
 
             if (numberAddOpenAdID < adManager.OpenAdUnitIDs.Count)
             {
                 int numberRemove = adManager.OpenAdUnitIDs.Count - numberAddOpenAdID;
-                adManager.OpenAdUnitIDs.RemoveRange(numberAddOpenAdID, numberRemove); 
+                adManager.OpenAdUnitIDs.RemoveRange(numberAddOpenAdID, numberRemove);
             }
-             
+
             for (int i = 0; i < adManager.OpenAdUnitIDs.Count; i++)
             {
                 if (adManager.OpenAdUnitIDs[i] == null)
                     adManager.OpenAdUnitIDs[i] = "";
                 adManager.OpenAdUnitIDs[i] = DVAH_Data.AppLovin_ADOpenIDs[i];
-            } 
- 
+            }
+
 #if NATIVE_AD
-             
+
             if (numberNativeADID > adManager.NativeAdID.Count)
             {
                 adManager.NativeAdID.AddRange(new string[numberNativeADID - adManager.NativeAdID.Count]);
@@ -585,13 +610,13 @@ class ProjectInfoEditor : EditorWindow
                 adManager.adNativePanel.RemoveRange(numberNativeADID, adManager.adNativePanel.Count - numberNativeADID);
             }
 
-             
-            for (int i = 0; i< adManager.NativeAdID.Count; i++)
+
+            for (int i = 0; i < adManager.NativeAdID.Count; i++)
             {
                 if (adManager.NativeAdID[i] == null)
                     adManager.NativeAdID[i] = "";
                 adManager.NativeAdID[i] = DVAH_Data.AppLovin_NativeAdIDs[i];
-            } 
+            }
 #endif
 
 
@@ -599,7 +624,7 @@ class ProjectInfoEditor : EditorWindow
             PrefabUtility.RecordPrefabInstancePropertyModifications(adManager);
 
         }
-#endregion
+        #endregion
 
         EditorGUILayout.Space(20);
 
@@ -619,12 +644,12 @@ class ProjectInfoEditor : EditorWindow
                   "This will change your AndroidManifest for match FBID!!", "Ok");
             MenuEditor.FixAndroidManifestFB();
         }
-         
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        
-       
+
+
         if (GUILayout.Button("Build"))
         {
             if (!PlayerSettings.applicationIdentifier.StartsWith("com."))
@@ -641,6 +666,9 @@ class ProjectInfoEditor : EditorWindow
 
             EditorWindow.GetWindow(Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
         }
+
+        DVAH_Data.CHEAT_BUILD = EditorGUILayout.Toggle("Build Cheat", DVAH_Data.CHEAT_BUILD);
+
         EditorGUILayout.EndHorizontal();
 
         if (GUILayout.Button("Close"))
@@ -657,7 +685,7 @@ class ProjectInfoEditor : EditorWindow
     void KeyStoreInfo()
     {
         EditorGUILayout.BeginHorizontal();
-        if(!isShowKeyStorePass)
+        if (!isShowKeyStorePass)
             PlayerSettings.keystorePass = EditorGUILayout.PasswordField("Keystore Pass", PlayerSettings.keystorePass);
         else
             PlayerSettings.keystorePass = EditorGUILayout.TextField("Keystore Pass", PlayerSettings.keystorePass);
@@ -694,7 +722,7 @@ class ProjectInfoEditor : EditorWindow
     void OnDropBoxAdjustItemClick(object item)
     {
         this.DVAH_Data.AdjustMode = (ADJUST_MODE)item;
-         
+
     }
 
 

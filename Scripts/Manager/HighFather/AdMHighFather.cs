@@ -17,13 +17,24 @@ namespace DVAH
     {
         None,
         Open,
+        Click,
         Closed
     }
     public enum RewardVideoState
     {
         None,
         Open,
-        Watched
+        Click,
+        Watched,
+        Closed
+    }
+
+    public enum OpenAdState
+    {
+        None,
+        Open,
+        Click,
+        Closed
     }
 
     public enum AD_TYPE
@@ -39,8 +50,24 @@ namespace DVAH
 
     public abstract class AdMHighFather : Singleton<AdMHighFather>, IChildLib
     {
+        #region Lib Properties
+
+
+        [SerializeField]
+        protected bool _isBannerAutoShow = false, _initBannerManually;
+
+         
+        protected bool _isBannerCurrentlyAllow = false;
+        protected bool[] _offAdPosition = new bool[] { false, false, false, false, false, false };
+
+        public bool isAdBanner => _isBannerCurrentlyAllow;
+
+        [SerializeField] protected GameObject _popUpNoAd;
+
+        #endregion
 
         #region Properties
+        protected DVAH_Data DVAH_Data;
         [SerializeField]
         protected string _paid_ad_revenue = "paid_ad_impression_value";
 #if UNITY_EDITOR
@@ -173,6 +200,16 @@ namespace DVAH
 
         #endregion
 
+        #region CallBack Action
+        protected Action<InterVideoState> _callbackInter = null;
+        protected Action<RewardVideoState> _callbackReward = null;
+        protected Action<int, OpenAdState> _callbackOpenAD = null;
+        protected Action<int, bool> _callbackLoadNativeAd = null;
+
+        protected Action[] _clickADCallback = new Action[6];
+
+        #endregion
+
         public abstract bool[] getOffAdPosition();
         public abstract void Init(Action onInitDone = null);
 
@@ -208,9 +245,9 @@ namespace DVAH
 
         public abstract void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false);
 
-        public abstract void ShowAdOpen(int ID = 0, bool isAdOpen = false, Action<bool> callback = null);
+        public abstract void ShowAdOpen(int ID = 0, bool isAdOpen = false, Action<int, OpenAdState> callback = null);
 
-        public abstract void ShowAdOpen(Action<bool> callback = null);
+        public abstract void ShowAdOpen(Action<int, OpenAdState> callback = null);
 
 #if NATIVE_AD
 

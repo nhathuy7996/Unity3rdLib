@@ -8,6 +8,7 @@ using System.Xml;
 using SimpleJSON;
 using System;
 using UnityEngine.UI;
+using Facebook.Unity;
 
 namespace DVAH
 {
@@ -45,7 +46,7 @@ namespace DVAH
             if (_isDontDestroyOnLoad)
                 DontDestroyOnLoad(this.gameObject);
 
-            _= FireBaseManager.Instant.GetValueRemoteAsync(CONSTANT.FORCE_UPDATE, (value) =>
+            FireBaseManager.Instant.GetValueRemoteAsync(CONSTANT.FORCE_UPDATE, (value) =>
             {
                 try
                 {
@@ -80,6 +81,20 @@ namespace DVAH
             this.CheckFirebaseJS();
             this.CheckFirebaseXml();
 #endif
+
+            if (!FB.IsInitialized)
+            {
+                // Initialize the Facebook SDK
+                FB.Init(() =>
+                {
+                    FB.ActivateApp();
+                });
+            }
+            else
+            {
+                // Already initialized, signal an app activation App Event
+                FB.ActivateApp();
+            }
         }
 
         // Update is called once per frame
