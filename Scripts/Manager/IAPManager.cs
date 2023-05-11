@@ -44,7 +44,7 @@ namespace DVAH
 
         List<string> _restoreItemCheck = new List<string>();
 
-        private Action<bool> _onBuyDone = null;
+        private Action<bool,Product> _onBuyDone = null;
 
         public bool IsInitDone => IsInitialized();
         private bool _isBuying = false; 
@@ -154,9 +154,15 @@ namespace DVAH
         /// Call if player click btn buy product
         /// </summary>
         /// <param name="productId">ID of product (in catalog)</param>
-        /// <param name="onBuyDone">do sth if buy success (example: add coin ...)</param>
-        /// <param name="onBuyFail">do sth if buy fail (example: show popup sorry ...)</param>
-        public void BuyProductID(string productId, Action<bool> onBuyDone = null )
+        /// <param name="onBuyDone">do sth if buy done with a bool to describe success or not (example: add coin ...)</param>
+        public void BuyProductID(string productId, Action<bool> onBuyDone = null)
+        {
+            BuyProductID(productId, (isSuccess,product) => {
+                onBuyDone?.Invoke(isSuccess);
+            });
+        }
+
+        public void BuyProductID(string productId, Action<bool, Product> onBuyDone = null )
         {
             if (_isBuying) return;
 
@@ -280,7 +286,7 @@ namespace DVAH
 
                     try
                     {
-                        _onBuyDone?.Invoke(true);
+                        _onBuyDone?.Invoke(true, args.purchasedProduct);
                         _onBuyDone = null;
                     } catch (Exception e) {
                         Debug.LogError(CONSTANT.Prefix + "==> Buy production success but fail on invoke callback, error: "+e.Message);
@@ -309,7 +315,7 @@ namespace DVAH
 
             try
             {
-                _onBuyDone?.Invoke(false);
+                _onBuyDone?.Invoke(false,null);
                 _onBuyDone = null;
             }
             catch (Exception e)
