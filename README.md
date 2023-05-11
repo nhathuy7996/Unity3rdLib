@@ -90,7 +90,7 @@ if all condition is done then loading will stop and invoke callback, which alrea
 
 if some condition still false but loading reach max time then loading still stop and invoke call back. You can process on callback like this:
 
-      LoadingManager.Instant.Init((conditionDone)=>{
+      LoadingManager.Instant.Init({number of conditions},(conditionDone)=>{
               if(conditionDone.Where(t => t == false ).Any()){
                       //Some condition fail!
 
@@ -98,6 +98,11 @@ if some condition still false but loading reach max time then loading still stop
                       //All condition done!
               }
       });
+You can set max time of loading using script right before call loading init
+      LoadingManager.Instant.SetMaxTimeLoading(30).Init();
+      
+You can using doneConditionSelf to wait something done (it similar with using coroutine wait until)
+      LoadingManager.Instant.DoneConditionSelf({ID condition}, ()=> AdManager.Instant.OpenAdLoaded());
 
 ## Call function:
 
