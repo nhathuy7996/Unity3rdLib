@@ -211,9 +211,28 @@ Some game have more than one ad open then, you must pass ID for showing
 If game have more than one ad open then Ad ID 1 will auto use for open game and the last one use for resume game
 
 ####
-            AdManager.Instant.ShowAdOpen(ID,true, (isSuccess) =>
+            AdManager.Instant.ShowAdOpen(ID,true, (id,status) =>
             {
-                
+                        // id mean adOpen id
+                    if (state == OpenAdState.None)
+                    {
+                        //adOpen show fail or something wrong
+                    }
+
+                    if (state == OpenAdState.Open)
+                    {
+                        //trigger callback when ad open start show
+                    }
+
+                    if (state == OpenAdState.Click)
+                    {
+                        //trigger callback when user click ad
+                    }
+
+                    if (state == OpenAdState.Closed)
+                    {
+                        //trigger when ad open close
+                    }
             }); 
 ####
 
@@ -223,7 +242,7 @@ You call check on callback Ad show success or not using isSuccess
 
 ####
             AdManager.Instant.LoadNativeADsAsync(0,1,2);
-            AdManager.Instant.ShowNativeAsync(ID,true, (isSuccess) =>
+            AdManager.Instant.ShowNativeAsync(ID,true, (nativePanel) =>
             {
                  nativePanel.transform.SetParent(canvas.transform);
                  nativePanel.transform.localScale = Vector3.one;
