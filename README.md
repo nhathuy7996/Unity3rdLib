@@ -90,7 +90,7 @@ if all condition is done then loading will stop and invoke callback, which alrea
 
 if some condition still false but loading reach max time then loading still stop and invoke call back. You can process on callback like this:
 
-      LoadingManager.Instant.Init((conditionDone)=>{
+      LoadingManager.Instant.Init({number of conditions},(conditionDone)=>{
               if(conditionDone.Where(t => t == false ).Any()){
                       //Some condition fail!
 
@@ -98,6 +98,13 @@ if some condition still false but loading reach max time then loading still stop
                       //All condition done!
               }
       });
+You can set max time of loading using script right before call loading init:
+
+      LoadingManager.Instant.SetMaxTimeLoading(30).Init();
+      
+You can using doneConditionSelf to wait something done (it similar with using coroutine wait until):
+
+      LoadingManager.Instant.DoneConditionSelf({ID condition}, ()=> AdManager.Instant.OpenAdLoaded());
 
 ## Call function:
 
@@ -211,9 +218,28 @@ Some game have more than one ad open then, you must pass ID for showing
 If game have more than one ad open then Ad ID 1 will auto use for open game and the last one use for resume game
 
 ####
-            AdManager.Instant.ShowAdOpen(ID,true, (isSuccess) =>
+            AdManager.Instant.ShowAdOpen(ID,true, (id,status) =>
             {
-                
+                        // id mean adOpen id
+                    if (state == OpenAdState.None)
+                    {
+                        //adOpen show fail or something wrong
+                    }
+
+                    if (state == OpenAdState.Open)
+                    {
+                        //trigger callback when ad open start show
+                    }
+
+                    if (state == OpenAdState.Click)
+                    {
+                        //trigger callback when user click ad
+                    }
+
+                    if (state == OpenAdState.Closed)
+                    {
+                        //trigger when ad open close
+                    }
             }); 
 ####
 
@@ -223,7 +249,7 @@ You call check on callback Ad show success or not using isSuccess
 
 ####
             AdManager.Instant.LoadNativeADsAsync(0,1,2);
-            AdManager.Instant.ShowNativeAsync(ID,true, (isSuccess) =>
+            AdManager.Instant.ShowNativeAsync(ID,true, (nativePanel) =>
             {
                  nativePanel.transform.SetParent(canvas.transform);
                  nativePanel.transform.localScale = Vector3.one;
