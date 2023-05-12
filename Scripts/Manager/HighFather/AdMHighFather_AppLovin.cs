@@ -29,7 +29,7 @@ namespace DVAH
 
         List<int> AdOpenRetryAttemp = new List<int>(); 
 
-        private bool isShowingAd = false, _isSDKMaxInitDone = false,
+        private bool _isSDKMaxInitDone = false,
             _isSDKAdMobInitDone = false,
             _isBannerInitDone = false;
 
@@ -327,6 +327,7 @@ namespace DVAH
             }
 
             _callbackInter = null;
+            isShowingAD = false;
         }
 
 
@@ -359,7 +360,7 @@ namespace DVAH
             }
             _callbackInter = null;
             LoadInterstitial();
-            isShowingAd = false;
+            isShowingAD = false;
         }
 
 
@@ -436,6 +437,7 @@ namespace DVAH
             }
 
             _callbackReward = null;
+            isShowingAD = false;
         }
 
         private void OnRewardedAdDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -473,7 +475,7 @@ namespace DVAH
         private void OnRewardedAdDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             LoadRewardedAd();
-            isShowingAd = false;
+            isShowingAD = false;
           
             try
             {
@@ -570,7 +572,7 @@ namespace DVAH
                 return;
             AdOpenRetryAttemp[ID]++;
             double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
-            isShowingAd = false;
+             
 
             waitLoadAdOpen((float)retryDelay, ID);
         }
@@ -579,7 +581,7 @@ namespace DVAH
         {
             Debug.Log(CONSTANT.Prefix + $"==> Show ad open/resume success! <==");
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show, adNetwork: arg2.NetworkName);
-            isShowingAd = true;
+            
             int ID = _OpenAdUnitIDs.IndexOf(arg1);
             if (ID < 0)
                 return;
@@ -637,7 +639,7 @@ namespace DVAH
 
             AdOpenRetryAttemp[ID]++;
             double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
-            isShowingAd = false;
+            isShowingAD = false;
 
             waitLoadAdOpen((float)retryDelay, ID);
 
@@ -648,7 +650,7 @@ namespace DVAH
         {
             Debug.Log(CONSTANT.Prefix + $"==> Ad open/resume close! <==");
            
-            isShowingAd = false;
+            isShowingAD = false;
             int ID = _OpenAdUnitIDs.IndexOf(adUnitId);
             if (ID < 0)
                 return;
@@ -664,7 +666,7 @@ namespace DVAH
             }
             AdOpenRetryAttemp[ID]++;
             double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
-            isShowingAd = false;
+            
 
             LoadAdOpen(ID);
         }
@@ -1041,11 +1043,12 @@ namespace DVAH
 
         public override bool NativeAdLoaded(int ID)
         {
-            if (ID >= this._nativeAd.Count)
-                return false;
+            
 #if UNITY_EDITOR
             return true;
 #elif NATIVE_AD
+            if (ID >= this._nativeAd.Count)
+                            return false;
             return this._nativeAd[ID] != null;
 #else
             return false;
@@ -1120,7 +1123,7 @@ namespace DVAH
             }
             if (InterstitialIsLoaded())
             {
-                isShowingAd = true;
+                isShowingAD = true;
                 _callbackInter = callback;
                 MaxSdk.ShowInterstitial(_InterstitialAdUnitID);
                 return;
@@ -1157,7 +1160,7 @@ namespace DVAH
 
             if (VideoRewardIsLoaded())
             {
-                isShowingAd = true;
+                isShowingAD = true;
                 _callbackReward = callback;
                 MaxSdk.ShowRewardedAd(_RewardedAdUnitID);
             }
@@ -1203,7 +1206,7 @@ namespace DVAH
                 return;
             }
 
-            if (isShowingAd)
+            if (isShowingAD)
             {
                 FireBaseManager.Instant.adTypeShow = AD_TYPE.resume;
                 return;
@@ -1211,6 +1214,7 @@ namespace DVAH
 
             if (CheckInternetConnection() && AdsOpenIsLoaded(ID))
             {
+                isShowingAD = true;
                 FireBaseManager.Instant.adTypeShow = isAdOpen ? AD_TYPE.open : AD_TYPE.resume;
                 MaxSdk.ShowAppOpenAd(_OpenAdUnitIDs[ID]);
                 _callbackOpenAD = callback;
@@ -1416,6 +1420,18 @@ namespace DVAH
             {
                 if (_OpenAdUnitIDs.Count == 0)
                     return;
+                if (isShowingAD)
+                {
+                    _callbackInter?.Invoke(InterVideoState.None);
+                    _callbackInter = null;
+
+                    _callbackReward?.Invoke(RewardVideoState.None);
+                    _callbackReward = null;
+
+                    _callbackOpenAD?.Invoke(_OpenAdUnitIDs.Count - 1, OpenAdState.None);
+                    _callbackOpenAD = null;
+                    return;
+                }
                 this.ShowAdOpen(_OpenAdUnitIDs.Count - 1);
             }
         }
