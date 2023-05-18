@@ -52,7 +52,7 @@ namespace DVAH
     {
         #region Lib Properties
 
-
+        protected bool isShowingAD = false;
         [SerializeField]
         protected bool _isBannerAutoShow = false, _initBannerManually;
 

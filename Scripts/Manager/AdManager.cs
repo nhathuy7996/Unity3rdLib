@@ -9,6 +9,7 @@ namespace DVAH
 
     public class AdManager: Singleton<AdManager> {
 
+       
 
         public bool[] offAdPositions => AdMHighFather.Instant.getOffAdPosition();
 
