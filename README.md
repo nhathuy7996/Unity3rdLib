@@ -111,12 +111,20 @@ You can using doneConditionSelf to wait something done (it similar with using co
 ![enter ID adopen](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/6.png) 
 
 #### ***Buy product***
-        IAPManager.Instant.BuyProductID("IDProduct", () =>
+        IAPManager.Instant.BuyProductID("IDProduct", (isSuccess) =>
         {
-            Debug.Log("Buy DOne!");
-        }, () =>
+            if(isSuccess)
+                Debug.Log("Buy DOne!");
+            else
+                Debug.Log("Buy Fail!");
+        });
+Or If you wanna get data of product like receipt for self-check on your server
+        IAPManager.Instant.BuyProductID("IDProduct", (isSuccess, Product) =>
         {
-            Debug.Log("Buy Fail!");
+            if (isSuccess)
+                Debug.Log("Buy DOne! "+Product.receipt);
+            else
+                Debug.Log("Buy Fail!");
         });
 
 #### ***restore product, call ASAP*** 
