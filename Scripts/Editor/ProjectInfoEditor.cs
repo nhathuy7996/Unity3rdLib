@@ -187,8 +187,8 @@ class ProjectInfoEditor : EditorWindow
         if (!PlayerSettings.applicationIdentifier.StartsWith("com.") || PlayerSettings.applicationIdentifier.Split('.').Count() < 3)
         {
             EditorGUILayout.LabelField("Package name should in form \"com.X.Y\" other can cost a build error!", TextRedStyles);
-        } 
-        
+        }
+
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, applicationIdentifier);
         EditorGUILayout.EndHorizontal();
 
@@ -243,7 +243,7 @@ class ProjectInfoEditor : EditorWindow
 
         PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android, symbols);
 
-        
+
         EditorGUILayout.EndHorizontal();
 
         if (PlayerSettings.Android.useCustomKeystore)
@@ -301,18 +301,18 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.Space(20);
         EditorGUILayout.LabelField("Events Token:", TextGreenStyles);
 
-        DVAH_Data.EventsToken_AdValue = EditorGUILayout.TextField("ad_value", DVAH_Data.EventsToken_AdValue.Replace(" ", ""));
-        DVAH_Data.EventsToken_LevelAchives = EditorGUILayout.TextField("level_achived", DVAH_Data.EventsToken_LevelAchives.Replace(" ", ""));
+        DVAH_Data.EventsToken_AdValue = EditorGUILayout.TextField("ad_value (optional)", DVAH_Data.EventsToken_AdValue.Replace(" ", ""));
+        DVAH_Data.EventsToken_LevelAchives = EditorGUILayout.TextField("level_achived (optional)", DVAH_Data.EventsToken_LevelAchives.Replace(" ", ""));
 
         EditorGUILayout.Space(20);
         EditorGUILayout.LabelField("Google:", TextGreenStyles);
-        DVAH_Data.Google_Android_AppID = EditorGUILayout.TextField("Android App ID", DVAH_Data.Google_Android_AppID.Replace(" ", ""));
+        DVAH_Data.Google_Android_AppID = EditorGUILayout.TextField("Google AD App ID", DVAH_Data.Google_Android_AppID.Replace(" ", ""));
         DVAH_Data.Google_Event_Paid_AD = EditorGUILayout.TextField("Event Paid AD", DVAH_Data.Google_Event_Paid_AD.Replace(" ", ""));
 
         EditorGUILayout.Space(20);
         EditorGUILayout.LabelField("AppLovin (MAX):", TextGreenStyles);
         DVAH_Data.AppLovin_SDK_Key = EditorGUILayout.TextField("MaxSdk key", DVAH_Data.AppLovin_SDK_Key.Replace(" ", ""));
-        EditorGUILayout.LabelField("Android AD ID:                       " + DVAH_Data.Google_Android_AppID);
+        EditorGUILayout.LabelField("Google AD App ID:                       " + DVAH_Data.Google_Android_AppID);
 
 
         EditorGUILayout.Space(20);
@@ -649,6 +649,11 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        DVAH_Data.CHEAT_BUILD = EditorGUILayout.Toggle("Build Cheat", DVAH_Data.CHEAT_BUILD);
+        EditorUserBuildSettings.buildAppBundle = EditorGUILayout.Toggle("Build aab", EditorUserBuildSettings.buildAppBundle);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
 
 
         if (GUILayout.Button("Build"))
@@ -669,13 +674,9 @@ class ProjectInfoEditor : EditorWindow
             //EditorWindow.GetWindow(Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
         }
 
-        DVAH_Data.CHEAT_BUILD = EditorGUILayout.Toggle("Build Cheat", DVAH_Data.CHEAT_BUILD);
-
-        EditorUserBuildSettings.buildAppBundle = EditorGUILayout.Toggle("Build aab", EditorUserBuildSettings.buildAppBundle);
-
         if (GUILayout.Button("Build Seting"))
         {
-              EditorWindow.GetWindow(Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
+            EditorWindow.GetWindow(Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
         }
 
         EditorGUILayout.EndHorizontal();
@@ -687,8 +688,9 @@ class ProjectInfoEditor : EditorWindow
             GUIUtility.ExitGUI();
         }
 
-        EditorGUILayout.EndScrollView();
+
         EditorGUILayout.EndVertical();
+        EditorGUILayout.EndScrollView();
     }
 
     void KeyStoreInfo()
@@ -739,9 +741,9 @@ class ProjectInfoEditor : EditorWindow
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
         buildPlayerOptions = BuildPlayerWindow.DefaultBuildMethods.GetBuildPlayerOptions(buildPlayerOptions);
 
-        
+
         BuildPipeline.BuildPlayer(buildPlayerOptions);
-         
+
     }
 
 
