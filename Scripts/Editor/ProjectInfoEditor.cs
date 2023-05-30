@@ -737,8 +737,9 @@ class ProjectInfoEditor : EditorWindow
     void BuildProject()
     {
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
-        BuildPlayerWindow.DefaultBuildMethods.GetBuildPlayerOptions(buildPlayerOptions);
+        buildPlayerOptions = BuildPlayerWindow.DefaultBuildMethods.GetBuildPlayerOptions(buildPlayerOptions);
 
+        
         BuildPipeline.BuildPlayer(buildPlayerOptions);
          
     }
