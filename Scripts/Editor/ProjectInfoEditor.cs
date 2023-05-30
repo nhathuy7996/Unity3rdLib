@@ -44,6 +44,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
+using UnityEditor.Build.Reporting;
 
 class ProjectInfoEditor : EditorWindow
 {
@@ -664,10 +665,18 @@ class ProjectInfoEditor : EditorWindow
                    "Your package name is not in format 'com.X.Y' . This can make you can't build your project, consider change it ASAP!!", "Ok");
             }
 
-            EditorWindow.GetWindow(Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
+            this.BuildProject();
+            //EditorWindow.GetWindow(Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
         }
 
         DVAH_Data.CHEAT_BUILD = EditorGUILayout.Toggle("Build Cheat", DVAH_Data.CHEAT_BUILD);
+
+        EditorUserBuildSettings.buildAppBundle = EditorGUILayout.Toggle("Build aab", EditorUserBuildSettings.buildAppBundle);
+
+        if (GUILayout.Button("Build Seting"))
+        {
+              EditorWindow.GetWindow(Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
+        }
 
         EditorGUILayout.EndHorizontal();
 
@@ -723,6 +732,15 @@ class ProjectInfoEditor : EditorWindow
     {
         this.DVAH_Data.AdjustMode = (ADJUST_MODE)item;
 
+    }
+
+    void BuildProject()
+    {
+        BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+        BuildPlayerWindow.DefaultBuildMethods.GetBuildPlayerOptions(buildPlayerOptions);
+
+        BuildPipeline.BuildPlayer(buildPlayerOptions);
+         
     }
 
 
