@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName ="DVAH/Create Data File",fileName ="DVAH_Data")]
 public class DVAH_Data : ScriptableObject
 {
+    public string LinkGoogleSheet = "";
     //Adjust
     public string Adjust_token = "";
     public ADJUST_MODE AdjustMode = ADJUST_MODE.Sandbox;

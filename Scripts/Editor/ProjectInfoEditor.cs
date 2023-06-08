@@ -75,10 +75,15 @@ class ProjectInfoEditor : EditorWindow
 
     MasterLib masterLib;
 
+    string linkGoogleSheet = "";
+
+    RequestBase requestBase;
+
     // Add menu named "My Window" to the Window menu
     [MenuItem("3rdLib/Checklist APERO", priority = 0)]
     public static void InitWindowEditor()
     {
+        
         // This method is called when the user selects the menu item in the Editor
         wnd = GetWindow<ProjectInfoEditor>();
         wnd.titleContent = new GUIContent("Huynn 3rdLib - APERO version!");
@@ -134,6 +139,7 @@ class ProjectInfoEditor : EditorWindow
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(DVAH_Datas[0]);
                 DVAH_Data = UnityEditor.AssetDatabase.LoadAssetAtPath<DVAH_Data>(path);
 
+               
                 numberAddOpenAdID = DVAH_Data.AppLovin_ADOpenIDs.Count;
 #if NATIVE_AD
                 numberNativeADID = DVAH_Data.AppLovin_NativeAdIDs.Count;
@@ -162,6 +168,20 @@ class ProjectInfoEditor : EditorWindow
 
         EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.BeginHorizontal(); 
+        DVAH_Data.LinkGoogleSheet = EditorGUILayout.TextField("Link google Sheet", DVAH_Data.LinkGoogleSheet);
+        if (GUILayout.Button("Reload"))
+        {
+            requestBase = this.getData(DVAH_Data);
+        }
+        EditorGUILayout.EndHorizontal();
+
+        if (requestBase != null && !requestBase.isDone)
+        {
+            EditorGUILayout.LabelField("Loading", TextRedStyles);
+            return;
+        }
+
         EditorGUILayout.BeginVertical();
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(wnd.position.width), GUILayout.Height(wnd.position.height - 20));
         if (!adManager)
@@ -187,8 +207,8 @@ class ProjectInfoEditor : EditorWindow
         if (!PlayerSettings.applicationIdentifier.StartsWith("com.") || PlayerSettings.applicationIdentifier.Split('.').Count() < 3)
         {
             EditorGUILayout.LabelField("Package name should in form \"com.X.Y\" other can cost a build error!", TextRedStyles);
-        } 
-        
+        }
+
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, applicationIdentifier);
         EditorGUILayout.EndHorizontal();
 
@@ -243,7 +263,7 @@ class ProjectInfoEditor : EditorWindow
 
         PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android, symbols);
 
-        
+
         EditorGUILayout.EndHorizontal();
 
         if (PlayerSettings.Android.useCustomKeystore)
@@ -301,18 +321,18 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.Space(20);
         EditorGUILayout.LabelField("Events Token:", TextGreenStyles);
 
-        DVAH_Data.EventsToken_AdValue = EditorGUILayout.TextField("ad_value", DVAH_Data.EventsToken_AdValue.Replace(" ", ""));
-        DVAH_Data.EventsToken_LevelAchives = EditorGUILayout.TextField("level_achived", DVAH_Data.EventsToken_LevelAchives.Replace(" ", ""));
+        DVAH_Data.EventsToken_AdValue = EditorGUILayout.TextField("ad_value (optional)", DVAH_Data.EventsToken_AdValue.Replace(" ", ""));
+        DVAH_Data.EventsToken_LevelAchives = EditorGUILayout.TextField("level_achived (optional)", DVAH_Data.EventsToken_LevelAchives.Replace(" ", ""));
 
         EditorGUILayout.Space(20);
         EditorGUILayout.LabelField("Google:", TextGreenStyles);
-        DVAH_Data.Google_Android_AppID = EditorGUILayout.TextField("Android App ID", DVAH_Data.Google_Android_AppID.Replace(" ", ""));
+        DVAH_Data.Google_Android_AppID = EditorGUILayout.TextField("Google AD App ID", DVAH_Data.Google_Android_AppID.Replace(" ", ""));
         DVAH_Data.Google_Event_Paid_AD = EditorGUILayout.TextField("Event Paid AD", DVAH_Data.Google_Event_Paid_AD.Replace(" ", ""));
 
         EditorGUILayout.Space(20);
         EditorGUILayout.LabelField("AppLovin (MAX):", TextGreenStyles);
         DVAH_Data.AppLovin_SDK_Key = EditorGUILayout.TextField("MaxSdk key", DVAH_Data.AppLovin_SDK_Key.Replace(" ", ""));
-        EditorGUILayout.LabelField("Android AD ID:                       " + DVAH_Data.Google_Android_AppID);
+        EditorGUILayout.LabelField("Google AD App ID:                       " + DVAH_Data.Google_Android_AppID);
 
 
         EditorGUILayout.Space(20);
@@ -330,7 +350,6 @@ class ProjectInfoEditor : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
         numberAddOpenAdID = EditorGUILayout.IntField("AppOpen AD ID number", numberAddOpenAdID);
-
 
         if (numberAddOpenAdID > DVAH_Data.AppLovin_ADOpenIDs.Count)
         {
@@ -649,6 +668,11 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        DVAH_Data.CHEAT_BUILD = EditorGUILayout.Toggle("Build Cheat", DVAH_Data.CHEAT_BUILD);
+        EditorUserBuildSettings.buildAppBundle = EditorGUILayout.Toggle("Build aab", EditorUserBuildSettings.buildAppBundle);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
 
 
         if (GUILayout.Button("Build"))
@@ -669,13 +693,9 @@ class ProjectInfoEditor : EditorWindow
             //EditorWindow.GetWindow(Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
         }
 
-        DVAH_Data.CHEAT_BUILD = EditorGUILayout.Toggle("Build Cheat", DVAH_Data.CHEAT_BUILD);
-
-        EditorUserBuildSettings.buildAppBundle = EditorGUILayout.Toggle("Build aab", EditorUserBuildSettings.buildAppBundle);
-
         if (GUILayout.Button("Build Seting"))
         {
-              EditorWindow.GetWindow(Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
+            EditorWindow.GetWindow(Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
         }
 
         EditorGUILayout.EndHorizontal();
@@ -687,8 +707,9 @@ class ProjectInfoEditor : EditorWindow
             GUIUtility.ExitGUI();
         }
 
-        EditorGUILayout.EndScrollView();
+
         EditorGUILayout.EndVertical();
+        EditorGUILayout.EndScrollView();
     }
 
     void KeyStoreInfo()
@@ -739,9 +760,96 @@ class ProjectInfoEditor : EditorWindow
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
         buildPlayerOptions = BuildPlayerWindow.DefaultBuildMethods.GetBuildPlayerOptions(buildPlayerOptions);
 
-        
+
         BuildPipeline.BuildPlayer(buildPlayerOptions);
-         
+
+    }
+
+    public RequestBase getData(DVAH_Data DVAH_Data)
+    {
+        string[] urlSplits = DVAH_Data.LinkGoogleSheet.Split("/");
+        int idBeforeISsheet = urlSplits.ToList().IndexOf("spreadsheets")+2;
+        if (idBeforeISsheet >= urlSplits.Length)
+            return null ;
+        string sctualURL = $"https://sheets.googleapis.com/v4/spreadsheets/{urlSplits[idBeforeISsheet]}/values/Data?key=AIzaSyBlihthzYwvTLws1ArIAq8m5uBkci8TDUI";
+
+        RequestBase requestBase = new RequestBase(sctualURL);
+        _ = requestBase.Send(result =>
+        {
+            if (!DVAH_Data)
+                return;
+            JSONArray data = JSON.Parse(result.response)["values"].AsArray;
+
+            List<JSONNode> rows = new List<JSONNode>();
+            foreach (JSONNode item in data)
+            {
+
+                rows.Add(item.AsArray);
+                if (item.Count <= 1)
+                    continue;
+                if (item.AsArray[0].ToString().ToLower().Contains("jus"))
+                {
+                    DVAH_Data.Adjust_token = item.AsArray[1];
+                }
+
+                if (item.AsArray[0].ToString().ToLower().Contains("fb") || item.AsArray[0].ToString().ToLower().Contains("ace"))
+                {
+                    string[] IDs = item.AsArray[1].ToString().Replace("\"", "").Split("\\n");
+                  
+                    DVAH_Data.Facebook_AppID = IDs[0];
+                    if (IDs.Length > 1)
+                        DVAH_Data.Facebook_ClientToken = IDs[1];
+                }
+
+                if (item.AsArray[0].ToString().ToLower().Contains("ann"))
+                {
+                    DVAH_Data.AppLovin_BannerID = item.AsArray[1]; 
+                }
+
+                if (item.AsArray[0].ToString().ToLower().Contains("nte"))
+                {
+                    DVAH_Data.AppLovin_InterID = item.AsArray[1]; 
+                }
+
+                if (item.AsArray[0].ToString().ToLower().Contains("war"))
+                {
+                    DVAH_Data.AppLovin_RewardID = item.AsArray[1]; 
+                }
+
+                if (item.AsArray[0].ToString().ToLower().Contains("pen"))
+                { 
+                    string[] IDs = item.AsArray[1].ToString().Replace("\"", "").Split("\\n");
+
+                    numberAddOpenAdID = IDs.Length;
+                    DVAH_Data.AppLovin_ADOpenIDs.Clear();
+
+                    for (int i = 0; i < IDs.Length; i++)
+                    { 
+                        DVAH_Data.AppLovin_ADOpenIDs.Add(IDs[i]);
+                    }
+                }
+
+                if (item.AsArray[0].ToString().ToLower().Contains("ativ"))
+                { 
+                    string[] IDs = item.AsArray[1].ToString().Replace("\"", "").Split("\\n");
+
+                    numberNativeADID = IDs.Length;
+                    DVAH_Data.AppLovin_NativeAdIDs.Clear();
+
+                    for (int i = 0; i < IDs.Length; i++)
+                    {
+                        DVAH_Data.AppLovin_NativeAdIDs.Add(IDs[i]);
+                    }
+                }
+
+                if (item.AsArray[0].ToString().ToLower().Contains("app"))
+                {
+                    DVAH_Data.Google_Android_AppID = item.AsArray[1]; 
+                }
+            }
+        });
+
+        return requestBase;
     }
 
 

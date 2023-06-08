@@ -12,20 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 640af7f2ec79a4391a239a838ba259b4, type: 3}
   m_Name: DVAH_Data
   m_EditorClassIdentifier: 
-  Adjust_token: ffff
+  LinkGoogleSheet: https://docs.google.com/spreadsheets/d/18XiIz1jUhIjV-cO6xkb1QuYV3WZlQg_Y4B0MQsG8yuc/edit#gid=896335561
+  Adjust_token: 17g9d8u9jz0ghh
   AdjustMode: 0
   EventsToken_AdValue: 
   EventsToken_LevelAchives: 
-  Google_Android_AppID: 
+  Google_Android_AppID: ca-app-pub-4584260126367940~6032392395
   Google_Event_Paid_AD: paid_ad_impression_value
-  Facebook_AppID: 
-  Facebook_ClientToken: 
+  Facebook_AppID: vvv
+  Facebook_ClientToken: hhh
   AppLovin_SDK_Key: 
-  AppLovin_BannerID: 123
-  AppLovin_InterID: 123
-  AppLovin_RewardID: 123
+  AppLovin_BannerID: 77212ebb82e5b6e1
+  AppLovin_InterID: f5ee74443ae59e6e
+  AppLovin_RewardID: 2493727da32d1631
   AppLovin_ADOpenIDs:
-  - vvvv
-  AppLovin_NativeAdIDs:
-  - ca-app-pub-3940256099942544/2247696110
+  - d3f0a5a2e58e54c6
+  - d3f0a5a2e58e54c6
+  AppLovin_NativeAdIDs: []
   CHEAT_BUILD: 0

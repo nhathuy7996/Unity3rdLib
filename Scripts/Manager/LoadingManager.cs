@@ -191,10 +191,18 @@ namespace DVAH
 
         async Task waitSelfDoneCondition(int id, Func<bool> predicate)
         {
-            do
+            try
             {
-                await Task.Delay(500);
-            } while ((!predicate.Invoke()));
+                do
+                {
+                    await Task.Delay(500);
+                } while (!_isLoadingStart && !predicate.Invoke());
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(CONSTANT.Prefix + $"==> Error on invoke predicate waitSelfDoneCondition, error: {e.ToString()}! <==");
+            }
+           
 
             await Task.Delay(1500);
             DoneCondition(id);
