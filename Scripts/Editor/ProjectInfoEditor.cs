@@ -828,7 +828,7 @@ class ProjectInfoEditor : EditorWindow
                         DVAH_Data.AppLovin_ADOpenIDs.Add(IDs[i]);
                     }
                 }
-
+#if NATIVE_AD
                 if (item.AsArray[0].ToString().ToLower().Contains("ativ"))
                 { 
                     string[] IDs = item.AsArray[1].ToString().Replace("\"", "").Split("\\n");
@@ -841,6 +841,7 @@ class ProjectInfoEditor : EditorWindow
                         DVAH_Data.AppLovin_NativeAdIDs.Add(IDs[i]);
                     }
                 }
+#endif
 
                 if (item.AsArray[0].ToString().ToLower().Contains("app"))
                 {
