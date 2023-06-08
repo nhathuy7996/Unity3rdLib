@@ -36,15 +36,25 @@ namespace DVAH
         [SerializeField] List<GameObject> _childLibs;
         public List<GameObject> ChildLibs => _childLibs;
 
+        protected override void Awake()
+        {
+            base.Awake();
+            if (_isDontDestroyOnLoad)
+                DontDestroyOnLoad(this.gameObject);
 
+
+            if (!_masterLib)
+                _masterLib = this.GetComponentInChildren<MasterLib>();
+
+        }
         // Start is called before the first frame update
         void Start()
         {
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             Application.targetFrameRate = 120;
 
-            if (_isDontDestroyOnLoad)
-                DontDestroyOnLoad(this.gameObject);
+            if (_isAutoInit)
+                _masterLib.InitChildLib(() => { Debug.Log("=====> <color=#00FF00>Init done all!</color> <====="); });
 
             FireBaseManager.Instant.GetValueRemoteAsync(CONSTANT.FORCE_UPDATE, (value) =>
             {
@@ -72,7 +82,7 @@ namespace DVAH
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("===>Error on set forceupdate popup!<==== "+e.ToString());
+                    Debug.LogError("===>Error on set forceupdate popup!<==== " + e.ToString());
                 }
 
             });
@@ -103,7 +113,7 @@ namespace DVAH
             if (_noInternetDebug)
             {
                 _noInternetDebug.SetActive(!this.CheckInternetConnection());
-            }  
+            }
 
 
             if (!_isShowDebug || _notiDebug == null)
@@ -145,7 +155,7 @@ namespace DVAH
 
         public void GotoMarket()
         {
-            Application.OpenURL("market://details?id="+Application.identifier);
+            Application.OpenURL("market://details?id=" + Application.identifier);
         }
 
         public void CloseApplication()
@@ -169,7 +179,7 @@ namespace DVAH
             }
             _notiDebug.SetActive(_isShowDebug);
 
-             
+
         }
 
         public void GetSubLib()
@@ -191,7 +201,7 @@ namespace DVAH
 
                 _childLibs.Add(_masterLib.transform.GetChild(i).gameObject);
             }
-           
+
         }
 
         public bool CheckInternetConnection()
