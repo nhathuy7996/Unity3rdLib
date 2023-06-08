@@ -2,11 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
-using com.adjust.sdk;
+using System.Threading.Tasks; 
 using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.Purchasing.MiniJSON;
+using UnityEngine.Networking; 
 
 namespace DVAH
 {
