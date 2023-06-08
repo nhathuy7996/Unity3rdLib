@@ -157,9 +157,12 @@ class ProjectInfoEditor : EditorWindow
         {
             GenericMenu menu = new GenericMenu();
 
-            foreach (var scene in EditorBuildSettings.scenes)
+            string[] scenes = UnityEditor.AssetDatabase.FindAssets("t:Scene");
+            
+            foreach (string scene in scenes)
             {
-                AddMenuItemForScenes(menu, scene.path, scene, SceneManager.GetActiveScene().path.Equals(scene.path));
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath  (scene);
+                AddMenuItemForScenes(menu, path, path, SceneManager.GetActiveScene().path.Equals(scene));
             }
 
 
@@ -738,7 +741,7 @@ class ProjectInfoEditor : EditorWindow
         menu.AddItem(new GUIContent(menuPath), isSelected, OnDropBoxAdjustItemClick, value);
     }
 
-    void AddMenuItemForScenes(GenericMenu menu, string menuPath, EditorBuildSettingsScene value, bool isSelected = false)
+    void AddMenuItemForScenes(GenericMenu menu, string menuPath, string value, bool isSelected = false)
     {
         // the menu item is marked as selected if it matches the current value of m_Color
         menu.AddItem(new GUIContent(menuPath), isSelected, OnDropBoxSceneItemClick, value);
@@ -746,7 +749,7 @@ class ProjectInfoEditor : EditorWindow
 
     void OnDropBoxSceneItemClick(object item)
     {
-        EditorSceneManager.OpenScene(((EditorBuildSettingsScene)item).path);
+        EditorSceneManager.OpenScene(item.ToString());
     }
 
     void OnDropBoxAdjustItemClick(object item)
