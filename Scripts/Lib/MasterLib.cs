@@ -20,12 +20,7 @@ namespace DVAH
         private void Awake()
         {
             huynn3RdLib = this.GetComponentInParent<DVAH3rdLib>();
-            if (!huynn3RdLib.isAutoInit)
-                return;
-
-            InitChildLib(() => { Debug.Log("=====> Init done all! <====="); });
-
-
+            
         }
 
         public void InitChildLib(Action onAllInitDone = null)

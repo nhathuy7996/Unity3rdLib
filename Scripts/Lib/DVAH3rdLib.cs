@@ -34,17 +34,27 @@ namespace DVAH
         public bool isInitByOrder => _isInitByOrder;
 
         [SerializeField] List<GameObject> _childLibs;
-        public List<GameObject> ChildLibs => _childLibs;
+        public List<GameObject> ChildLibs => _childLibs; 
 
+        protected override void Awake()
+        {
+            base.Awake();
+            if (_isDontDestroyOnLoad)
+                DontDestroyOnLoad(this.gameObject);
 
+            if (!_isAutoInit)
+                return;
+
+            if (!_masterLib)
+                _masterLib = this.GetComponentInChildren<MasterLib>();
+
+            _masterLib.InitChildLib(() => { Debug.Log("=====> Init done all! <====="); }); 
+        }
         // Start is called before the first frame update
         void Start()
         {
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             Application.targetFrameRate = 120;
-
-            if (_isDontDestroyOnLoad)
-                DontDestroyOnLoad(this.gameObject);
 
             FireBaseManager.Instant.GetValueRemoteAsync(CONSTANT.FORCE_UPDATE, (value) =>
             {
