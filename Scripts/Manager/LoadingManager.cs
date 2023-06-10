@@ -196,7 +196,7 @@ namespace DVAH
                 do
                 {
                     await Task.Delay(500);
-                } while (!_isLoadingStart && !predicate.Invoke());
+                } while (!_isLoadingStart || !predicate.Invoke());
             }
             catch (Exception e)
             {

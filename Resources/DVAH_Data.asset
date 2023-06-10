@@ -12,21 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 640af7f2ec79a4391a239a838ba259b4, type: 3}
   m_Name: DVAH_Data
   m_EditorClassIdentifier: 
-  LinkGoogleSheet: https://docs.google.com/spreadsheets/d/18XiIz1jUhIjV-cO6xkb1QuYV3WZlQg_Y4B0MQsG8yuc/edit#gid=896335561
-  Adjust_token: 17g9d8u9jz0ghh
+  LinkGoogleSheet: https://docs.google.com/spreadsheets/d/1yjAdcQ6CDqMJ-BugvW3kbSucrWcToKDNmScy3RQicfA/edit?usp=sharing
+  Adjust_token: kcsy5qwwd1q8
   AdjustMode: 0
   EventsToken_AdValue: 
   EventsToken_LevelAchives: 
-  Google_Android_AppID: ca-app-pub-4584260126367940~6032392395
+  Google_Android_AppID: ca-app-pub-4584260126367940~8721093275
   Google_Event_Paid_AD: paid_ad_impression_value
-  Facebook_AppID: vvv
+  Facebook_AppID: 1710191072775663
   Facebook_ClientToken: hhh
   AppLovin_SDK_Key: 
-  AppLovin_BannerID: 77212ebb82e5b6e1
-  AppLovin_InterID: f5ee74443ae59e6e
-  AppLovin_RewardID: 2493727da32d1631
+  AppLovin_BannerID: cd4330f79457a817
+  AppLovin_InterID: "846a549beb6ba975\t"
+  AppLovin_RewardID: d70d16d1720c03b9
   AppLovin_ADOpenIDs:
-  - d3f0a5a2e58e54c6
-  - d3f0a5a2e58e54c6
+  - f20eebe5ba78c9d8
   AppLovin_NativeAdIDs: []
   CHEAT_BUILD: 0
