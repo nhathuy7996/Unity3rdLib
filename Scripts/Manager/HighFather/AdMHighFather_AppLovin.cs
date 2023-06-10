@@ -1028,22 +1028,23 @@ namespace DVAH
 
         public override bool InterstitialIsLoaded()
         {
-            return MaxSdk.IsInterstitialReady(_InterstitialAdUnitID);
+            return MaxSdk.IsInitialized() && MaxSdk.IsInterstitialReady(_InterstitialAdUnitID);
         }
 
         public override bool VideoRewardIsLoaded()
         {
-            return MaxSdk.IsRewardedAdReady(_RewardedAdUnitID);
+            return MaxSdk.IsInitialized() && MaxSdk.IsRewardedAdReady(_RewardedAdUnitID);
         }
 
         public override bool AdsOpenIsLoaded(int ID = 0)
         {
-            return MaxSdk.IsAppOpenAdReady(_OpenAdUnitIDs[ID]);
+            return MaxSdk.IsInitialized() && MaxSdk.IsAppOpenAdReady(_OpenAdUnitIDs[ID]);
         }
 
         public override bool NativeAdLoaded(int ID)
         {
-            
+            if (!_isSDKAdMobInitDone)
+                return false;
 #if UNITY_EDITOR
             return true;
 #elif NATIVE_AD

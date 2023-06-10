@@ -186,7 +186,7 @@ class ProjectInfoEditor : EditorWindow
         }
 
         EditorGUILayout.BeginVertical();
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(wnd.position.width), GUILayout.Height(wnd.position.height - 20));
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(wnd.position.width), GUILayout.Height(wnd.position.height - 40));
         if (!adManager)
         {
             adManager = GameObject.FindObjectOfType<DVAH.AdMHighFather>();
