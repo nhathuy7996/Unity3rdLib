@@ -149,15 +149,25 @@ namespace DVAH
         /// </summary>
         /// <param name="callback">callback invoke when loading done</param>
         /// <returns></returns>
-        public LoadingManager AddOnDoneLoading(Action<List<bool>> callback)
+        public LoadingManager AddOnDoneLoadingAsync(Action<List<bool>> callback)
         {
             if (_loading.value >= 99f)
             {
                 callback?.Invoke(_conditionDone);
                 return this;
             }
-            _onDone += (callback);
+            _ = AddDoneLoading(callback);
             return this;
+        }
+
+        async Task AddDoneLoading(Action<List<bool>> callback)
+        {
+            while (!_isLoadingStart)
+            {
+                await Task.Delay(500);
+            }
+
+            _onDone += (callback);
         }
 
         /// <summary>
