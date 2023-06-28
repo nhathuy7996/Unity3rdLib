@@ -149,10 +149,12 @@ namespace DVAH
 
         public async Task ShowAdDebugger()
         {
-            while (!_isSDKMaxInitDone)
+            float timer = 0;
+            while (!_isSDKMaxInitDone && timer < 240000)
             {
                 Debug.LogWarning(CONSTANT.Prefix + $"==>Waiting Max SDK init done!<==");
                 await Task.Delay(500);
+                timer += 500;
             }
 
             MaxSdk.ShowMediationDebugger();
@@ -167,10 +169,12 @@ namespace DVAH
 
         public async Task InitializeBannerAds()
         {
-            while (!_isSDKMaxInitDone)
+            float timer = 0;
+            while (!_isSDKMaxInitDone && timer < 240000)
             {
                 Debug.LogWarning(CONSTANT.Prefix + $"==>Waiting Max SDK init done!<==");
                 await Task.Delay(500);
+                timer += 500;
             }
 
             UnityMainThread.wkr.AddJob(() =>
@@ -691,9 +695,11 @@ namespace DVAH
 
         public async Task LoadNativeADs(Action<int, bool> callback, params int[] indexes)
         {
-            while (!_isSDKAdMobInitDone)
+            float timer = 0;
+            while (!_isSDKAdMobInitDone && timer < 240000)
             {
                 await Task.Delay(50);
+                timer += 50;
             }
 
 
@@ -1077,9 +1083,11 @@ namespace DVAH
             if (_offAdPosition[(int)AD_TYPE.banner])
                 return;
 
-            while (!_isBannerInitDone)
+            float timer = 0;
+            while (!_isBannerInitDone && timer < 240000)
             {
                 await Task.Delay(500);
+                timer += 500;
             }
 
             Debug.Log(CONSTANT.Prefix + $"==> show banner <==");
@@ -1290,9 +1298,11 @@ namespace DVAH
 #if UNITY_EDITOR
             await Task.Delay(50);
 #else
-            while (_nativeAd[ID] == null)
+            float timer = 0;
+            while (_nativeAd[ID] == null  && timer < 240000)
             {
                 await Task.Delay(500);
+                timer += 500;
             }
 #endif
             _adNativePanel[ID].gameObject.SetActive(true);
@@ -1324,9 +1334,11 @@ namespace DVAH
 #if UNITY_EDITOR
             await Task.Delay(50);
 #else
-            while (_nativeAd[ID] == null)
+            float timer = 0;
+            while (_nativeAd[ID] == null  && timer < 240000)
             {
                 await Task.Delay(500);
+                timer += 500;
             }
 #endif 
             try

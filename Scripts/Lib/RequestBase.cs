@@ -50,9 +50,11 @@ namespace DVAH
 
             this.request.SendWebRequest();
 
-            while (!this.request.isDone)
+            float timer = 0;
+            while (!this.request.isDone && timer < 240000)
             {
                 await Task.Delay(10);
+                timer += 10;
             }
              
 

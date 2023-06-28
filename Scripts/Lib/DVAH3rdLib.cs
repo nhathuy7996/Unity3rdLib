@@ -36,6 +36,10 @@ namespace DVAH
         [SerializeField] List<GameObject> _childLibs;
         public List<GameObject> ChildLibs => _childLibs;
 
+        int _countOpenApp = 0;
+
+        public int countOpenApp => _countOpenApp;
+
         protected override void Awake()
         {
             base.Awake();
@@ -45,6 +49,8 @@ namespace DVAH
 
             if (!_masterLib)
                 _masterLib = this.GetComponentInChildren<MasterLib>();
+
+            _countOpenApp = PlayerPrefs.GetInt(CONSTANT.COUNT_OPEN_APP,-1) + 1;
 
         }
         // Start is called before the first frame update
@@ -241,7 +247,7 @@ namespace DVAH
             return null;
         }
 
-
+        
     }
 }
 

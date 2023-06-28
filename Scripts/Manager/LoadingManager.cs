@@ -162,9 +162,11 @@ namespace DVAH
 
         async Task AddDoneLoading(Action<List<bool>> callback)
         {
-            while (!_isLoadingStart)
+            float timer = 0;
+            while (!_isLoadingStart && timer < 240000)
             {
                 await Task.Delay(500);
+                timer += 500;
             }
 
             _onDone += (callback);
@@ -203,9 +205,15 @@ namespace DVAH
         {
             try
             {
+                float timer = 0;
                 do
                 {
                     await Task.Delay(500);
+                    timer += 500;
+
+                    if (timer > 240000)
+                        break;
+
                 } while (!_isLoadingStart || !predicate.Invoke());
             }
             catch (Exception e)

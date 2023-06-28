@@ -1,7 +1,7 @@
 
 namespace DVAH
 {
-    public class CONSTANT
+    public static class CONSTANT
     {
 #if UNITY_EDITOR
         public const string Prefix = "<color=cyan>[Huynn3rdLib]</color>";
@@ -22,6 +22,7 @@ namespace DVAH
         #region LibKey
         public const string LANGUAGE_ID = "LAN";
         public const string RATE_CHECK = "RATE";
+        public const string COUNT_OPEN_APP = "COUNT_OPEN_APP";
         #endregion
 
         #region Custom
