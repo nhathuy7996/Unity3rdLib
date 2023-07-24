@@ -21,7 +21,7 @@ MonoBehaviour:
   Google_Event_Paid_AD: paid_ad_impression_value
   Facebook_AppID: 1710191072775663
   Facebook_ClientToken: hhh
-  AppLovin_SDK_Key: 
+  AppLovin_SDK_Key: 3N4Mt8SNhOzkQnGb9oHsRRG1ItybcZDpJWN1fVAHLdRagxP-_k_ZXVaMAdMe5Otsmp6qJSXskfsrtakfRmPAGW
   AppLovin_BannerID: cd4330f79457a817
   AppLovin_InterID: "846a549beb6ba975\t"
   AppLovin_RewardID: d70d16d1720c03b9

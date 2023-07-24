@@ -18,7 +18,8 @@ namespace DVAH
         None,
         Open,
         Click,
-        Closed
+        Closed,
+        Interupt
     }
     public enum RewardVideoState
     {
@@ -26,7 +27,8 @@ namespace DVAH
         Open,
         Click,
         Watched,
-        Closed
+        Closed,
+        Interupt
     }
 
     public enum OpenAdState

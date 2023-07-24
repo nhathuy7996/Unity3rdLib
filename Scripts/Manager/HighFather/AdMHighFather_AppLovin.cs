@@ -1435,13 +1435,13 @@ namespace DVAH
                     return;
                 if (isShowingAD)
                 {
-                    _callbackInter?.Invoke(InterVideoState.None);
-                    _callbackInter = null;
+                    _callbackInter?.Invoke(InterVideoState.Interupt);
+                    //_callbackInter = null;
 
-                    _callbackReward?.Invoke(RewardVideoState.None); 
+                    _callbackReward?.Invoke(RewardVideoState.Interupt); 
 
                     _callbackOpenAD?.Invoke(_OpenAdUnitIDs.Count - 1, OpenAdState.None);
-                    _callbackOpenAD = null;
+                    //_callbackOpenAD = null;
                     return;
                 }
                 this.ShowAdOpen(_OpenAdUnitIDs.Count - 1);
