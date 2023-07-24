@@ -34,6 +34,8 @@ namespace DVAH
             _isBannerInitDone = false;
 
         bool[] _isnativeKeepReload;
+
+        bool _isClickedBanner = false;
           
 
         #region CUSTOM PROPERTIES
@@ -250,7 +252,7 @@ namespace DVAH
             {
                 Debug.LogError(CONSTANT.Prefix + $"==> invoke banner click callback error: " + e.ToString() + " <==");
             }
-             
+            _isClickedBanner = true;
         }
 
 
@@ -1433,6 +1435,12 @@ namespace DVAH
             {
                 if (_OpenAdUnitIDs.Count == 0)
                     return;
+
+                if (_isClickedBanner)
+                {
+                    _isClickedBanner = false;
+                    return;
+                }
                 if (isShowingAD)
                 {
                     _callbackInter?.Invoke(InterVideoState.Interupt);
