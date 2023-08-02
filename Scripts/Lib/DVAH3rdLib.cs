@@ -20,7 +20,7 @@ namespace DVAH
         int _devTapCount = 0;
 
         [Header("------------POPUP-------------")]
-        [SerializeField] GameObject _popupRate;
+        [SerializeField] RateController _popupRate;
         [SerializeField] GameObject _popupForceUpdate;
         [SerializeField] Button _forceUpdateBlackPanel, _forceUpdateNo;
 
@@ -152,11 +152,13 @@ namespace DVAH
                 _notiDebug.SetActive(true);
         }
 
-        public void ShowPopUpRate(bool isShow = true)
+        public void ShowPopUpRate(bool isShow = true, Action<bool> _callback = null)
         {
             if (isShow && PlayerPrefs.HasKey(CONSTANT.RATE_CHECK))
                 return;
-            _popupRate.SetActive(isShow);
+
+            _popupRate.setCallBack(_callback);
+            _popupRate.gameObject.SetActive(isShow);
         }
 
         public void GotoMarket()
