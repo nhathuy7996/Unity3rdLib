@@ -247,6 +247,8 @@ namespace DVAH
 
         public abstract void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false);
 
+        public abstract void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false, Button btnShowAd = null);
+
         public abstract void ShowAdOpen(int ID = 0, bool isAdOpen = false, Action<int, OpenAdState> callback = null);
 
         public abstract void ShowAdOpen(Action<int, OpenAdState> callback = null);
