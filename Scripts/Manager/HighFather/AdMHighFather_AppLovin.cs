@@ -36,6 +36,8 @@ namespace DVAH
         bool[] _isnativeKeepReload;
 
         bool _isClickedBanner = false;
+
+        Button btnAdReward = null;
           
 
         #region CUSTOM PROPERTIES
@@ -486,6 +488,7 @@ namespace DVAH
             try
             {
                 _callbackReward?.Invoke(RewardVideoState.Closed);
+                if (this.btnAdReward != null) this.btnAdReward.interactable = true;
 
             }
             catch (Exception e)
@@ -1189,6 +1192,14 @@ namespace DVAH
             }
         }
 
+
+        public override void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false, Button btnShowAd = null)
+        {
+            this.btnAdReward = btnShowAd;
+            if (this.btnAdReward != null) this.btnAdReward.interactable = false;
+            this.ShowRewardVideo(callback, showNoAds);
+        }
+
         /// <summary>
         /// Show ad open or resume, if you need callback must check is ad show done or not
         /// <code>
@@ -1446,7 +1457,8 @@ namespace DVAH
                     _callbackInter?.Invoke(InterVideoState.Interupt);
                     //_callbackInter = null;
 
-                    _callbackReward?.Invoke(RewardVideoState.Interupt); 
+                    _callbackReward?.Invoke(RewardVideoState.Interupt);
+                    if (this.btnAdReward != null) this.btnAdReward.interactable = true;
 
                     _callbackOpenAD?.Invoke(_OpenAdUnitIDs.Count - 1, OpenAdState.None);
                     //_callbackOpenAD = null;
