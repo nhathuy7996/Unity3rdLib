@@ -236,7 +236,12 @@ namespace DVAH
 
         #endregion
 
-        #region FUNCTION SHOW/HIDE ADs 
+        #region FUNCTION SHOW/HIDE ADs
+
+        public abstract void ShowMRECs();
+
+        public abstract void HideMRECs();
+
 
         public abstract void ShowBanner();
 

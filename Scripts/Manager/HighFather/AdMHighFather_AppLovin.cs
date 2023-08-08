@@ -17,7 +17,8 @@ namespace DVAH
 { 
     public class AdMHighFather_AppLovin : AdMHighFather
     {
-          
+        [SerializeField] string _mrecAdUnitId;
+
         [SerializeField]
         MaxSdkBase.BannerPosition _bannerPosition = MaxSdkBase.BannerPosition.BottomCenter;
         public MaxSdkBase.BannerPosition BannerPosition => _bannerPosition;
@@ -103,7 +104,10 @@ namespace DVAH
                 // AppLovin SDK is initialized, configure and start loading ads.
                 Debug.Log(CONSTANT.Prefix + $"==> MAX SDK Initialized <==");
                 _isSDKMaxInitDone = true;
+
                 InitAdOpen();
+                InitializeMRecAds();
+
                 if (!_offAdPosition[(int)AD_TYPE.inter])
                     InitializeInterstitialAds();
 
@@ -163,6 +167,48 @@ namespace DVAH
 
             MaxSdk.ShowMediationDebugger();
         }
+
+        #region MREC Ad Methods
+        public void InitializeMRecAds()
+        {
+            Debug.Log(CONSTANT.Prefix + $"==> Init MRECs banner <==");
+            // MRECs are sized to 300x250 on phones and tablets
+            MaxSdk.CreateMRec(_mrecAdUnitId, MaxSdkBase.AdViewPosition.BottomCenter);
+
+            MaxSdkCallbacks.MRec.OnAdLoadedEvent += OnMRecAdLoadedEvent;
+            MaxSdkCallbacks.MRec.OnAdLoadFailedEvent += OnMRecAdLoadFailedEvent;
+            MaxSdkCallbacks.MRec.OnAdClickedEvent += OnMRecAdClickedEvent;
+            MaxSdkCallbacks.MRec.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
+            MaxSdkCallbacks.MRec.OnAdRevenuePaidEvent += (adUnit, adInfo) =>
+            {
+                Debug.Log(CONSTANT.Prefix + $"==> MRECs banner revenue paid <==");
+                TrackAdRevenue(adInfo);
+            };
+
+            MaxSdkCallbacks.MRec.OnAdExpandedEvent += OnMRecAdExpandedEvent;
+            MaxSdkCallbacks.MRec.OnAdCollapsedEvent += OnMRecAdCollapsedEvent;
+        }
+
+        public void OnMRecAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) {
+            MaxSdk.StartMRecAutoRefresh(adUnitId);
+            Debug.Log(CONSTANT.Prefix + $"==> MRECs Banner ad loaded " + adUnitId + " <==");
+        }
+
+        public void OnMRecAdLoadFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo error) {
+            Debug.LogError(CONSTANT.Prefix + $"==> MRECs Banner ad loaded " + adUnitId + " <==");
+        }
+
+        public void OnMRecAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) {
+            Debug.Log(CONSTANT.Prefix + $"==> MRECs Banner ad click " + adUnitId + " <==");
+        }
+
+         
+
+        public void OnMRecAdExpandedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) { }
+
+        public void OnMRecAdCollapsedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) { }
+
+        #endregion
 
         #region Banner Ad Methods
 
@@ -1071,6 +1117,18 @@ namespace DVAH
         #endregion
 
         #region ShowAd
+
+        public override void ShowMRECs()
+        {
+            Debug.LogWarning(CONSTANT.Prefix + $"==>MRecs show call!<==");
+            MaxSdk.ShowMRec(_mrecAdUnitId);
+        }
+
+        public override void HideMRECs()
+        {
+            Debug.LogWarning(CONSTANT.Prefix + $"==>MRecs hide call!<==");
+            MaxSdk.HideMRec(_mrecAdUnitId);
+        }
 
         /// <summary>
         /// Show AD Banner, It doesn't matter SDK init done or not

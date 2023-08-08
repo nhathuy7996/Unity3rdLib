@@ -54,6 +54,16 @@ namespace DVAH
 
         #region FUNCTION SHOW/HIDE ADs
 
+        public void ShowMRECs()
+        {
+            AdMHighFather.Instant.ShowMRECs();
+        }
+
+        public void HideMRECs()
+        {
+            AdMHighFather.Instant.HideMRECs();
+        }
+
         /// <summary>
         /// Show AD Banner, It doesn't matter SDK init done or not
         /// <code>
