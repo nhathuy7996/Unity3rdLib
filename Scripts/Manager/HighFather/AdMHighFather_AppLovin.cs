@@ -1172,6 +1172,9 @@ namespace DVAH
                 return;
             }
 
+            if (isShowingAD)
+                return;
+
             if (VideoRewardIsLoaded())
             {
                 isShowingAD = true;
