@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using GoogleMobileAds.Api;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 namespace DVAH
 { 
 
@@ -53,6 +54,16 @@ namespace DVAH
 
         #region FUNCTION SHOW/HIDE ADs
 
+        public void ShowMRECs()
+        {
+            AdMHighFather.Instant.ShowMRECs();
+        }
+
+        public void HideMRECs()
+        {
+            AdMHighFather.Instant.HideMRECs();
+        }
+
         /// <summary>
         /// Show AD Banner, It doesn't matter SDK init done or not
         /// <code>
@@ -101,6 +112,11 @@ namespace DVAH
         /// <param name="callback"></param>
         /// <param name="showNoAds">if you wanna show a popup "ad not avaiable!"</param>
         public void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false)
+        {
+            AdMHighFather.Instant.ShowRewardVideo(callback, showNoAds);
+        }
+
+        public void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false, Button btnShowAd = null)
         {
             AdMHighFather.Instant.ShowRewardVideo(callback, showNoAds);
         }

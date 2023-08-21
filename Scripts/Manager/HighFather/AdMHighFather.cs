@@ -236,7 +236,12 @@ namespace DVAH
 
         #endregion
 
-        #region FUNCTION SHOW/HIDE ADs 
+        #region FUNCTION SHOW/HIDE ADs
+
+        public abstract void ShowMRECs();
+
+        public abstract void HideMRECs();
+
 
         public abstract void ShowBanner();
 
@@ -246,6 +251,8 @@ namespace DVAH
 
 
         public abstract void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false);
+
+        public abstract void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false, Button btnShowAd = null);
 
         public abstract void ShowAdOpen(int ID = 0, bool isAdOpen = false, Action<int, OpenAdState> callback = null);
 
