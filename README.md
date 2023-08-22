@@ -62,7 +62,7 @@ After build aab, a branch production will auto create and push your code to ther
         void Start()
         {
             LoadingManager.Instant.DoneConditionSelf(0, ()=> AdManager.Instant.AdsOpenIsLoaded(0));
-            Scene currentScene = SceneManager.GetActiveScene();
+           
             AsyncOperation loadingScene = SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
             loadingScene.allowSceneActivation = true;
             LoadingManager.Instant.SetMaxTimeLoading(30).Init((conditionDone) =>
@@ -70,11 +70,11 @@ After build aab, a branch production will auto create and push your code to ther
                 AdManager.Instant.ShowAdOpen(0,true, (isSuccess) =>
                 {
 
-                    _= SceneManager.UnloadSceneAsync(currentScene,UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
-                    _ = AdManager.Instant.InitializeBannerAds();
-                    _= AdManager.Instant.ShowBanner();
+                   
+                    AdManager.Instant.InitializeBannerAdsAsync();
+                    AdManager.Instant.ShowBanner();
                 });
-                _= AdManager.Instant.LoadAdOpen(1);
+                
             });
         }
 
@@ -150,7 +150,7 @@ Or If you wanna get data of product like receipt for self-check on your server
 
 
 #### ***Log event Firebase***
-        FireBaseManager.Instant.LogEventWithParameter("Event_name_do_not_using_space", new Hashtable()
+        FireBaseManager.Instant.LogEventWithParameterAsync("Event_name_do_not_using_space", new Hashtable()
         {
             {
                 "parameter",1
@@ -162,7 +162,7 @@ Or If you wanna get data of product like receipt for self-check on your server
         FireBaseManager.Instant.LogEventWithOneParam("Event_name_do_not_using_space" );
 
 #### ***Get value from remote config***
-        _= FireBaseManager.Instant.GetValueRemoteAsync("key", (value) =>
+        FireBaseManager.Instant.GetValueRemoteAsync("key", (value) =>
         {
             int true_value = (int)value.LongValue;
         });
