@@ -53,8 +53,7 @@ namespace DVAH
 
             DVAH_Data = Resources.Load<DVAH_Data>("DVAH_Data");
             if (!DVAH_Data)
-            {
-               Debug.LogError(CONSTANT.Prefix + "===>Can not find DVAH data file!<====");
+            {               Debug.LogError(CONSTANT.Prefix + "===>Can not find DVAH data file!<====");
             }
 
             if (DVAH_Data.CHEAT_BUILD)
@@ -106,7 +105,10 @@ namespace DVAH
                 _isSDKMaxInitDone = true;
 
                 InitAdOpen();
-                InitializeMRecAds();
+
+                if(!string.IsNullOrEmpty(_mrecAdUnitId))
+                    InitializeMRecAds();
+
 
                 if (!_offAdPosition[(int)AD_TYPE.inter])
                     InitializeInterstitialAds();
