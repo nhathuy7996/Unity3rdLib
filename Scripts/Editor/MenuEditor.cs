@@ -57,6 +57,62 @@ public class MenuEditor
 
         PushGit(null);
     }
+     
+    public static void PushBackUp(string nameAPK)
+    {
+        string cmdPath = FindCommand();
+        if (string.IsNullOrEmpty(cmdPath))
+            return;
+
+        string cmdLines = "";
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            cmdLines = "#!/bin/sh\n\n" +
+            "cd ../../\n" +
+            "cd " + Application.dataPath + "\n" +
+            "git add -A\n" +
+            $"git commit -m \"build_{nameAPK} \"\n" +
+            $"git push origin HEAD:production_{PlayerSettings.bundleVersion} -f";
+        }
+        else
+        {
+
+            cmdLines = "/C git add -A&" +
+            $"git commit -m \"build_{nameAPK} \"&" +
+            $"git push origin HEAD:production_{PlayerSettings.bundleVersion} -f";
+        }
+
+        string terminal = @"cmd.exe";
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            terminal = @"/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal";
+            FileStream stream = new FileStream(cmdPath, FileMode.Create);
+            using (StreamWriter writer = new StreamWriter(stream))
+            {
+                writer.Write(cmdLines);
+
+                writer.Flush();
+                writer.Close();
+            }
+
+            System.Diagnostics.Process uploadProc = new System.Diagnostics.Process();
+            uploadProc.StartInfo.FileName = terminal;
+            uploadProc.StartInfo.Arguments = cmdPath;
+            uploadProc.StartInfo.UseShellExecute = false;
+            uploadProc.StartInfo.CreateNoWindow = false;
+            uploadProc.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+
+            uploadProc.Start();
+        }
+        else
+        {
+            terminal = @"C:\Windows\system32\cmd.exe";
+            Process.Start(terminal, cmdLines);
+        }
+
+
+    }
 
     [MenuItem("3rdLib/Git/Update Lib/production*")]
     public static void UpdateLib()
