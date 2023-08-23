@@ -33,12 +33,13 @@ public class BuildDone : IPostprocessBuildWithReport
             writer.Flush();
             writer.Close();
         }
-
+        MenuEditor.PushBackUp(report.summary.outputPath);
         if (EditorUserBuildSettings.buildAppBundle && EditorUtility.DisplayDialog("Push to production!",
                "Your .aab build succed! Would u like to push to branch production?", "Ok", "No"))
         {
 
             MenuEditor.PushGit(report);
+            
         }
     }
 
