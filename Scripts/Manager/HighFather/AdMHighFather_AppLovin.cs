@@ -105,8 +105,10 @@ namespace DVAH
                 _isSDKMaxInitDone = true;
 
                 InitAdOpen();
+
                 if(!string.IsNullOrEmpty(_mrecAdUnitId))
                     InitializeMRecAds();
+
 
                 if (!_offAdPosition[(int)AD_TYPE.inter])
                     InitializeInterstitialAds();
