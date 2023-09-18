@@ -283,6 +283,7 @@ namespace DVAH
 
 
         public abstract bool CheckInternetConnection();
+        public abstract Task ShowAdDebugger();
 
         #region CUSTOM FUNCTION
         #endregion
