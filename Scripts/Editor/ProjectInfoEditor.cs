@@ -36,15 +36,11 @@ using com.adjust.sdk;
 using GoogleMobileAds.Editor;
 using System;
 using DVAH;
-using Facebook.Unity.Settings;
-using Codice.Client.BaseCommands;
-using System.IO;
-using NUnit.Framework.Internal;
+using Facebook.Unity.Settings; 
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.SceneManagement;
-using UnityEditor.SceneManagement;
-using UnityEditor.Build.Reporting;
+using UnityEditor.SceneManagement; 
 
 class ProjectInfoEditor : EditorWindow
 {
