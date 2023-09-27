@@ -106,7 +106,7 @@ namespace DVAH
             }  
 
 
-            if (!_isShowDebug || _notiDebug == null)
+            if (!_isShowDebug  )
                 return;
             if (Input.touchCount < 3)
             {
@@ -131,8 +131,10 @@ namespace DVAH
             if (_devTapCount < 5)
                 return;
 
-            //_ = AdMHighFather.Instant.ShowAdDebugger();
-            if (!_notiDebug.activeSelf)
+            _devTapCount = 0;
+            _ = AdMHighFather.Instant.ShowAdDebugger();
+
+            if (_notiDebug != null && !_notiDebug.activeSelf)
                 _notiDebug.SetActive(true);
         }
 
@@ -167,7 +169,7 @@ namespace DVAH
             {
                 _notiDebug = this.transform.GetChild(0).gameObject;
             }
-            _notiDebug.SetActive(_isShowDebug);
+            //_notiDebug.SetActive(_isShowDebug);
 
              
         }

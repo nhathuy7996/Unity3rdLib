@@ -147,7 +147,7 @@ namespace DVAH
 #endif
         }
 
-        public async Task ShowAdDebugger()
+        public override async Task ShowAdDebugger()
         {
             while (!_isSDKMaxInitDone)
             {
