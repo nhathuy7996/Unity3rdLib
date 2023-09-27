@@ -1,6 +1,8 @@
 using com.adjust.sdk;
+#if UNITY_ANDROID
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Common;
+#endif
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,7 +19,8 @@ namespace DVAH
 { 
     public class AdMHighFather_AppLovin : AdMHighFather
     {
-          
+        [SerializeField] string _mrecAdUnitId;
+
         [SerializeField]
         MaxSdkBase.BannerPosition _bannerPosition = MaxSdkBase.BannerPosition.BottomCenter;
         public MaxSdkBase.BannerPosition BannerPosition => _bannerPosition;
@@ -29,11 +32,15 @@ namespace DVAH
 
         List<int> AdOpenRetryAttemp = new List<int>(); 
 
-        private bool isShowingAd = false, _isSDKMaxInitDone = false,
+        private bool _isSDKMaxInitDone = false,
             _isSDKAdMobInitDone = false,
             _isBannerInitDone = false;
 
         bool[] _isnativeKeepReload;
+
+        bool _isClickedBanner = false;
+
+        Button btnAdReward = null;
           
 
         #region CUSTOM PROPERTIES
@@ -48,8 +55,7 @@ namespace DVAH
 
             DVAH_Data = Resources.Load<DVAH_Data>("DVAH_Data");
             if (!DVAH_Data)
-            {
-               Debug.LogError(CONSTANT.Prefix + "===>Can not find DVAH data file!<====");
+            {               Debug.LogError(CONSTANT.Prefix + "===>Can not find DVAH data file!<====");
             }
 
             if (DVAH_Data.CHEAT_BUILD)
@@ -60,8 +66,9 @@ namespace DVAH
             InitMAX();
             InitAdMob();
 
+#if UNITY_ANDROID
             AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
-
+#endif
             _onInitDone?.Invoke();
         }
 
@@ -99,7 +106,13 @@ namespace DVAH
                 // AppLovin SDK is initialized, configure and start loading ads.
                 Debug.Log(CONSTANT.Prefix + $"==> MAX SDK Initialized <==");
                 _isSDKMaxInitDone = true;
+
                 InitAdOpen();
+
+                if(!string.IsNullOrEmpty(_mrecAdUnitId))
+                    InitializeMRecAds();
+
+
                 if (!_offAdPosition[(int)AD_TYPE.inter])
                     InitializeInterstitialAds();
 
@@ -149,14 +162,58 @@ namespace DVAH
 
         public override async Task ShowAdDebugger()
         {
-            while (!_isSDKMaxInitDone)
+            float timer = 0;
+            while (!_isSDKMaxInitDone && timer < 240000)
             {
                 Debug.LogWarning(CONSTANT.Prefix + $"==>Waiting Max SDK init done!<==");
                 await Task.Delay(500);
+                timer += 500;
             }
 
             MaxSdk.ShowMediationDebugger();
         }
+
+        #region MREC Ad Methods
+        public void InitializeMRecAds()
+        {
+            Debug.Log(CONSTANT.Prefix + $"==> Init MRECs banner <==");
+            // MRECs are sized to 300x250 on phones and tablets
+            MaxSdk.CreateMRec(_mrecAdUnitId, MaxSdkBase.AdViewPosition.BottomCenter);
+
+            MaxSdkCallbacks.MRec.OnAdLoadedEvent += OnMRecAdLoadedEvent;
+            MaxSdkCallbacks.MRec.OnAdLoadFailedEvent += OnMRecAdLoadFailedEvent;
+            MaxSdkCallbacks.MRec.OnAdClickedEvent += OnMRecAdClickedEvent;
+            MaxSdkCallbacks.MRec.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
+            MaxSdkCallbacks.MRec.OnAdRevenuePaidEvent += (adUnit, adInfo) =>
+            {
+                Debug.Log(CONSTANT.Prefix + $"==> MRECs banner revenue paid <==");
+                TrackAdRevenue(adInfo);
+            };
+
+            MaxSdkCallbacks.MRec.OnAdExpandedEvent += OnMRecAdExpandedEvent;
+            MaxSdkCallbacks.MRec.OnAdCollapsedEvent += OnMRecAdCollapsedEvent;
+        }
+
+        public void OnMRecAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) {
+            MaxSdk.StartMRecAutoRefresh(adUnitId);
+            Debug.Log(CONSTANT.Prefix + $"==> MRECs Banner ad loaded " + adUnitId + " <==");
+        }
+
+        public void OnMRecAdLoadFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo error) {
+            Debug.LogError(CONSTANT.Prefix + $"==> MRECs Banner ad loaded " + adUnitId + " <==");
+        }
+
+        public void OnMRecAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) {
+            Debug.Log(CONSTANT.Prefix + $"==> MRECs Banner ad click " + adUnitId + " <==");
+        }
+
+         
+
+        public void OnMRecAdExpandedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) { }
+
+        public void OnMRecAdCollapsedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) { }
+
+        #endregion
 
         #region Banner Ad Methods
 
@@ -167,10 +224,12 @@ namespace DVAH
 
         public async Task InitializeBannerAds()
         {
-            while (!_isSDKMaxInitDone)
+            float timer = 0;
+            while (!_isSDKMaxInitDone && timer < 240000)
             {
                 Debug.LogWarning(CONSTANT.Prefix + $"==>Waiting Max SDK init done!<==");
                 await Task.Delay(500);
+                timer += 500;
             }
 
             UnityMainThread.wkr.AddJob(() =>
@@ -246,7 +305,7 @@ namespace DVAH
             {
                 Debug.LogError(CONSTANT.Prefix + $"==> invoke banner click callback error: " + e.ToString() + " <==");
             }
-             
+            _isClickedBanner = true;
         }
 
 
@@ -327,6 +386,7 @@ namespace DVAH
             }
 
             _callbackInter = null;
+            isShowingAD = false;
         }
 
 
@@ -359,7 +419,7 @@ namespace DVAH
             }
             _callbackInter = null;
             LoadInterstitial();
-            isShowingAd = false;
+            isShowingAD = false;
         }
 
 
@@ -436,6 +496,7 @@ namespace DVAH
             }
 
             _callbackReward = null;
+            isShowingAD = false;
         }
 
         private void OnRewardedAdDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -473,11 +534,12 @@ namespace DVAH
         private void OnRewardedAdDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             LoadRewardedAd();
-            isShowingAd = false;
+            isShowingAD = false;
           
             try
             {
                 _callbackReward?.Invoke(RewardVideoState.Closed);
+                if (this.btnAdReward != null) this.btnAdReward.interactable = true;
 
             }
             catch (Exception e)
@@ -570,7 +632,7 @@ namespace DVAH
                 return;
             AdOpenRetryAttemp[ID]++;
             double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
-            isShowingAd = false;
+             
 
             waitLoadAdOpen((float)retryDelay, ID);
         }
@@ -579,7 +641,7 @@ namespace DVAH
         {
             Debug.Log(CONSTANT.Prefix + $"==> Show ad open/resume success! <==");
             FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show, adNetwork: arg2.NetworkName);
-            isShowingAd = true;
+            
             int ID = _OpenAdUnitIDs.IndexOf(arg1);
             if (ID < 0)
                 return;
@@ -637,7 +699,7 @@ namespace DVAH
 
             AdOpenRetryAttemp[ID]++;
             double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
-            isShowingAd = false;
+            isShowingAD = false;
 
             waitLoadAdOpen((float)retryDelay, ID);
 
@@ -648,7 +710,7 @@ namespace DVAH
         {
             Debug.Log(CONSTANT.Prefix + $"==> Ad open/resume close! <==");
            
-            isShowingAd = false;
+            isShowingAD = false;
             int ID = _OpenAdUnitIDs.IndexOf(adUnitId);
             if (ID < 0)
                 return;
@@ -664,7 +726,7 @@ namespace DVAH
             }
             AdOpenRetryAttemp[ID]++;
             double retryDelay = Math.Pow(2, Math.Min(6, AdOpenRetryAttemp[ID]));
-            isShowingAd = false;
+            
 
             LoadAdOpen(ID);
         }
@@ -689,9 +751,11 @@ namespace DVAH
 
         public async Task LoadNativeADs(Action<int, bool> callback, params int[] indexes)
         {
-            while (!_isSDKAdMobInitDone)
+            float timer = 0;
+            while (!_isSDKAdMobInitDone && timer < 240000)
             {
                 await Task.Delay(50);
+                timer += 50;
             }
 
 
@@ -1022,30 +1086,32 @@ namespace DVAH
         #endregion
 
 #endif
-        #region CheckAdLoaded
+#region CheckAdLoaded
 
         public override bool InterstitialIsLoaded()
         {
-            return MaxSdk.IsInterstitialReady(_InterstitialAdUnitID);
+            return MaxSdk.IsInitialized() && MaxSdk.IsInterstitialReady(_InterstitialAdUnitID);
         }
 
         public override bool VideoRewardIsLoaded()
         {
-            return MaxSdk.IsRewardedAdReady(_RewardedAdUnitID);
+            return MaxSdk.IsInitialized() && MaxSdk.IsRewardedAdReady(_RewardedAdUnitID);
         }
 
         public override bool AdsOpenIsLoaded(int ID = 0)
         {
-            return MaxSdk.IsAppOpenAdReady(_OpenAdUnitIDs[ID]);
+            return MaxSdk.IsInitialized() && MaxSdk.IsAppOpenAdReady(_OpenAdUnitIDs[ID]);
         }
 
         public override bool NativeAdLoaded(int ID)
         {
-            if (ID >= this._nativeAd.Count)
+            if (!_isSDKAdMobInitDone)
                 return false;
 #if UNITY_EDITOR
             return true;
 #elif NATIVE_AD
+            if (ID >= this._nativeAd.Count)
+                            return false;
             return this._nativeAd[ID] != null;
 #else
             return false;
@@ -1056,6 +1122,18 @@ namespace DVAH
         #endregion
 
         #region ShowAd
+
+        public override void ShowMRECs()
+        {
+            Debug.LogWarning(CONSTANT.Prefix + $"==>MRecs show call!<==");
+            MaxSdk.ShowMRec(_mrecAdUnitId);
+        }
+
+        public override void HideMRECs()
+        {
+            Debug.LogWarning(CONSTANT.Prefix + $"==>MRecs hide call!<==");
+            MaxSdk.HideMRec(_mrecAdUnitId);
+        }
 
         /// <summary>
         /// Show AD Banner, It doesn't matter SDK init done or not
@@ -1073,9 +1151,11 @@ namespace DVAH
             if (_offAdPosition[(int)AD_TYPE.banner])
                 return;
 
-            while (!_isBannerInitDone)
+            float timer = 0;
+            while (!_isBannerInitDone && timer < 240000)
             {
                 await Task.Delay(500);
+                timer += 500;
             }
 
             Debug.Log(CONSTANT.Prefix + $"==> show banner <==");
@@ -1120,7 +1200,7 @@ namespace DVAH
             }
             if (InterstitialIsLoaded())
             {
-                isShowingAd = true;
+                isShowingAD = true;
                 _callbackInter = callback;
                 MaxSdk.ShowInterstitial(_InterstitialAdUnitID);
                 return;
@@ -1155,9 +1235,12 @@ namespace DVAH
                 return;
             }
 
+            if (isShowingAD)
+                return;
+
             if (VideoRewardIsLoaded())
             {
-                isShowingAd = true;
+                isShowingAD = true;
                 _callbackReward = callback;
                 MaxSdk.ShowRewardedAd(_RewardedAdUnitID);
             }
@@ -1173,6 +1256,14 @@ namespace DVAH
                 }
                 if (_popUpNoAd && showNoAds) _popUpNoAd.SetActive(true);
             }
+        }
+
+
+        public override void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false, Button btnShowAd = null)
+        {
+            this.btnAdReward = btnShowAd;
+            if (this.btnAdReward != null) this.btnAdReward.interactable = false;
+            this.ShowRewardVideo(callback, showNoAds);
         }
 
         /// <summary>
@@ -1203,7 +1294,7 @@ namespace DVAH
                 return;
             }
 
-            if (isShowingAd)
+            if (isShowingAD)
             {
                 FireBaseManager.Instant.adTypeShow = AD_TYPE.resume;
                 return;
@@ -1211,6 +1302,7 @@ namespace DVAH
 
             if (CheckInternetConnection() && AdsOpenIsLoaded(ID))
             {
+                isShowingAD = true;
                 FireBaseManager.Instant.adTypeShow = isAdOpen ? AD_TYPE.open : AD_TYPE.resume;
                 MaxSdk.ShowAppOpenAd(_OpenAdUnitIDs[ID]);
                 _callbackOpenAD = callback;
@@ -1285,9 +1377,11 @@ namespace DVAH
 #if UNITY_EDITOR
             await Task.Delay(50);
 #else
-            while (_nativeAd[ID] == null)
+            float timer = 0;
+            while (_nativeAd[ID] == null  && timer < 240000)
             {
                 await Task.Delay(500);
+                timer += 500;
             }
 #endif
             _adNativePanel[ID].gameObject.SetActive(true);
@@ -1319,11 +1413,13 @@ namespace DVAH
 #if UNITY_EDITOR
             await Task.Delay(50);
 #else
-            while (_nativeAd[ID] == null)
+            float timer = 0;
+            while (_nativeAd[ID] == null  && timer < 240000)
             {
                 await Task.Delay(500);
+                timer += 500;
             }
-#endif 
+#endif
             try
             {
                 callBack?.Invoke(_adNativePanel[ID]);
@@ -1395,20 +1491,7 @@ namespace DVAH
             callback?.Invoke();
         }
 
-#if UNITY_EDITOR
-
-        private void OnApplicationFocus(bool focus)
-        {
-            if (!focus)
-            {
-                if (_OpenAdUnitIDs.Count == 0)
-                    return;
-                this.ShowAdOpen(_OpenAdUnitIDs.Count - 1);
-            }
-        }
-#endif
-
-
+#if UNITY_ANDROID
         private void OnAppStateChanged(AppState state)
         {
             // Display the app open ad when the app is foregrounded. 
@@ -1416,9 +1499,57 @@ namespace DVAH
             {
                 if (_OpenAdUnitIDs.Count == 0)
                     return;
+
+                if (_isClickedBanner)
+                {
+                    _isClickedBanner = false;
+                    return;
+                }
+                if (isShowingAD)
+                {
+                    _callbackInter?.Invoke(InterVideoState.Interupt);
+                    //_callbackInter = null;
+
+                    _callbackReward?.Invoke(RewardVideoState.Interupt);
+                    if (this.btnAdReward != null) this.btnAdReward.interactable = true;
+
+                    _callbackOpenAD?.Invoke(_OpenAdUnitIDs.Count - 1, OpenAdState.None);
+                    //_callbackOpenAD = null;
+                    return;
+                }
                 this.ShowAdOpen(_OpenAdUnitIDs.Count - 1);
             }
         }
+#elif UNITY_IOS || UNITY_EDITOR
+        private void OnApplicationFocus(bool focus)
+        {
+            // Display the app open ad when the app is foregrounded. 
+            if (!focus)
+            {
+                if (_OpenAdUnitIDs.Count == 0)
+                    return;
+
+                if (_isClickedBanner)
+                {
+                    _isClickedBanner = false;
+                    return;
+                }
+                if (isShowingAD)
+                {
+                    _callbackInter?.Invoke(InterVideoState.Interupt);
+                    //_callbackInter = null;
+
+                    _callbackReward?.Invoke(RewardVideoState.Interupt);
+                    if (this.btnAdReward != null) this.btnAdReward.interactable = true;
+
+                    _callbackOpenAD?.Invoke(_OpenAdUnitIDs.Count - 1, OpenAdState.None);
+                    //_callbackOpenAD = null;
+                    return;
+                }
+                this.ShowAdOpen(_OpenAdUnitIDs.Count - 1);
+            }
+        }
+#endif
 
         #endregion
 

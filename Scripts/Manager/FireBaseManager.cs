@@ -218,12 +218,18 @@ namespace DVAH
             switch (info.LastFetchStatus)
             {
                 case Firebase.RemoteConfig.LastFetchStatus.Success:
-                    Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance.ActivateAsync();
-                    _isFetchDone = true;
+                    Task task = Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance.ActivateAsync();
+                    task.ContinueWith(_result =>
+                    {
+                        if (!_result.IsCompleted)
+                            return;
 
-                    _keyConfigs = FirebaseRemoteConfig.DefaultInstance.AllValues.Keys.ToList();
-                    Debug.Log(String.Format(CONSTANT.Prefix + "==> Remote data loaded and ready (last fetch time {0}).<==",
-                        info.FetchTime));
+                        _isFetchDone = true;
+
+                        _keyConfigs = FirebaseRemoteConfig.DefaultInstance.AllValues.Keys.ToList();
+                        Debug.Log(String.Format(CONSTANT.Prefix + "==> Remote data loaded and ready (last fetch time {0}).<==",
+                            info.FetchTime));
+                    }); 
 
                     break;
                 case Firebase.RemoteConfig.LastFetchStatus.Failure:

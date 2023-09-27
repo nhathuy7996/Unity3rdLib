@@ -5,8 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using com.adjust.sdk;
+#if UNITY_ANDROID
 using Facebook.Unity.Settings;
 using GoogleMobileAds.Editor;
+#endif
 using DVAH;
 using System.Xml;
 using UnityEditor;
@@ -56,6 +58,62 @@ public class MenuEditor
         }
 
         PushGit(null);
+    }
+     
+    public static void PushBackUp(string nameAPK)
+    {
+        string cmdPath = FindCommand();
+        if (string.IsNullOrEmpty(cmdPath))
+            return;
+
+        string cmdLines = "";
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            cmdLines = "#!/bin/sh\n\n" +
+            "cd ../../\n" +
+            "cd " + Application.dataPath + "\n" +
+            "git add -A\n" +
+            $"git commit -m \"build_{nameAPK} \"\n" +
+            $"git push origin HEAD:production_{PlayerSettings.bundleVersion} -f";
+        }
+        else
+        {
+
+            cmdLines = "/C git add -A&" +
+            $"git commit -m \"build_{nameAPK} \"&" +
+            $"git push origin HEAD:production_{PlayerSettings.bundleVersion} -f";
+        }
+
+        string terminal = @"cmd.exe";
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            terminal = @"/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal";
+            FileStream stream = new FileStream(cmdPath, FileMode.Create);
+            using (StreamWriter writer = new StreamWriter(stream))
+            {
+                writer.Write(cmdLines);
+
+                writer.Flush();
+                writer.Close();
+            }
+
+            System.Diagnostics.Process uploadProc = new System.Diagnostics.Process();
+            uploadProc.StartInfo.FileName = terminal;
+            uploadProc.StartInfo.Arguments = cmdPath;
+            uploadProc.StartInfo.UseShellExecute = false;
+            uploadProc.StartInfo.CreateNoWindow = false;
+            uploadProc.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+
+            uploadProc.Start();
+        }
+        else
+        {
+            terminal = @"C:\Windows\system32\cmd.exe";
+            Process.Start(terminal, cmdLines);
+        }
+
+
     }
 
     [MenuItem("3rdLib/Git/Update Lib/production*")]
@@ -174,13 +232,14 @@ public class MenuEditor
             "cd ../../\n" +
             "cd " + Application.dataPath + "\n" +
             "git add -A\n" +
-            "git commit -m \"release_" + PlayerSettings.bundleVersion + "\"\n" +
+            $"git commit -m \"release_{ PlayerSettings.bundleVersion}_{PlayerSettings.Android.bundleVersionCode} \"\n" +
             "git push origin HEAD:production_doNotCreateBranchFromHere -f";
         }
         else
         {
+            
             cmdLines = "/C git add -A&" +
-            "git commit -m \"release _" + PlayerSettings.bundleVersion + "\"&" +
+            $"git commit -m \"release_{ PlayerSettings.bundleVersion}_{PlayerSettings.Android.bundleVersionCode} \"&" +
             "git push origin HEAD:production_doNotCreateBranchFromHere -f";
         }
 
@@ -216,6 +275,7 @@ public class MenuEditor
 
     }
 
+#if UNITY_ANDROID
     public static void FixAndroidManifestFB()
     {
 
@@ -284,7 +344,7 @@ public class MenuEditor
         }
         
     }
-
+#endif
     public static void FixGoogleXml(bool isShowOk = true)
     {
 
@@ -503,9 +563,11 @@ public class MenuEditor
             reportContent += adjust;
         }
 
+        AdMHighFather adManagerObject = GameObject.FindObjectOfType<DVAH.AdMHighFather>();
+#if UNITY_ANDROID
         GoogleMobileAdsSettings gg = null;
         string[] ggSetting = UnityEditor.AssetDatabase.FindAssets("t:GoogleMobileAdsSettings");
-        AdMHighFather adManagerObject = GameObject.FindObjectOfType<DVAH.AdMHighFather>();
+        
 
         if (ggSetting.Length != 0)
         {
@@ -527,7 +589,7 @@ public class MenuEditor
 
             reportContent += googleReport;
         }
-
+#endif
         AppLovinSettings max = null;
         string[] maxSetting = UnityEditor.AssetDatabase.FindAssets("t:AppLovinSettings");
         if (maxSetting.Length != 0)
@@ -589,7 +651,7 @@ public class MenuEditor
             reportContent += adReport;
         }
 
-
+#if UNITY_ANDROID
         FacebookSettings facebook = null;
         string[] facebookSetting = UnityEditor.AssetDatabase.FindAssets("t:FacebookSettings");
         if (facebookSetting.Length != 0)
@@ -636,6 +698,7 @@ public class MenuEditor
             reportContent += facebookReport;
 
         }
+#endif
 
         return reportContent;
     }

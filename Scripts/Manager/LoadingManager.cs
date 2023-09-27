@@ -149,15 +149,27 @@ namespace DVAH
         /// </summary>
         /// <param name="callback">callback invoke when loading done</param>
         /// <returns></returns>
-        public LoadingManager AddOnDoneLoading(Action<List<bool>> callback)
+        public LoadingManager AddOnDoneLoadingAsync(Action<List<bool>> callback)
         {
             if (_loading.value >= 99f)
             {
                 callback?.Invoke(_conditionDone);
                 return this;
             }
-            _onDone += (callback);
+            _ = AddDoneLoading(callback);
             return this;
+        }
+
+        async Task AddDoneLoading(Action<List<bool>> callback)
+        {
+            float timer = 0;
+            while (!_isLoadingStart && timer < 240000)
+            {
+                await Task.Delay(500);
+                timer += 500;
+            }
+
+            _onDone += (callback);
         }
 
         /// <summary>
@@ -191,10 +203,24 @@ namespace DVAH
 
         async Task waitSelfDoneCondition(int id, Func<bool> predicate)
         {
-            do
+            try
             {
-                await Task.Delay(500);
-            } while ((!predicate.Invoke()));
+                float timer = 0;
+                do
+                {
+                    await Task.Delay(500);
+                    timer += 500;
+
+                    if (timer > 240000)
+                        break;
+
+                } while (!_isLoadingStart || !predicate.Invoke());
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(CONSTANT.Prefix + $"==> Error on invoke predicate waitSelfDoneCondition, error: {e.ToString()}! <==");
+            }
+           
 
             await Task.Delay(1500);
             DoneCondition(id);

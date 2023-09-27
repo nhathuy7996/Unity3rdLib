@@ -39,7 +39,9 @@ public class CustomLib : MonoBehaviour
 
     void LoadingCompleteCallback(List<bool> doneCondition)
     {
+#if NATIVE_AD
         AdManager.Instant.SetAdNativeKeepReload(0, false);
+#endif
         AdManager.Instant.ShowAdOpen(0,true, (id,state) =>
         {
             // id mean adOpen id
@@ -80,6 +82,7 @@ public class CustomLib : MonoBehaviour
 
     void CheckLoadNativeAd()
     {
+        #if NATIVE_AD
         if (!PlayerPrefs.HasKey(CONSTANT.LANGUAGE_ID))
         {
             AdManager.Instant.LoadNativeADsAsync(0,1,2,3,4,5,6,7,8,9);
@@ -111,6 +114,8 @@ public class CustomLib : MonoBehaviour
                 });
             }
         });
+
+        #endif
     }
 
     

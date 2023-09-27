@@ -2,9 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using DVAH;
-using GoogleMobileAds.Api;
-using GoogleMobileAds.Common;
+using DVAH; 
 using System.Text.RegularExpressions;
 
 public class test : MonoBehaviour
@@ -16,7 +14,7 @@ public class test : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.LogError(IAPManager.Instant.gameObject.name);
+         
     }
 
     
@@ -24,14 +22,22 @@ public class test : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-        //-----Buy product-----
-        //IAPManager.Instant.BuyProductID("IDProduct", () =>
+
+        //------ Buy Product -----
+        //IAPManager.Instant.BuyProductID("IDProduct", (isSuccess) =>
         //{
-        //    Debug.Log("Buy DOne!");
-        //}, () =>
+        //    if(isSuccess)
+        //        Debug.Log("Buy DOne!");
+        //    else
+        //        Debug.Log("Buy Fail!");
+        //});
+
+        //IAPManager.Instant.BuyProductID("IDProduct", (isSuccess, Product) =>
         //{
-        //    Debug.Log("Buy Fail!");
+        //    if (isSuccess)
+        //        Debug.Log("Buy DOne! "+Product.receipt);
+        //    else
+        //        Debug.Log("Buy Fail!");
         //});
 
         //------ restore product, call ASAP -----

@@ -2,25 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_ANDROID
 using Google.Play.Review;
+#endif
 using UnityEngine.Events;
+using System;
 
 namespace DVAH
 {
     public class RateController : MonoBehaviour
     {
         [SerializeField] float _delayTimeShowNoButton;
-        [SerializeField] GameObject _noThankButton;
+        [SerializeField] Button _noThankButton;
         [SerializeField] Transform _starManTrans;
         [SerializeField] List<GameObject> _starManager = new List<GameObject>();
 
         int _starRate = 5;
 
+        #if UNITY_ANDROID
         private ReviewManager _reviewManager;
         private PlayReviewInfo _playReviewInfo;
-
+        #endif
 
         Coroutine _waitShowNoThank;
+
+        Action<bool> _callback = null;
 
         private void Awake()
         {
@@ -29,12 +35,27 @@ namespace DVAH
                 _starManTrans.transform.GetChild(i).GetChild(0).gameObject.SetActive(true);
                 _starManager.Add(_starManTrans.transform.GetChild(i).GetChild(0).gameObject);
             }
+
+            _noThankButton.onClick.AddListener(() =>
+            {
+                _callback?.Invoke(false);
+                this.gameObject.SetActive(false);
+            });
         }
 
 
         private void OnEnable()
         {
+            for (int i = 0; i < _starManTrans.transform.childCount; i++)
+            {
+                _starManTrans.transform.GetChild(i).GetChild(0).gameObject.SetActive(true); 
+            }
             _waitShowNoThank = StartCoroutine(WaitShowNoThank());
+        }
+
+        public void setCallBack(Action<bool> callBack)
+        {
+            _callback = callBack;
         }
 
 
@@ -47,7 +68,7 @@ namespace DVAH
         IEnumerator WaitShowNoThank()
         {
             yield return new WaitForSeconds(_delayTimeShowNoButton);
-            _noThankButton.SetActive(true);
+            _noThankButton.gameObject.SetActive(true);
         }
 
         public void ClickChoose(Transform t)
@@ -75,14 +96,16 @@ namespace DVAH
             if (_starRate >= 4)
             {
 #if UNITY_ANDROID
+                _callback?.Invoke(true);
+                this.gameObject.SetActive(false);
                 StartCoroutine(RequestReviews(() =>
                 {
-                    this.gameObject.SetActive(false);
+                    
                 }));
 
                 
-#elif UNITY_EDITOR
-            this.gameObject.SetActive(false);
+#elif UNITY_EDITOR || UNITY_IOS
+                this.gameObject.SetActive(false);
 #endif
             }
             else
@@ -91,7 +114,7 @@ namespace DVAH
             }
         }
 
-
+        #if UNITY_ANDROID
         IEnumerator RequestReviews(UnityAction afterRateAction)
         {
             Debug.Log(CONSTANT.Prefix + $"==> RequestReviews-----1 <==");
@@ -127,6 +150,7 @@ namespace DVAH
             // matter the result, we continue our app flow.
             afterRateAction?.Invoke();
         }
+        #endif
 
 
     }

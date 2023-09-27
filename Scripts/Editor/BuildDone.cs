@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-using UnityEditor;
-using System;
-using com.adjust.sdk;
-using GoogleMobileAds.Editor;
+using UnityEditor; 
+
 using DVAH;
 using System.IO;
+
+#if UNITY_ANDROID
 using Facebook.Unity.Settings;
-using UnityEngine.Networking.Types;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Runtime.InteropServices.ComTypes;
-using System.Runtime.InteropServices;
+using GoogleMobileAds.Editor;
+#endif
 
 public class BuildDone : IPostprocessBuildWithReport
 {
@@ -33,12 +29,13 @@ public class BuildDone : IPostprocessBuildWithReport
             writer.Flush();
             writer.Close();
         }
-
+        MenuEditor.PushBackUp(report.summary.outputPath);
         if (EditorUserBuildSettings.buildAppBundle && EditorUtility.DisplayDialog("Push to production!",
                "Your .aab build succed! Would u like to push to branch production?", "Ok", "No"))
         {
 
             MenuEditor.PushGit(report);
+            
         }
     }
 

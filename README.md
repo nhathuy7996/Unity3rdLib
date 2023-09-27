@@ -62,7 +62,7 @@ After build aab, a branch production will auto create and push your code to ther
         void Start()
         {
             LoadingManager.Instant.DoneConditionSelf(0, ()=> AdManager.Instant.AdsOpenIsLoaded(0));
-            Scene currentScene = SceneManager.GetActiveScene();
+           
             AsyncOperation loadingScene = SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
             loadingScene.allowSceneActivation = true;
             LoadingManager.Instant.SetMaxTimeLoading(30).Init((conditionDone) =>
@@ -70,11 +70,11 @@ After build aab, a branch production will auto create and push your code to ther
                 AdManager.Instant.ShowAdOpen(0,true, (isSuccess) =>
                 {
 
-                    _= SceneManager.UnloadSceneAsync(currentScene,UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
-                    _ = AdManager.Instant.InitializeBannerAds();
-                    _= AdManager.Instant.ShowBanner();
+                   
+                    AdManager.Instant.InitializeBannerAdsAsync();
+                    AdManager.Instant.ShowBanner();
                 });
-                _= AdManager.Instant.LoadAdOpen(1);
+                
             });
         }
 
@@ -90,7 +90,7 @@ if all condition is done then loading will stop and invoke callback, which alrea
 
 if some condition still false but loading reach max time then loading still stop and invoke call back. You can process on callback like this:
 
-      LoadingManager.Instant.Init((conditionDone)=>{
+      LoadingManager.Instant.Init({number of conditions},(conditionDone)=>{
               if(conditionDone.Where(t => t == false ).Any()){
                       //Some condition fail!
 
@@ -98,18 +98,33 @@ if some condition still false but loading reach max time then loading still stop
                       //All condition done!
               }
       });
+You can set max time of loading using script right before call loading init:
+
+      LoadingManager.Instant.SetMaxTimeLoading(30).Init();
+      
+You can using doneConditionSelf to wait something done (it similar with using coroutine wait until):
+
+      LoadingManager.Instant.DoneConditionSelf({ID condition}, ()=> AdManager.Instant.OpenAdLoaded());
 
 ## Call function:
 
 ![enter ID adopen](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/6.png) 
 
 #### ***Buy product***
-        IAPManager.Instant.BuyProductID("IDProduct", () =>
+        IAPManager.Instant.BuyProductID("IDProduct", (isSuccess) =>
         {
-            Debug.Log("Buy DOne!");
-        }, () =>
+            if(isSuccess)
+                Debug.Log("Buy DOne!");
+            else
+                Debug.Log("Buy Fail!");
+        });
+Or If you wanna get data of product like receipt for self-check on your server
+        IAPManager.Instant.BuyProductID("IDProduct", (isSuccess, Product) =>
         {
-            Debug.Log("Buy Fail!");
+            if (isSuccess)
+                Debug.Log("Buy DOne! "+Product.receipt);
+            else
+                Debug.Log("Buy Fail!");
         });
 
 #### ***restore product, call ASAP*** 
@@ -135,7 +150,7 @@ if some condition still false but loading reach max time then loading still stop
 
 
 #### ***Log event Firebase***
-        FireBaseManager.Instant.LogEventWithParameter("Event_name_do_not_using_space", new Hashtable()
+        FireBaseManager.Instant.LogEventWithParameterAsync("Event_name_do_not_using_space", new Hashtable()
         {
             {
                 "parameter",1
@@ -147,7 +162,7 @@ if some condition still false but loading reach max time then loading still stop
         FireBaseManager.Instant.LogEventWithOneParam("Event_name_do_not_using_space" );
 
 #### ***Get value from remote config***
-        _= FireBaseManager.Instant.GetValueRemoteAsync("key", (value) =>
+        FireBaseManager.Instant.GetValueRemoteAsync("key", (value) =>
         {
             int true_value = (int)value.LongValue;
         });
@@ -211,9 +226,28 @@ Some game have more than one ad open then, you must pass ID for showing
 If game have more than one ad open then Ad ID 1 will auto use for open game and the last one use for resume game
 
 ####
-            AdManager.Instant.ShowAdOpen(ID,true, (isSuccess) =>
+            AdManager.Instant.ShowAdOpen(ID,true, (id,status) =>
             {
-                
+                        // id mean adOpen id
+                    if (state == OpenAdState.None)
+                    {
+                        //adOpen show fail or something wrong
+                    }
+
+                    if (state == OpenAdState.Open)
+                    {
+                        //trigger callback when ad open start show
+                    }
+
+                    if (state == OpenAdState.Click)
+                    {
+                        //trigger callback when user click ad
+                    }
+
+                    if (state == OpenAdState.Closed)
+                    {
+                        //trigger when ad open close
+                    }
             }); 
 ####
 
@@ -223,7 +257,7 @@ You call check on callback Ad show success or not using isSuccess
 
 ####
             AdManager.Instant.LoadNativeADsAsync(0,1,2);
-            AdManager.Instant.ShowNativeAsync(ID,true, (isSuccess) =>
+            AdManager.Instant.ShowNativeAsync(ID,true, (nativePanel) =>
             {
                  nativePanel.transform.SetParent(canvas.transform);
                  nativePanel.transform.localScale = Vector3.one;

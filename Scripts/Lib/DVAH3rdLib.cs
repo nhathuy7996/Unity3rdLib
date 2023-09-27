@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using System.Linq;
-using UnityEditor;
-using System.Xml;
+using System.Linq; 
 using SimpleJSON;
 using System;
 using UnityEngine.UI;
+#if UNITY_ANDROID
 using Facebook.Unity;
+#endif
 
 namespace DVAH
 {
@@ -20,7 +20,7 @@ namespace DVAH
         int _devTapCount = 0;
 
         [Header("------------POPUP-------------")]
-        [SerializeField] GameObject _popupRate;
+        [SerializeField] RateController _popupRate;
         [SerializeField] GameObject _popupForceUpdate;
         [SerializeField] Button _forceUpdateBlackPanel, _forceUpdateNo;
 
@@ -36,15 +36,31 @@ namespace DVAH
         [SerializeField] List<GameObject> _childLibs;
         public List<GameObject> ChildLibs => _childLibs;
 
+        int _countOpenApp = 0;
 
+        public int countOpenApp => _countOpenApp;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            if (_isDontDestroyOnLoad)
+                DontDestroyOnLoad(this.gameObject);
+
+
+            if (!_masterLib)
+                _masterLib = this.GetComponentInChildren<MasterLib>();
+
+            _countOpenApp = PlayerPrefs.GetInt(CONSTANT.COUNT_OPEN_APP,-1) + 1;
+
+        }
         // Start is called before the first frame update
         void Start()
         {
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             Application.targetFrameRate = 120;
 
-            if (_isDontDestroyOnLoad)
-                DontDestroyOnLoad(this.gameObject);
+            if (_isAutoInit)
+                _masterLib.InitChildLib(() => { Debug.Log("=====> <color=#00FF00>Init done all!</color> <====="); });
 
             FireBaseManager.Instant.GetValueRemoteAsync(CONSTANT.FORCE_UPDATE, (value) =>
             {
@@ -72,7 +88,7 @@ namespace DVAH
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("===>Error on set forceupdate popup!<==== "+e.ToString());
+                    Debug.LogError("===>Error on set forceupdate popup!<==== " + e.ToString());
                 }
 
             });
@@ -82,6 +98,7 @@ namespace DVAH
             this.CheckFirebaseXml();
 #endif
 
+#if UNITY_ANDROID
             if (!FB.IsInitialized)
             {
                 // Initialize the Facebook SDK
@@ -95,6 +112,7 @@ namespace DVAH
                 // Already initialized, signal an app activation App Event
                 FB.ActivateApp();
             }
+#endif
         }
 
         // Update is called once per frame
@@ -103,7 +121,7 @@ namespace DVAH
             if (_noInternetDebug)
             {
                 _noInternetDebug.SetActive(!this.CheckInternetConnection());
-            }  
+            }
 
 
             if (!_isShowDebug  )
@@ -138,16 +156,18 @@ namespace DVAH
                 _notiDebug.SetActive(true);
         }
 
-        public void ShowPopUpRate(bool isShow = true)
+        public void ShowPopUpRate(bool isShow = true, Action<bool> _callback = null)
         {
             if (isShow && PlayerPrefs.HasKey(CONSTANT.RATE_CHECK))
                 return;
-            _popupRate.SetActive(isShow);
+
+            _popupRate.setCallBack(_callback);
+            _popupRate.gameObject.SetActive(isShow);
         }
 
         public void GotoMarket()
         {
-            Application.OpenURL("market://details?id="+Application.identifier);
+            Application.OpenURL("market://details?id=" + Application.identifier);
         }
 
         public void CloseApplication()
@@ -171,7 +191,7 @@ namespace DVAH
             }
             //_notiDebug.SetActive(_isShowDebug);
 
-             
+
         }
 
         public void GetSubLib()
@@ -193,7 +213,7 @@ namespace DVAH
 
                 _childLibs.Add(_masterLib.transform.GetChild(i).gameObject);
             }
-           
+
         }
 
         public bool CheckInternetConnection()
@@ -233,7 +253,7 @@ namespace DVAH
             return null;
         }
 
-
+        
     }
 }
 

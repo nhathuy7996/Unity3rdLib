@@ -1,6 +1,4 @@
-using com.adjust.sdk;
-using GoogleMobileAds.Api;
-using GoogleMobileAds.Common;
+using com.adjust.sdk; 
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,7 +16,8 @@ namespace DVAH
         None,
         Open,
         Click,
-        Closed
+        Closed,
+        Interupt
     }
     public enum RewardVideoState
     {
@@ -26,7 +25,8 @@ namespace DVAH
         Open,
         Click,
         Watched,
-        Closed
+        Closed,
+        Interupt
     }
 
     public enum OpenAdState
@@ -52,7 +52,7 @@ namespace DVAH
     {
         #region Lib Properties
 
-
+        protected bool isShowingAD = false;
         [SerializeField]
         protected bool _isBannerAutoShow = false, _initBannerManually;
 
@@ -234,7 +234,12 @@ namespace DVAH
 
         #endregion
 
-        #region FUNCTION SHOW/HIDE ADs 
+        #region FUNCTION SHOW/HIDE ADs
+
+        public abstract void ShowMRECs();
+
+        public abstract void HideMRECs();
+
 
         public abstract void ShowBanner();
 
@@ -244,6 +249,8 @@ namespace DVAH
 
 
         public abstract void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false);
+
+        public abstract void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false, Button btnShowAd = null);
 
         public abstract void ShowAdOpen(int ID = 0, bool isAdOpen = false, Action<int, OpenAdState> callback = null);
 

@@ -10,8 +10,10 @@ using SimpleJSON;
 using System;
 using System.Reflection;
 using com.adjust.sdk;
+#if UNITY_ANDROID
 using Facebook.Unity.Settings;
 using GoogleMobileAds.Editor;
+#endif
 using DVAH;
 using System.Collections.Generic;
 
@@ -78,10 +80,11 @@ class BuildProcess : IPreprocessBuildWithReport
         if (!MenuEditor.CheckFirebaseJson(false))
         { 
             return;
-        } 
+        }
 
+#if UNITY_ANDROID
         MenuEditor.FixAndroidManifestFB();
-
+#endif
         MenuEditor.FixGoogleXml(false);
 
         reportContent = MenuEditor.Report(report);
