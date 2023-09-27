@@ -6,6 +6,7 @@ using System.Linq;
 using SimpleJSON;
 using System;
 using UnityEngine.UI;
+using UnityEngine.Android;
 #if UNITY_ANDROID
 using Facebook.Unity;
 #endif
@@ -56,6 +57,14 @@ namespace DVAH
         // Start is called before the first frame update
         void Start()
         {
+
+#if UNITY_ANDROID
+        if (!Permission.HasUserAuthorizedPermission("android.permission.POST_NOTIFICATIONS"))
+        {
+            Permission.RequestUserPermission("android.permission.POST_NOTIFICATIONS");
+        }
+ 
+#endif
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             Application.targetFrameRate = 120;
 
