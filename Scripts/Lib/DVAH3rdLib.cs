@@ -319,6 +319,29 @@ namespace DVAH
 
             }
         }
+
+#if UNITY_EDITOR
+
+        private void OnApplicationFocus(bool focus)
+        {
+            try
+            {
+                var handlers = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(IAppStateChange).IsAssignableFrom(p) && p.IsClass);
+
+                foreach (var handler in handlers)
+                {
+                    var handlerInstance = (IAppStateChange)Activator.CreateInstance(handler);
+                    handlerInstance.OnAppStateChanged(focus ? AppState.Foreground : AppState.Background);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+#endif
     }
 }
 

@@ -239,7 +239,7 @@ namespace DVAH
                 if (string.IsNullOrWhiteSpace(_BannerAdUnitID))
                     return;
                 Debug.Log(CONSTANT.Prefix + $"==> Init banner <==");
-                FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adAction: AD_ACTION.load, adStatus: AD_STATUS.init, adUnit: BannerAdUnitID);
+                FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adAction: AD_ACTION.load, adStatus: AD_STATUS.init, adUnit: _BannerAdUnitID);
                 // Attach Callbacks
                 MaxSdkCallbacks.Banner.OnAdLoadedEvent += OnBannerAdLoadedEvent;
                 MaxSdkCallbacks.Banner.OnAdLoadFailedEvent += OnBannerAdFailedEvent;
@@ -470,7 +470,7 @@ namespace DVAH
         {
             Debug.Log(CONSTANT.Prefix + $"==> Load reward Ad " + _RewardedAdUnitID + " ! <==");
             FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adAction: AD_ACTION.load,
-                adStatus: AD_STATUS.init,adUnit: RewardedAdUnitID );
+                adStatus: AD_STATUS.init,adUnit: _RewardedAdUnitID );
             MaxSdk.LoadRewardedAd(_RewardedAdUnitID);
         }
 
