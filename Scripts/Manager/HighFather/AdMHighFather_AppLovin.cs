@@ -1527,7 +1527,7 @@ namespace DVAH
             callback?.Invoke();
         }
 
-#if UNITY_ANDROID
+ 
         public void OnAppStateChanged(AppState state)
         {
             // Display the app open ad when the app is foregrounded. 
@@ -1556,36 +1556,7 @@ namespace DVAH
                 this.ShowAdOpen(_OpenAdUnitIDs.Count - 1);
             }
         }
-#elif UNITY_IOS || UNITY_EDITOR
-        private void OnApplicationFocus(bool focus)
-        {
-            // Display the app open ad when the app is foregrounded. 
-            if (!focus)
-            {
-                if (_OpenAdUnitIDs.Count == 0)
-                    return;
-
-                if (_isClickedBanner)
-                {
-                    _isClickedBanner = false;
-                    return;
-                }
-                if (isShowingAD)
-                {
-                    _callbackInter?.Invoke(InterVideoState.Interupt);
-                    //_callbackInter = null;
-
-                    _callbackReward?.Invoke(RewardVideoState.Interupt);
-                    if (this.btnAdReward != null) this.btnAdReward.interactable = true;
-
-                    _callbackOpenAD?.Invoke(_OpenAdUnitIDs.Count - 1, OpenAdState.None);
-                    //_callbackOpenAD = null;
-                    return;
-                }
-                this.ShowAdOpen(_OpenAdUnitIDs.Count - 1);
-            }
-        }
-#endif
+ 
 
         #endregion
 

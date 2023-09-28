@@ -9,10 +9,18 @@ using GoogleMobileAds.Common;
 
 namespace DVAH
 {
+#if UNITY_IOS
+    public enum AppState
+    {
+        Foreground,
+        Background
+    }
+
+#endif
     public interface IAppStateChange
     {
-#if UNITY_ANDROID
          
+
         /// <summary>
         /// Function Invoke when app change state, you can check state param to know what state of application is
         /// <code>
@@ -30,13 +38,5 @@ namespace DVAH
         /// <param name="state">A state of application. Foreground mean app active, Background mean app deactive</param> 
         public void OnAppStateChanged(AppState state);
 
-#if UNITY_EDITOR
-        private void OnApplicationFocus(bool focus)
-        {
-            this.OnAppStateChanged(!focus ? AppState.Background : AppState.Foreground);
-        }
-#endif
-#endif
-         
     }
 }

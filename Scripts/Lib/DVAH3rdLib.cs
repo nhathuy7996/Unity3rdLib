@@ -7,10 +7,9 @@ using SimpleJSON;
 using System;
 using UnityEngine.UI;
 using UnityEngine.Android;
+#if UNITY_ANDROID
 using GoogleMobileAds.Common;
 using GoogleMobileAds.Api;
-using UnityEditor;
-#if UNITY_ANDROID
 using Facebook.Unity;
 #endif
 
@@ -292,6 +291,7 @@ namespace DVAH
             return null;
         }
 
+ 
         void IAppStateChange.OnAppStateChanged(AppState state)
         {
             try
@@ -318,9 +318,9 @@ namespace DVAH
             {
 
             }
-        }
+        } 
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_IOS
 
         private void OnApplicationFocus(bool focus)
         {
