@@ -395,55 +395,27 @@ namespace DVAH
             });
         }
 
-        public void LogADEvent(AD_TYPE adType, AD_STATE adState, string adNetwork = "")
+        public void LogADEvent(AD_TYPE adType, AD_STATUS adStatus, AD_ACTION adAction, string adNetwork = "unknow", string adUnit = "unknow", string errorCode="unknow")
         {
             _ = this.LogEventWithParameter("ad_event", new Hashtable()
             {
-                 {"ad_load_stats" ,string.Format( "ad_{0}_{1}",adType.ToString(), adState.ToString() )},
-                  {"ad_source" ,adNetwork}
-                
+                 
+                  {"ad_format",adType.ToString() },
+                  {"id_screen",AdManager.Instant.ScreenName },
+                  {"ad_source" ,adNetwork},
+                   {"ad_unit_id",adUnit },
+                  {"ad_status", adStatus.ToString() },
+                  {"ad_action", adAction.ToString() },
+                  {"fail_reason",errorCode },
+
             });
         }
-
-
-        public void LogADResumeEvent(AD_STATE adState, string adNetwork = "")
-        {
-            AD_TYPE adType = this._adTypeLoaded;
-              
-            if (adState == AD_STATE.show)
-            {
-                if (adTypeShow == AD_TYPE.open)
-                    adState = AD_STATE.show_open;
-                else
-                    adState = AD_STATE.show_resume;
-
-
-                this._adTypeLoaded = AD_TYPE.resume;
-                adTypeShow = AD_TYPE.resume;
-            }
-
-            if (adState == AD_STATE.show_fail)
-            {
-                if (adTypeShow == AD_TYPE.open)
-                    adState = AD_STATE.show_open_fail;
-                else
-                    adState = AD_STATE.show_resume_fail;
-
-                this._adTypeLoaded = AD_TYPE.resume;
-                adTypeShow = AD_TYPE.resume;
-            }
-
-            LogADEvent(adType,adState,adNetwork); 
-        }
-
+         
 
         public void LogEventClickAds(AD_TYPE ad_type, string adNetwork)
         {
-            _ = this.LogEventWithParameter("ad_event", new Hashtable()
-            {
-                 {string.Format("ad_load_stats", adNetwork),string.Format( "ad_{0}_click", ad_type.ToString() )},
-                  {"ad_source" ,adNetwork}
-            });
+            FireBaseManager.Instant.LogADEvent(adType: ad_type, adAction: AD_ACTION.click, adStatus: AD_STATUS.success,
+              adNetwork: adNetwork);
         }
 
         public void LogAdValueAdjust(double value)
@@ -475,7 +447,7 @@ public enum LEVEL_STATE_EVENT
     win_level
 }
 
-public enum AD_STATE
+public enum AD_ACTION
 {
     load,
     load_done,
@@ -486,4 +458,12 @@ public enum AD_STATE
     show_open_fail,
     show_resume,
     show_resume_fail,
+    click
+}
+
+public enum AD_STATUS
+{
+    init,
+    fail,
+    success
 }

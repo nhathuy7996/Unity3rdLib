@@ -7,13 +7,15 @@ using SimpleJSON;
 using System;
 using UnityEngine.UI;
 using UnityEngine.Android;
+using GoogleMobileAds.Common;
+using GoogleMobileAds.Api;
 #if UNITY_ANDROID
 using Facebook.Unity;
 #endif
 
 namespace DVAH
 {
-    public class DVAH3rdLib : Singleton<DVAH3rdLib>
+    public class DVAH3rdLib : Singleton<DVAH3rdLib>, IAppStateChange
     {
         [SerializeField] bool _isShowDebug = false, _isDontDestroyOnLoad = false;
         [SerializeField] GameObject _notiDebug, _noInternetDebug;
@@ -44,6 +46,9 @@ namespace DVAH
         protected override void Awake()
         {
             base.Awake();
+
+            this.AssignIAppstateChange();
+
             if (_isDontDestroyOnLoad)
                 DontDestroyOnLoad(this.gameObject);
 
@@ -54,6 +59,24 @@ namespace DVAH
             _countOpenApp = PlayerPrefs.GetInt(CONSTANT.COUNT_OPEN_APP,-1) + 1;
 
         }
+
+        void AssignIAppstateChange()
+        {
+#if UNITY_ANDROID
+            var type = typeof(IAppStateChange);
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => type.IsAssignableFrom(p));
+
+            foreach (IAppStateChange c in types)
+            {
+
+                AppStateEventNotifier.AppStateChanged += c.OnAppStateChanged;
+
+            }
+#endif
+        }
+
         // Start is called before the first frame update
         void Start()
         {
@@ -262,7 +285,33 @@ namespace DVAH
             return null;
         }
 
-        
+        void IAppStateChange.OnAppStateChanged(AppState state)
+        {
+            try
+            {
+                if (state == AppState.Foreground)
+                {
+                
+                        FireBaseManager.Instant.LogEventWithParameterAsync("on_game_resume_focus", new Hashtable()
+                        {
+                            { "id_screen", AdManager.Instant.ScreenName }
+                        });
+                
+                }
+                else
+                {
+                        FireBaseManager.Instant.LogEventWithParameterAsync("on_game_out_focus", new Hashtable()
+                        {
+                            { "id_screen", AdManager.Instant.ScreenName }
+                        });
+                }
+
+                }
+            catch (Exception e)
+            {
+
+            }
+        }
     }
 }
 

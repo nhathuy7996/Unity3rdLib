@@ -8,6 +8,9 @@ using static MaxSdkBase;
 using System.Threading.Tasks;
 using System.Linq;
 using UnityEngine.UI;
+#if NATIVE_AD
+using GoogleMobileAds.Api;
+#endif
 
 namespace DVAH
 {
