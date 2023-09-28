@@ -259,12 +259,12 @@ namespace DVAH
         #endregion
 
         #region CUSTOM FUNCTION
-        void SetScreenName(string screenName)
+        public void SetScreenName(string screenName)
         {
             this._screenName = screenName;
         }
 
-        void SetRewardName(string rewardName)
+        public void SetRewardName(string rewardName)
         {
             this._rewardName = rewardName;
         }

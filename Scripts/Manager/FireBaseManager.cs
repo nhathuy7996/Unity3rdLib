@@ -395,7 +395,8 @@ namespace DVAH
             });
         }
 
-        public void LogADEvent(AD_TYPE adType, AD_STATUS adStatus, AD_ACTION adAction, string adNetwork = "unknow", string adUnit = "unknow", string errorCode="unknow")
+        public void LogADEvent(AD_TYPE adType, AD_STATUS adStatus, AD_ACTION adAction, string adNetwork = "unknow",
+            string adUnit = "unknow", string errorCode="unknow", string value="0")
         {
             _ = this.LogEventWithParameter("ad_event", new Hashtable()
             {
@@ -458,7 +459,8 @@ public enum AD_ACTION
     show_open_fail,
     show_resume,
     show_resume_fail,
-    click
+    click,
+    impression
 }
 
 public enum AD_STATUS

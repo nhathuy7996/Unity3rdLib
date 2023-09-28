@@ -47,7 +47,8 @@ namespace DVAH
         banner,
         inter,
         reward,
-        native
+        native,
+        MRecs
     }
 
 

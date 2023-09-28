@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using UnityEngine.Android;
 using GoogleMobileAds.Common;
 using GoogleMobileAds.Api;
+using UnityEditor;
 #if UNITY_ANDROID
 using Facebook.Unity;
 #endif
@@ -63,17 +64,23 @@ namespace DVAH
         void AssignIAppstateChange()
         {
 #if UNITY_ANDROID
-            var type = typeof(IAppStateChange);
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(p => type.IsAssignableFrom(p));
-
-            foreach (IAppStateChange c in types)
+            try
             {
+                var handlers = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(IAppStateChange).IsAssignableFrom(p) && p.IsClass);
 
-                AppStateEventNotifier.AppStateChanged += c.OnAppStateChanged;
-
+                foreach (var handler in handlers)
+                {
+                    var handlerInstance = (IAppStateChange)Activator.CreateInstance(handler);
+                    AppStateEventNotifier.AppStateChanged += handlerInstance.OnAppStateChanged;
+                }
             }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+            
 #endif
         }
 

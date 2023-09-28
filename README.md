@@ -30,12 +30,12 @@ After build aab, a branch production will auto create and push your code to ther
 - Reimport All
 - Android Resolve -> Force Resolve
 - Then you have 2 way to add the code lib to your project:
-    - The lazy way:
+    - The lazy way: (you must add your project to a git reposity first)
         ![add Code](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/0.png)
     - The profession way:
         - Add git subtree on project and pull production (_develop branch may not working well yet!_)
-        - (Git Add Command: git subtree add --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash    )
-        - (Git Pull Command: git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash  )
+        - (Git Add Command: git subtree add --prefix Assets/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash    )
+        - (Git Pull Command: git subtree pull --prefix Assets/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash  )
         If you already add it, then pull command only is enought!
 
 - put prefab 3rdLib into scene index 0 on build setting (check dontDestroyOnload if project have multiple scene)

@@ -186,6 +186,8 @@ namespace DVAH
             {
                 Debug.Log(CONSTANT.Prefix + $"==> MRECs banner revenue paid <==");
                 TrackAdRevenue(adInfo);
+                FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.MRecs, adAction: AD_ACTION.impression,
+               adStatus: AD_STATUS.success, adNetwork: adInfo.NetworkName, adUnit: adUnit, value: adInfo.Revenue.ToString());
             };
 
             MaxSdkCallbacks.MRec.OnAdExpandedEvent += OnMRecAdExpandedEvent;
@@ -248,6 +250,9 @@ namespace DVAH
                 {
                     Debug.Log(CONSTANT.Prefix + $"==> Banner ad revenue paid <==");
                     TrackAdRevenue(adInfo);
+
+                    FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adAction: AD_ACTION.impression,
+                        adStatus: AD_STATUS.success, adNetwork: adInfo.NetworkName, adUnit: adUnit, value: adInfo.Revenue.ToString());
                 };
 
                 // Banners are automatically sized to 320x50 on phones and 728x90 on tablets.
@@ -325,6 +330,8 @@ namespace DVAH
             {
                 Debug.Log(CONSTANT.Prefix + $"==> Interstitial revenue paid <==");
                 TrackAdRevenue(adInfo);
+                FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adAction: AD_ACTION.impression,
+    adStatus: AD_STATUS.success, adNetwork: adInfo.NetworkName, adUnit: adUnit, value: adInfo.Revenue.ToString());
             };
 
             // Load the first interstitial
@@ -450,6 +457,8 @@ namespace DVAH
             {
                 Debug.Log(CONSTANT.Prefix + $"==> Reward paid event! <==");
                 TrackAdRevenue(adInfo);
+                FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adAction: AD_ACTION.impression,
+    adStatus: AD_STATUS.success, adNetwork: adInfo.NetworkName, adUnit: adUnitId, value: adInfo.Revenue.ToString());
             };
 
 
@@ -599,6 +608,8 @@ namespace DVAH
             {
                 Debug.Log(CONSTANT.Prefix + $"==> Ad open/resume paid event! <==");
                 TrackAdRevenue(adInfo);
+                FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.open, adAction: AD_ACTION.impression,
+    adStatus: AD_STATUS.success, adNetwork: adInfo.NetworkName, adUnit: adUnit, value: adInfo.Revenue.ToString());
             };
 
             if (_OpenAdUnitIDs.Count > 0)
@@ -1489,6 +1500,7 @@ namespace DVAH
               new Firebase.Analytics.Parameter("currency", "USD"), // All AppLovin revenue is sent in USD
             };
             Firebase.Analytics.FirebaseAnalytics.LogEvent(_paid_ad_revenue, impressionParameters);
+           
         }
 
         #endregion
