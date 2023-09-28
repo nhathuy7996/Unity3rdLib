@@ -1,6 +1,8 @@
 using com.adjust.sdk;
+#if UNITY_ANDROID
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Common;
+#endif
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ using System.IO;
 
 namespace DVAH
 { 
-    public class AdMHighFather_AppLovin : AdMHighFather
+    public class AdMHighFather_AppLovin : AdMHighFather, IAppStateChange
     {
         [SerializeField] string _mrecAdUnitId;
 
@@ -64,7 +66,6 @@ namespace DVAH
             InitMAX();
             InitAdMob();
 
-            AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
 
             _onInitDone?.Invoke();
         }
@@ -185,6 +186,8 @@ namespace DVAH
             {
                 Debug.Log(CONSTANT.Prefix + $"==> MRECs banner revenue paid <==");
                 TrackAdRevenue(adInfo);
+                FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.MRecs, adAction: AD_ACTION.impression,
+               adStatus: AD_STATUS.success, adNetwork: adInfo.NetworkName, adUnit: adUnit, value: adInfo.Revenue.ToString());
             };
 
             MaxSdkCallbacks.MRec.OnAdExpandedEvent += OnMRecAdExpandedEvent;
@@ -236,7 +239,7 @@ namespace DVAH
                 if (string.IsNullOrWhiteSpace(_BannerAdUnitID))
                     return;
                 Debug.Log(CONSTANT.Prefix + $"==> Init banner <==");
-                FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load);
+                FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adAction: AD_ACTION.load, adStatus: AD_STATUS.init, adUnit: _BannerAdUnitID);
                 // Attach Callbacks
                 MaxSdkCallbacks.Banner.OnAdLoadedEvent += OnBannerAdLoadedEvent;
                 MaxSdkCallbacks.Banner.OnAdLoadFailedEvent += OnBannerAdFailedEvent;
@@ -247,6 +250,9 @@ namespace DVAH
                 {
                     Debug.Log(CONSTANT.Prefix + $"==> Banner ad revenue paid <==");
                     TrackAdRevenue(adInfo);
+
+                    FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adAction: AD_ACTION.impression,
+                        adStatus: AD_STATUS.success, adNetwork: adInfo.NetworkName, adUnit: adUnit, value: adInfo.Revenue.ToString());
                 };
 
                 // Banners are automatically sized to 320x50 on phones and 728x90 on tablets.
@@ -274,16 +280,17 @@ namespace DVAH
                  this.ShowBanner();
             Debug.Log(CONSTANT.Prefix + $"==> Banner ad loaded " + adUnitId + " <==");
             MaxSdk.StartBannerAutoRefresh(_BannerAdUnitID);
-
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load_done, adNetwork: adInfo.NetworkName);
-
+             
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adAction: AD_ACTION.load, adStatus: AD_STATUS.success,
+                adUnit: adUnitId, adNetwork: adInfo.NetworkName);
         }
 
         private void OnBannerAdFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo)
         {
             // Banner ad failed to load. MAX will automatically try loading a new ad internally.
-            Debug.LogError(CONSTANT.Prefix + $"==>Banner ad failed to load with error code: " + errorInfo.Code + " <==");
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adState: AD_STATE.load_fail);
+            Debug.LogError(CONSTANT.Prefix + $"==>Banner ad failed to load with error code: " + errorInfo.Code + " <=="); 
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.banner, adAction: AD_ACTION.load,
+                adStatus: AD_STATUS.fail, adUnit: adUnitId, errorCode: errorInfo.Code.ToString());
             bannerRetryAttempt++;
             double retryDelay = Math.Pow(2, Math.Min(6, bannerRetryAttempt));
 
@@ -323,6 +330,8 @@ namespace DVAH
             {
                 Debug.Log(CONSTANT.Prefix + $"==> Interstitial revenue paid <==");
                 TrackAdRevenue(adInfo);
+                FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adAction: AD_ACTION.impression,
+    adStatus: AD_STATUS.success, adNetwork: adInfo.NetworkName, adUnit: adUnit, value: adInfo.Revenue.ToString());
             };
 
             // Load the first interstitial
@@ -333,16 +342,19 @@ namespace DVAH
 
         void LoadInterstitial()
         {
-            Debug.Log(CONSTANT.Prefix + $"==>Start load Interstitial " + _InterstitialAdUnitID + " <==");
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load);
+            Debug.Log(CONSTANT.Prefix + $"==>Start load Interstitial " + _InterstitialAdUnitID + " <=="); 
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adAction: AD_ACTION.load,
+                adStatus: AD_STATUS.init, adUnit: _InterstitialAdUnitID);
             MaxSdk.LoadInterstitial(_InterstitialAdUnitID);
         }
 
         private void OnInterstitialLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             // Interstitial ad is ready to be shown. MaxSdk.IsInterstitialReady(interstitialAdUnitId) will now return 'true'
-            Debug.Log(CONSTANT.Prefix + $"==> Interstitial loaded <==");
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load_done, adNetwork: adInfo.NetworkName);
+            Debug.Log(CONSTANT.Prefix + $"==> Interstitial loaded <=="); 
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adAction: AD_ACTION.load, adStatus: AD_STATUS.success,
+                adUnit: adUnitId, adNetwork: adInfo.NetworkName);
+
             // Reset retry attempt
             interstitialRetryAttempt = 0;
         }
@@ -353,8 +365,10 @@ namespace DVAH
             interstitialRetryAttempt++;
             double retryDelay = Math.Pow(2, Math.Min(6, interstitialRetryAttempt));
 
-            Debug.LogError(CONSTANT.Prefix + $"==> Interstitial failed to load with error code: " + errorInfo.Code + " <==");
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.load_fail);
+            Debug.LogError(CONSTANT.Prefix + $"==> Interstitial failed to load with error code: " + errorInfo.Code + " <=="); 
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adAction: AD_ACTION.load,
+                adStatus: AD_STATUS.fail, adUnit: adUnitId, errorCode: errorInfo.Code.ToString());
+
 
             Invoke("LoadInterstitial", (float)retryDelay);
         }
@@ -362,15 +376,19 @@ namespace DVAH
         private void Interstitial_OnAdDisplayedEvent(string arg1, AdInfo adInfo)
         {
             Debug.Log(CONSTANT.Prefix + $"==> Interstitial show! <==");
-            _callbackInter?.Invoke(InterVideoState.Open);
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.show, adNetwork: adInfo.NetworkName);
+            _callbackInter?.Invoke(InterVideoState.Open); 
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adAction: AD_ACTION.show,
+                adStatus: AD_STATUS.success, adUnit: adInfo.AdUnitIdentifier, adNetwork: adInfo.NetworkName);
+
         }
 
         private void InterstitialFailedToDisplayEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo, MaxSdkBase.AdInfo adInfo)
         {
             // Interstitial ad failed to display. We recommend loading the next ad
             Debug.LogError(CONSTANT.Prefix + $"==> Interstitial failed to display with error code: " + errorInfo.Code + " <==");
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adState: AD_STATE.show_fail, adNetwork: adInfo.NetworkName);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.inter, adAction: AD_ACTION.show,
+                adStatus: AD_STATUS.fail, adUnit: adUnitId, errorCode: errorInfo.Code.ToString(), adNetwork: adInfo.NetworkName);
+
             LoadInterstitial();
 
             try
@@ -439,6 +457,8 @@ namespace DVAH
             {
                 Debug.Log(CONSTANT.Prefix + $"==> Reward paid event! <==");
                 TrackAdRevenue(adInfo);
+                FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adAction: AD_ACTION.impression,
+    adStatus: AD_STATUS.success, adNetwork: adInfo.NetworkName, adUnit: adUnitId, value: adInfo.Revenue.ToString());
             };
 
 
@@ -449,7 +469,8 @@ namespace DVAH
         private void LoadRewardedAd()
         {
             Debug.Log(CONSTANT.Prefix + $"==> Load reward Ad " + _RewardedAdUnitID + " ! <==");
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.load);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adAction: AD_ACTION.load,
+                adStatus: AD_STATUS.init,adUnit: _RewardedAdUnitID );
             MaxSdk.LoadRewardedAd(_RewardedAdUnitID);
         }
 
@@ -458,7 +479,8 @@ namespace DVAH
             // Rewarded ad is ready to be shown. MaxSdk.IsRewardedAdReady(rewardedAdUnitId) will now return 'true'
 
             // Reset retry attempt
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.load_done, adNetwork: adInfo.NetworkName);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward,adUnit: adUnitId, adAction: AD_ACTION.load,adStatus:AD_STATUS.success,
+                adNetwork: adInfo.NetworkName);
             rewardedRetryAttempt = 0;
         }
 
@@ -470,7 +492,8 @@ namespace DVAH
             double retryDelay = Math.Pow(2, Math.Min(6, rewardedRetryAttempt));
 
             Debug.LogError(CONSTANT.Prefix + $"==> Rewarded ad failed to load with error code: " + errorInfo.Code + " <==");
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.load_fail);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward,adUnit: adUnitId, adAction:AD_ACTION.load,
+                adStatus: AD_STATUS.fail,errorCode: errorInfo.Code.ToString());
             Invoke("LoadRewardedAd", (float)retryDelay);
 
         }
@@ -480,7 +503,8 @@ namespace DVAH
             // Rewarded ad failed to display. We recommend loading the next ad
 
             Debug.LogError(CONSTANT.Prefix + $"==> Rewarded ad failed to display with error code: " + errorInfo.Code + " <==");
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.show_fail, adInfo.NetworkName);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adUnit: adUnitId, adAction: AD_ACTION.show,
+               adStatus: AD_STATUS.fail, errorCode: errorInfo.Code.ToString(), adNetwork: adInfo.NetworkName);
             LoadRewardedAd();
             try
             {
@@ -499,7 +523,8 @@ namespace DVAH
         private void OnRewardedAdDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             Debug.Log(CONSTANT.Prefix + $"==> Reward display success! <==");
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adState: AD_STATE.show, adInfo.NetworkName);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.reward, adUnit: adUnitId, adAction: AD_ACTION.show,
+              adStatus: AD_STATUS.success,   adNetwork: adInfo.NetworkName);
             try
             {
                 _callbackReward?.Invoke(RewardVideoState.Open);
@@ -514,7 +539,7 @@ namespace DVAH
         private void OnRewardedAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
         {
             Debug.Log(CONSTANT.Prefix + $"==> Reward clicked! <==");
-            FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.reward, adNetwork: adInfo.NetworkName);
+             
             try
             {
                 _clickADCallback[(int)AD_TYPE.reward]?.Invoke();
@@ -583,6 +608,8 @@ namespace DVAH
             {
                 Debug.Log(CONSTANT.Prefix + $"==> Ad open/resume paid event! <==");
                 TrackAdRevenue(adInfo);
+                FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.open, adAction: AD_ACTION.impression,
+    adStatus: AD_STATUS.success, adNetwork: adInfo.NetworkName, adUnit: adUnit, value: adInfo.Revenue.ToString());
             };
 
             if (_OpenAdUnitIDs.Count > 0)
@@ -599,7 +626,8 @@ namespace DVAH
         {
             Debug.Log(CONSTANT.Prefix + $"==> Start load ad open/resume! ID:" + _OpenAdUnitIDs[ID] + " <==");
 
-            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.open, adAction: AD_ACTION.load, adStatus: AD_STATUS.init,
+                adUnit: _OpenAdUnitIDs[ID]);
 
             if (!MaxSdk.IsAppOpenAdReady(_OpenAdUnitIDs[ID]))
             {
@@ -612,7 +640,8 @@ namespace DVAH
         {
             Debug.Log(CONSTANT.Prefix + $"==>Load ad open/resume success! <==");
 
-            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load_done, adNetwork: arg2.NetworkName);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.open, adAction: AD_ACTION.load, adStatus: AD_STATUS.success,
+               adUnit: arg2.AdUnitIdentifier, adNetwork: arg2.NetworkName);
 
             int ID = _OpenAdUnitIDs.IndexOf(arg1);
             if (ID < 0)
@@ -623,7 +652,8 @@ namespace DVAH
         private void AppOpenOnAdLoadFailedEvent(string arg1, ErrorInfo errorInfo)
         {
             Debug.LogError(CONSTANT.Prefix + $"==> Load ad open/resume failed, code: " + errorInfo.Code + " <==");
-            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.load_fail);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.open, adAction: AD_ACTION.load, adStatus: AD_STATUS.fail,
+              adUnit: arg1, errorCode: errorInfo.Code.ToString());
             int ID = _OpenAdUnitIDs.IndexOf(arg1);
             if (ID < 0)
                 return;
@@ -637,8 +667,9 @@ namespace DVAH
         private void AppOpen_OnAdDisplayedEvent(string arg1, AdInfo arg2)
         {
             Debug.Log(CONSTANT.Prefix + $"==> Show ad open/resume success! <==");
-            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show, adNetwork: arg2.NetworkName);
-            
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.open, adAction: AD_ACTION.show, adStatus: AD_STATUS.success,
+           adUnit: arg1, adNetwork: arg2.NetworkName);
+
             int ID = _OpenAdUnitIDs.IndexOf(arg1);
             if (ID < 0)
                 return;
@@ -655,7 +686,8 @@ namespace DVAH
         private void AppOpen_OnAdClickedEvent(string arg1, AdInfo adInfo)
         {
             Debug.Log(CONSTANT.Prefix + $"==>Click open/resume success! <==");
-            FireBaseManager.Instant.LogEventClickAds(ad_type: AD_TYPE.open, adNetwork: adInfo.NetworkName);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.open, adAction: AD_ACTION.click, adStatus: AD_STATUS.success,
+         adUnit: arg1, adNetwork: adInfo.NetworkName);
             int ID = _OpenAdUnitIDs.IndexOf(arg1);
             if (ID < 0)
                 return;
@@ -676,8 +708,9 @@ namespace DVAH
         private void AppOpen_OnAdDisplayFailedEvent(string arg1, ErrorInfo errorInfo, AdInfo arg3)
         {
             Debug.LogError(CONSTANT.Prefix + $"==> Show ad open/resume failed, code: " + errorInfo.Code + " <==");
-             
-            FireBaseManager.Instant.LogADResumeEvent(adState: AD_STATE.show_fail);
+
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.open, adAction: AD_ACTION.show, adStatus: AD_STATUS.fail,
+         adUnit: arg1, adNetwork: arg3.NetworkName, errorCode: errorInfo.Code.ToString());
 
             int ID = _OpenAdUnitIDs.IndexOf(arg1);
             if (ID < 0)
@@ -785,7 +818,8 @@ namespace DVAH
         public AdLoader RequestNativeAd(string AdID)
         {
 
-            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.native, adState: AD_STATE.load);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.native, adUnit: AdID, adAction: AD_ACTION.load,
+              adStatus: AD_STATUS.init, adNetwork: "ADMOB");
 
             AdLoader adLoader = new AdLoader.Builder(AdID)
                 .ForNativeAd()
@@ -1000,7 +1034,8 @@ namespace DVAH
         private void HandleAdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
         {
             Debug.LogError(CONSTANT.Prefix + $"===> NativeAd load Fail! error: " + e.LoadAdError.GetMessage());
-            FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.load_fail);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.native, adUnit: ((AdLoader)sender).AdUnitId, adAction: AD_ACTION.load,
+               adStatus: AD_STATUS.fail, errorCode: e.LoadAdError.GetCode().ToString() , adNetwork: "ADMOB");
 
             int ID = _NativeAdID.IndexOf(((AdLoader)sender).AdUnitId);
             if (ID < 0)
@@ -1045,16 +1080,19 @@ namespace DVAH
 
             if (this.CreateNativeAd(ID))
             {
-                FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.show);
+                FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.native, adUnit: _NativeAdID[ID], adAction: AD_ACTION.show,
+             adStatus: AD_STATUS.init, adNetwork: "ADMOB");
             }
             else
             {
                 RequestNativeAd(_NativeAdID[ID]);
-                FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.show_fail);
+                FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.native, adUnit: _NativeAdID[ID], adAction: AD_ACTION.show,
+                adStatus: AD_STATUS.fail, adNetwork: "ADMOB");
             }
 
             _callbackLoadNativeAd?.Invoke(ID, true);
-            FireBaseManager.Instant.LogADEvent(AD_TYPE.native, AD_STATE.load_done);
+            FireBaseManager.Instant.LogADEvent(adType: AD_TYPE.native, adUnit: _NativeAdID[ID], adAction: AD_ACTION.load,
+             adStatus: AD_STATUS.success, adNetwork: "ADMOB");
 
         }
 
@@ -1083,7 +1121,7 @@ namespace DVAH
         #endregion
 
 #endif
-        #region CheckAdLoaded
+#region CheckAdLoaded
 
         public override bool InterstitialIsLoaded()
         {
@@ -1416,7 +1454,7 @@ namespace DVAH
                 await Task.Delay(500);
                 timer += 500;
             }
-#endif 
+#endif
             try
             {
                 callBack?.Invoke(_adNativePanel[ID]);
@@ -1462,6 +1500,7 @@ namespace DVAH
               new Firebase.Analytics.Parameter("currency", "USD"), // All AppLovin revenue is sent in USD
             };
             Firebase.Analytics.FirebaseAnalytics.LogEvent(_paid_ad_revenue, impressionParameters);
+           
         }
 
         #endregion
@@ -1488,21 +1527,8 @@ namespace DVAH
             callback?.Invoke();
         }
 
-#if UNITY_EDITOR
-
-        private void OnApplicationFocus(bool focus)
-        {
-            if (!focus)
-            {
-                if (_OpenAdUnitIDs.Count == 0)
-                    return;
-                this.ShowAdOpen(_OpenAdUnitIDs.Count - 1);
-            }
-        }
-#endif
-
-
-        private void OnAppStateChanged(AppState state)
+ 
+        public void OnAppStateChanged(AppState state)
         {
             // Display the app open ad when the app is foregrounded. 
             if (state == AppState.Foreground)
@@ -1530,6 +1556,7 @@ namespace DVAH
                 this.ShowAdOpen(_OpenAdUnitIDs.Count - 1);
             }
         }
+ 
 
         #endregion
 

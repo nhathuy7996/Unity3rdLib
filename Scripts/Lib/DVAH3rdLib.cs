@@ -2,17 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using System.Linq;
-using UnityEditor;
-using System.Xml;
+using System.Linq; 
 using SimpleJSON;
 using System;
 using UnityEngine.UI;
+using UnityEngine.Android;
+#if UNITY_ANDROID
+using GoogleMobileAds.Common;
+using GoogleMobileAds.Api;
 using Facebook.Unity;
+#endif
 
 namespace DVAH
 {
-    public class DVAH3rdLib : Singleton<DVAH3rdLib>
+    public class DVAH3rdLib : Singleton<DVAH3rdLib>, IAppStateChange
     {
         [SerializeField] bool _isShowDebug = false, _isDontDestroyOnLoad = false;
         [SerializeField] GameObject _notiDebug, _noInternetDebug;
@@ -43,6 +46,9 @@ namespace DVAH
         protected override void Awake()
         {
             base.Awake();
+
+            this.AssignIAppstateChange();
+
             if (_isDontDestroyOnLoad)
                 DontDestroyOnLoad(this.gameObject);
 
@@ -53,9 +59,41 @@ namespace DVAH
             _countOpenApp = PlayerPrefs.GetInt(CONSTANT.COUNT_OPEN_APP,-1) + 1;
 
         }
+
+        void AssignIAppstateChange()
+        {
+#if UNITY_ANDROID
+            try
+            {
+                var handlers = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(IAppStateChange).IsAssignableFrom(p) && p.IsClass);
+
+                foreach (var handler in handlers)
+                {
+                    var handlerInstance = (IAppStateChange)Activator.CreateInstance(handler);
+                    AppStateEventNotifier.AppStateChanged += handlerInstance.OnAppStateChanged;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+            
+#endif
+        }
+
         // Start is called before the first frame update
         void Start()
         {
+
+#if UNITY_ANDROID
+        if (!Permission.HasUserAuthorizedPermission("android.permission.POST_NOTIFICATIONS"))
+        {
+            Permission.RequestUserPermission("android.permission.POST_NOTIFICATIONS");
+        }
+ 
+#endif
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             Application.targetFrameRate = 120;
 
@@ -98,6 +136,7 @@ namespace DVAH
             this.CheckFirebaseXml();
 #endif
 
+#if UNITY_ANDROID
             if (!FB.IsInitialized)
             {
                 // Initialize the Facebook SDK
@@ -111,6 +150,7 @@ namespace DVAH
                 // Already initialized, signal an app activation App Event
                 FB.ActivateApp();
             }
+#endif
         }
 
         // Update is called once per frame
@@ -122,7 +162,7 @@ namespace DVAH
             }
 
 
-            if (!_isShowDebug || _notiDebug == null)
+            if (!_isShowDebug  )
                 return;
             if (Input.touchCount < 3)
             {
@@ -147,8 +187,10 @@ namespace DVAH
             if (_devTapCount < 5)
                 return;
 
+            _devTapCount = 0;
             _ = AdMHighFather.Instant.ShowAdDebugger();
-            if (!_notiDebug.activeSelf)
+
+            if (_notiDebug != null && !_notiDebug.activeSelf)
                 _notiDebug.SetActive(true);
         }
 
@@ -249,7 +291,57 @@ namespace DVAH
             return null;
         }
 
-        
+ 
+        void IAppStateChange.OnAppStateChanged(AppState state)
+        {
+            try
+            {
+                if (state == AppState.Foreground)
+                {
+                
+                        FireBaseManager.Instant.LogEventWithParameterAsync("on_game_resume_focus", new Hashtable()
+                        {
+                            { "id_screen", AdManager.Instant.ScreenName }
+                        });
+                
+                }
+                else
+                {
+                        FireBaseManager.Instant.LogEventWithParameterAsync("on_game_out_focus", new Hashtable()
+                        {
+                            { "id_screen", AdManager.Instant.ScreenName }
+                        });
+                }
+
+                }
+            catch (Exception e)
+            {
+
+            }
+        } 
+
+#if UNITY_EDITOR || UNITY_IOS
+
+        private void OnApplicationFocus(bool focus)
+        {
+            try
+            {
+                var handlers = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(IAppStateChange).IsAssignableFrom(p) && p.IsClass);
+
+                foreach (var handler in handlers)
+                {
+                    var handlerInstance = (IAppStateChange)Activator.CreateInstance(handler);
+                    handlerInstance.OnAppStateChanged(focus ? AppState.Foreground : AppState.Background);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+#endif
     }
 }
 

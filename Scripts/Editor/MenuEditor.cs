@@ -5,8 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using com.adjust.sdk;
+#if UNITY_ANDROID
 using Facebook.Unity.Settings;
 using GoogleMobileAds.Editor;
+#endif
 using DVAH;
 using System.Xml;
 using UnityEditor;
@@ -273,6 +275,7 @@ public class MenuEditor
 
     }
 
+#if UNITY_ANDROID
     public static void FixAndroidManifestFB()
     {
 
@@ -341,7 +344,7 @@ public class MenuEditor
         }
         
     }
-
+#endif
     public static void FixGoogleXml(bool isShowOk = true)
     {
 
@@ -560,9 +563,11 @@ public class MenuEditor
             reportContent += adjust;
         }
 
+        AdMHighFather adManagerObject = GameObject.FindObjectOfType<DVAH.AdMHighFather>();
+#if UNITY_ANDROID
         GoogleMobileAdsSettings gg = null;
         string[] ggSetting = UnityEditor.AssetDatabase.FindAssets("t:GoogleMobileAdsSettings");
-        AdMHighFather adManagerObject = GameObject.FindObjectOfType<DVAH.AdMHighFather>();
+        
 
         if (ggSetting.Length != 0)
         {
@@ -584,7 +589,7 @@ public class MenuEditor
 
             reportContent += googleReport;
         }
-
+#endif
         AppLovinSettings max = null;
         string[] maxSetting = UnityEditor.AssetDatabase.FindAssets("t:AppLovinSettings");
         if (maxSetting.Length != 0)
@@ -646,7 +651,7 @@ public class MenuEditor
             reportContent += adReport;
         }
 
-
+#if UNITY_ANDROID
         FacebookSettings facebook = null;
         string[] facebookSetting = UnityEditor.AssetDatabase.FindAssets("t:FacebookSettings");
         if (facebookSetting.Length != 0)
@@ -693,6 +698,7 @@ public class MenuEditor
             reportContent += facebookReport;
 
         }
+#endif
 
         return reportContent;
     }

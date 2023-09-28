@@ -30,13 +30,15 @@
  * * * * */
 #if UNITY_EDITOR
 using UnityEngine;
-using UnityEditor;
-using UnityEditor.PackageManager.UI;
+using UnityEditor; 
 using com.adjust.sdk;
-using GoogleMobileAds.Editor;
+
 using System;
 using DVAH;
-using Facebook.Unity.Settings; 
+#if UNITY_ANDROID
+using Facebook.Unity.Settings;
+using GoogleMobileAds.Editor;
+#endif
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.SceneManagement;
@@ -53,15 +55,16 @@ class ProjectInfoEditor : EditorWindow
     bool isShowKeyStorePass = false, isShowAliasPass = false;
     Adjust adjustGameObject;
 
-
+#if UNITY_ANDROID
     GoogleMobileAdsSettings gg = null;
+    FacebookSettings facebook;
+#endif
 
     DVAH.AdMHighFather adManager = null;
     AppLovinSettings max = null;
 
     FireBaseManager fireBaseManager;
 
-    FacebookSettings facebook;
 
     string fbAppID = null, fbAppLabels, fbClientToken = null, fbKeyStore = null;
     static EditorWindow wnd;
@@ -449,9 +452,9 @@ class ProjectInfoEditor : EditorWindow
         }
         #endregion
 
-        #region GOOGLE ADS SETTING
+#region GOOGLE ADS SETTING
 
-
+#if UNITY_ANDROID
         if (gg)
         {
             gg.GoogleMobileAdsAndroidAppId = DVAH_Data.Google_Android_AppID;
@@ -476,7 +479,8 @@ class ProjectInfoEditor : EditorWindow
                 EditorGUILayout.LabelField("Can not find GoogleMobileAdsSettings!");
             }
         }
-        #endregion
+#endif
+#endregion
 
 
         #region APPLOVIN
@@ -488,10 +492,12 @@ class ProjectInfoEditor : EditorWindow
             max.SdkKey = DVAH_Data.AppLovin_SDK_Key;
             if (adManager)
                 adManager.MaxSdkKey = max.SdkKey;
+#if UNITY_ANDROID
             if (gg != null)
             {
                 max.AdMobAndroidAppId = gg.GoogleMobileAdsAndroidAppId;
             }
+#endif
 
             PrefabUtility.RecordPrefabInstancePropertyModifications(max);
             EditorUtility.SetDirty(max);
@@ -510,11 +516,11 @@ class ProjectInfoEditor : EditorWindow
             }
         }
 
-        #endregion
+#endregion
 
-        #region FACEBOOK
+#region FACEBOOK
 
-
+#if UNITY_ANDROID
         if (facebook == null)
         {
             string[] facebookSetting = UnityEditor.AssetDatabase.FindAssets("t:FacebookSettings");
@@ -582,9 +588,9 @@ class ProjectInfoEditor : EditorWindow
             EditorUtility.SetDirty(facebook);
         }
 
+#endif
 
-
-        #endregion
+#endregion
 
         #region AD ID SETTING
 
@@ -657,12 +663,14 @@ class ProjectInfoEditor : EditorWindow
             MenuEditor.FixGoogleXml();
         }
 
+#if UNITY_ANDROID
         if (GUILayout.Button("Fix AndroidManifest FbID"))
         {
             EditorUtility.DisplayDialog("Attention Pleas?",
                   "This will change your AndroidManifest for match FBID!!", "Ok");
             MenuEditor.FixAndroidManifestFB();
         }
+#endif
 
         EditorGUILayout.EndHorizontal();
 

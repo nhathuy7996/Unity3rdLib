@@ -2,9 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using DVAH;
-using GoogleMobileAds.Api;
-using GoogleMobileAds.Common;
+using DVAH; 
 using System.Text.RegularExpressions;
 
 public class test : MonoBehaviour

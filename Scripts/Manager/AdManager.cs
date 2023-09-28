@@ -1,7 +1,6 @@
  using System;
 using System.Collections;
-using System.Collections.Generic;
-using GoogleMobileAds.Api;
+using System.Collections.Generic; 
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -10,14 +9,37 @@ namespace DVAH
 
     public class AdManager: Singleton<AdManager> {
 
-       
+        string _screenName = "none";
+        string _rewardName = "none";
+
+        public string ScreenName => _screenName;
 
         public bool[] offAdPositions => AdMHighFather.Instant.getOffAdPosition();
+
+        private void Start()
+        {
+            this.AssignClickCallBack(() =>
+            {
+
+            }, AD_TYPE.reward);
+        }
 
         #region INJECT FUNCTION
         public AdManager AssignClickCallBack(Action callback, AD_TYPE adType)
         {
             _ = AdMHighFather.Instant.AssignClickCallBack(callback, adType);
+            try
+            {
+                FireBaseManager.Instant.LogEventWithParameterAsync("on_ad_reward_click", new Hashtable()
+                {
+                    { "id_screen", _screenName },
+                    { "id_reward", _rewardName },
+                });
+            }
+            catch (Exception e)
+            {
+
+            }
             return this;
         }
 
@@ -113,11 +135,20 @@ namespace DVAH
         /// <param name="showNoAds">if you wanna show a popup "ad not avaiable!"</param>
         public void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false)
         {
+            callback += this.LogEventRewardClose;
             AdMHighFather.Instant.ShowRewardVideo(callback, showNoAds);
         }
 
         public void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false, Button btnShowAd = null)
         {
+            callback += this.LogEventRewardClose;
+            AdMHighFather.Instant.ShowRewardVideo(callback, showNoAds);
+        }
+
+        public void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false, string rewardName = "none")
+        {
+            this.SetRewardName(rewardName);
+            callback += this.LogEventRewardClose;
             AdMHighFather.Instant.ShowRewardVideo(callback, showNoAds);
         }
 
@@ -228,6 +259,33 @@ namespace DVAH
         #endregion
 
         #region CUSTOM FUNCTION
+        public void SetScreenName(string screenName)
+        {
+            this._screenName = screenName;
+        }
+
+        public void SetRewardName(string rewardName)
+        {
+            this._rewardName = rewardName;
+        }
+
+        void LogEventRewardClose(RewardVideoState state)
+        {
+            if (state != RewardVideoState.Closed)
+                return;
+            try
+            {
+                FireBaseManager.Instant.LogEventWithParameterAsync("on_ad_reward_complete", new Hashtable()
+                {
+                    { "id_screen", _screenName },
+                    { "id_reward", _rewardName },
+                });
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
         #endregion
     }
 }

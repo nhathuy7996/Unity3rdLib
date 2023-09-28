@@ -1,6 +1,4 @@
-using com.adjust.sdk;
-using GoogleMobileAds.Api;
-using GoogleMobileAds.Common;
+using com.adjust.sdk; 
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +8,9 @@ using static MaxSdkBase;
 using System.Threading.Tasks;
 using System.Linq;
 using UnityEngine.UI;
+#if NATIVE_AD
+using GoogleMobileAds.Api;
+#endif
 
 namespace DVAH
 {
@@ -46,7 +47,8 @@ namespace DVAH
         banner,
         inter,
         reward,
-        native
+        native,
+        MRecs
     }
 
 

@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_ANDROID
 using Google.Play.Review;
+#endif
 using UnityEngine.Events;
 using System;
 
@@ -17,9 +19,10 @@ namespace DVAH
 
         int _starRate = 5;
 
+        #if UNITY_ANDROID
         private ReviewManager _reviewManager;
         private PlayReviewInfo _playReviewInfo;
-
+        #endif
 
         Coroutine _waitShowNoThank;
 
@@ -101,8 +104,8 @@ namespace DVAH
                 }));
 
                 
-#elif UNITY_EDITOR
-            this.gameObject.SetActive(false);
+#elif UNITY_EDITOR || UNITY_IOS
+                this.gameObject.SetActive(false);
 #endif
             }
             else
@@ -111,7 +114,7 @@ namespace DVAH
             }
         }
 
-
+        #if UNITY_ANDROID
         IEnumerator RequestReviews(UnityAction afterRateAction)
         {
             Debug.Log(CONSTANT.Prefix + $"==> RequestReviews-----1 <==");
@@ -147,6 +150,7 @@ namespace DVAH
             // matter the result, we continue our app flow.
             afterRateAction?.Invoke();
         }
+        #endif
 
 
     }
