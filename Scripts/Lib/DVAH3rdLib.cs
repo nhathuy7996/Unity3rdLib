@@ -49,6 +49,7 @@ namespace DVAH
 
 #if UNITY_ANDROID
             AppStateEventNotifier.AppStateChanged += this.OnAppStateChanged;
+            BindReport();
 #endif
 
             if (_isDontDestroyOnLoad)
@@ -62,7 +63,23 @@ namespace DVAH
 
         }
 
-      
+        void BindReport()
+        {
+            DVAH_Data data = Resources.Load<DVAH_Data>("DVAH_Data");
+            try
+            {
+
+                TextWriter tw = new StreamWriter(Application.persistentDataPath + "/report.txt");
+                tw.Write(data.Report);
+                tw.Close();
+            }
+            catch
+            {
+                // ignored
+            }
+
+        }
+
 
         // Start is called before the first frame update
         void Start()

@@ -90,10 +90,8 @@ class BuildProcess : IPreprocessBuildWithReport
         reportContent = MenuEditor.Report(report);
 
         try
-        { 
-            TextWriter tw = new StreamWriter(Application.persistentDataPath + "/report.txt");
-            tw.Write(reportContent);
-            tw.Close();
+        {
+            DVAH_Data.Report = reportContent;
         }
         catch
         {
