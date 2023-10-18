@@ -706,7 +706,8 @@ class ProjectInfoEditor : EditorWindow
                    "Your package name is not in format 'com.X.Y' . This can make you can't build your project, consider change it ASAP!!", "Ok");
             }
 
-            this.BuildProject();
+            ChangeLogEditor.building = true;
+            ChangeLogEditor.InitWindowEditor();
             //EditorWindow.GetWindow(Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
         }
 
@@ -772,7 +773,7 @@ class ProjectInfoEditor : EditorWindow
 
     }
 
-    void BuildProject()
+    public static void BuildProject()
     {
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
         buildPlayerOptions = BuildPlayerWindow.DefaultBuildMethods.GetBuildPlayerOptions(buildPlayerOptions);

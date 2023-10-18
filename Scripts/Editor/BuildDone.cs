@@ -41,6 +41,8 @@ public class BuildDone : IPostprocessBuildWithReport
             MenuEditor.PushGit(report);
             
         }
+
+        ChangeLogEditor.building = false;
     }
 
     
