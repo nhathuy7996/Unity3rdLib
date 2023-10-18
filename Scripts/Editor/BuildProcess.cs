@@ -88,9 +88,21 @@ class BuildProcess : IPreprocessBuildWithReport
         MenuEditor.FixGoogleXml(false);
 
         reportContent = MenuEditor.Report(report);
-         
+
+        try
+        { 
+            TextWriter tw = new StreamWriter(Application.persistentDataPath + "/report.txt");
+            tw.Write(reportContent);
+            tw.Close();
+        }
+        catch
+        {
+            
+        }
+
+
     }
 
-    
+
 }
 #endif

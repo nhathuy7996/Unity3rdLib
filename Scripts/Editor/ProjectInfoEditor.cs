@@ -76,6 +76,8 @@ class ProjectInfoEditor : EditorWindow
 
     string linkGoogleSheet = "";
 
+    static bool createNewBranch = true;
+
     RequestBase requestBase;
 
     // Add menu named "My Window" to the Window menu
@@ -99,6 +101,8 @@ class ProjectInfoEditor : EditorWindow
             usingAdNative = true;
         if (symbolsList.ToList().Contains("IAP"))
             usingIAP = true;
+
+        createNewBranch = EditorPrefs.GetBool("NEW_BRANCH",true);
     }
 
     void OnGUI()
@@ -351,7 +355,7 @@ class ProjectInfoEditor : EditorWindow
 
 
         EditorGUILayout.BeginHorizontal();
-        numberAddOpenAdID = EditorGUILayout.IntField("AppOpen AD ID number", numberAddOpenAdID);
+        numberAddOpenAdID = EditorGUILayout.IntField("AppOpen AD ID number", numberAddOpenAdID); 
 
         if (numberAddOpenAdID > DVAH_Data.AppLovin_ADOpenIDs.Count)
         {
@@ -604,6 +608,7 @@ class ProjectInfoEditor : EditorWindow
 
             if (numberAddOpenAdID > adManager.OpenAdUnitIDs.Count)
             {
+                Undo.RecordObject(adManager, "Changed adManager");
                 adManager.OpenAdUnitIDs.AddRange(new string[numberAddOpenAdID - adManager.OpenAdUnitIDs.Count]);
             }
 
@@ -677,6 +682,11 @@ class ProjectInfoEditor : EditorWindow
         EditorGUILayout.BeginHorizontal();
         DVAH_Data.CHEAT_BUILD = EditorGUILayout.Toggle("Build Cheat", DVAH_Data.CHEAT_BUILD);
         EditorUserBuildSettings.buildAppBundle = EditorGUILayout.Toggle("Build aab", EditorUserBuildSettings.buildAppBundle);
+
+        createNewBranch = EditorGUILayout.Toggle("New branch after build", createNewBranch);
+        EditorPrefs.SetBool("NEW_BRANCH",createNewBranch);
+        
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

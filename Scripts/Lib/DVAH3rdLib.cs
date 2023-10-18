@@ -47,7 +47,9 @@ namespace DVAH
         {
             base.Awake();
 
-            this.AssignIAppstateChange();
+#if UNITY_ANDROID
+            AppStateEventNotifier.AppStateChanged += this.OnAppStateChanged;
+#endif
 
             if (_isDontDestroyOnLoad)
                 DontDestroyOnLoad(this.gameObject);
@@ -60,28 +62,7 @@ namespace DVAH
 
         }
 
-        void AssignIAppstateChange()
-        {
-#if UNITY_ANDROID
-            try
-            {
-                var handlers = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(p => typeof(IAppStateChange).IsAssignableFrom(p) && p.IsClass);
-
-                foreach (var handler in handlers)
-                {
-                    var handlerInstance = (IAppStateChange)Activator.CreateInstance(handler);
-                    AppStateEventNotifier.AppStateChanged += handlerInstance.OnAppStateChanged;
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-            }
-            
-#endif
-        }
+      
 
         // Start is called before the first frame update
         void Start()
@@ -291,34 +272,42 @@ namespace DVAH
             return null;
         }
 
- 
-        void IAppStateChange.OnAppStateChanged(AppState state)
+
+        public void OnAppStateChanged(AppState state)
         {
+            var appStateObject = FindObjectsOfType<MonoBehaviour>().OfType<IAppStateChange>();
+            foreach (IAppStateChange singleObject in appStateObject)
+            {
+                if ((singleObject as MonoBehaviour).gameObject.GetInstanceID() == this.gameObject.GetInstanceID())
+                    continue;
+                singleObject.OnAppStateChanged(state);
+            }
+
             try
             {
                 if (state == AppState.Foreground)
                 {
-                
-                        FireBaseManager.Instant.LogEventWithParameterAsync("on_game_resume_focus", new Hashtable()
+
+                    FireBaseManager.Instant.LogEventWithParameterAsync("on_game_resume_focus", new Hashtable()
                         {
                             { "id_screen", AdManager.Instant.ScreenName }
                         });
-                
+
                 }
                 else
                 {
-                        FireBaseManager.Instant.LogEventWithParameterAsync("on_game_out_focus", new Hashtable()
+                    FireBaseManager.Instant.LogEventWithParameterAsync("on_game_out_focus", new Hashtable()
                         {
                             { "id_screen", AdManager.Instant.ScreenName }
                         });
                 }
 
-                }
+            }
             catch (Exception e)
             {
 
             }
-        } 
+        }
 
 #if UNITY_EDITOR || UNITY_IOS
 
@@ -326,15 +315,14 @@ namespace DVAH
         {
             try
             {
-                var handlers = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(p => typeof(IAppStateChange).IsAssignableFrom(p) && p.IsClass);
-
-                foreach (var handler in handlers)
+                var appStateObject = FindObjectsOfType<MonoBehaviour>().OfType<IAppStateChange>();
+                foreach (IAppStateChange singleObject in appStateObject)
                 {
-                    var handlerInstance = (IAppStateChange)Activator.CreateInstance(handler);
-                    handlerInstance.OnAppStateChanged(focus ? AppState.Foreground : AppState.Background);
+                    if ((singleObject as MonoBehaviour).gameObject.GetInstanceID() == this.gameObject.GetInstanceID())
+                        continue;
+                    singleObject.OnAppStateChanged(focus ? AppState.Foreground : AppState.Background);
                 }
+
             }
             catch (Exception e)
             {
