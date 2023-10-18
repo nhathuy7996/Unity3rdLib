@@ -27,11 +27,7 @@ public class ChangeLogEditor : EditorWindow
         ChangeLogText = EditorGUILayout.TextArea(ChangeLogText, GUILayout.Height(position.height));
 
         if (GUILayout.Button("Save"))
-        {
-            if (building)
-            {
-                ProjectInfoEditor.BuildProject();
-            }
+        { 
             Close();
             GUIUtility.ExitGUI();
         }
