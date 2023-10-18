@@ -9,6 +9,7 @@ public class ChangeLogEditor : EditorWindow
 {
     static EditorWindow wnd;
     public static string ChangeLogText = "";
+    public static bool building = false;
 
     Vector2 scroll;
 
@@ -25,8 +26,20 @@ public class ChangeLogEditor : EditorWindow
         scroll = EditorGUILayout.BeginScrollView(scroll);
         ChangeLogText = EditorGUILayout.TextArea(ChangeLogText, GUILayout.Height(position.height));
 
+        if (GUILayout.Button("Save"))
+        { 
+            Close();
+            GUIUtility.ExitGUI();
+        }
         EditorGUILayout.EndScrollView();
 
 
+    }
+    void OnDestroy()
+    {
+        if (building)
+        {
+            ProjectInfoEditor.BuildProject();
+        }
     }
 }

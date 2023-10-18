@@ -29,7 +29,11 @@ public class BuildDone : IPostprocessBuildWithReport
             writer.Flush();
             writer.Close();
         }
-        MenuEditor.PushBackUp(report.summary.outputPath);
+
+        if (EditorPrefs.GetBool("NEW_BRANCH",false) && PlayerPrefs.GetString("Version") != PlayerSettings.bundleVersion) {
+            EditorPrefs.SetString("Version", PlayerSettings.bundleVersion);
+            MenuEditor.PushBackUp(report.summary.outputPath);
+        }
         if (EditorUserBuildSettings.buildAppBundle && EditorUtility.DisplayDialog("Push to production!",
                "Your .aab build succed! Would u like to push to branch production?", "Ok", "No"))
         {
@@ -37,6 +41,8 @@ public class BuildDone : IPostprocessBuildWithReport
             MenuEditor.PushGit(report);
             
         }
+
+        ChangeLogEditor.building = false;
     }
 
     

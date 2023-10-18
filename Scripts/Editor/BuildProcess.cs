@@ -88,9 +88,19 @@ class BuildProcess : IPreprocessBuildWithReport
         MenuEditor.FixGoogleXml(false);
 
         reportContent = MenuEditor.Report(report);
-         
+
+        try
+        {
+            DVAH_Data.Report = reportContent;
+        }
+        catch
+        {
+            
+        }
+
+
     }
 
-    
+
 }
 #endif

@@ -36,6 +36,8 @@ public class DVAH_Data : ScriptableObject
 #endif
 
     public bool CHEAT_BUILD = false;
+
+    public string Report = "";
 }
 
 public enum ADJUST_MODE
