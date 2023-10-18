@@ -205,6 +205,7 @@ namespace DVAH
 
         // Restore purchases previously made by this customer. Some platforms automatically restore purchases, like Google. 
         // Apple currently requires explicit purchase restoration for IAP, conditionally displaying a password prompt.
+         
         public void RestorePurchases()
         {
             // If Purchasing has not yet been set up ...
@@ -324,6 +325,11 @@ namespace DVAH
             }
 
            
+        }
+
+        public void OnInitializeFailed(InitializationFailureReason error, string message)
+        {
+            Debug.LogError(CONSTANT.Prefix + "==> OnInitializeFailed: " + message);
         }
     }
 

@@ -30,21 +30,19 @@
  * * * * */
 #if UNITY_EDITOR
 using UnityEngine;
-using UnityEditor;
-using UnityEditor.PackageManager.UI;
+using UnityEditor; 
 using com.adjust.sdk;
-using GoogleMobileAds.Editor;
+
 using System;
 using DVAH;
+#if UNITY_ANDROID
 using Facebook.Unity.Settings;
-using Codice.Client.BaseCommands;
-using System.IO;
-using NUnit.Framework.Internal;
+using GoogleMobileAds.Editor;
+#endif
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.SceneManagement;
-using UnityEditor.SceneManagement;
-using UnityEditor.Build.Reporting;
+using UnityEditor.SceneManagement; 
 
 class ProjectInfoEditor : EditorWindow
 {
@@ -57,15 +55,16 @@ class ProjectInfoEditor : EditorWindow
     bool isShowKeyStorePass = false, isShowAliasPass = false;
     Adjust adjustGameObject;
 
-
+#if UNITY_ANDROID
     GoogleMobileAdsSettings gg = null;
+    FacebookSettings facebook;
+#endif
 
     DVAH.AdMHighFather adManager = null;
     AppLovinSettings max = null;
 
     FireBaseManager fireBaseManager;
 
-    FacebookSettings facebook;
 
     string fbAppID = null, fbAppLabels, fbClientToken = null, fbKeyStore = null;
     static EditorWindow wnd;
@@ -76,6 +75,8 @@ class ProjectInfoEditor : EditorWindow
     MasterLib masterLib;
 
     string linkGoogleSheet = "";
+
+    static bool createNewBranch = true;
 
     RequestBase requestBase;
 
@@ -100,6 +101,8 @@ class ProjectInfoEditor : EditorWindow
             usingAdNative = true;
         if (symbolsList.ToList().Contains("IAP"))
             usingIAP = true;
+
+        createNewBranch = EditorPrefs.GetBool("NEW_BRANCH",true);
     }
 
     void OnGUI()
@@ -352,7 +355,7 @@ class ProjectInfoEditor : EditorWindow
 
 
         EditorGUILayout.BeginHorizontal();
-        numberAddOpenAdID = EditorGUILayout.IntField("AppOpen AD ID number", numberAddOpenAdID);
+        numberAddOpenAdID = EditorGUILayout.IntField("AppOpen AD ID number", numberAddOpenAdID); 
 
         if (numberAddOpenAdID > DVAH_Data.AppLovin_ADOpenIDs.Count)
         {
@@ -453,9 +456,9 @@ class ProjectInfoEditor : EditorWindow
         }
         #endregion
 
-        #region GOOGLE ADS SETTING
+#region GOOGLE ADS SETTING
 
-
+#if UNITY_ANDROID
         if (gg)
         {
             gg.GoogleMobileAdsAndroidAppId = DVAH_Data.Google_Android_AppID;
@@ -480,7 +483,8 @@ class ProjectInfoEditor : EditorWindow
                 EditorGUILayout.LabelField("Can not find GoogleMobileAdsSettings!");
             }
         }
-        #endregion
+#endif
+#endregion
 
 
         #region APPLOVIN
@@ -492,10 +496,12 @@ class ProjectInfoEditor : EditorWindow
             max.SdkKey = DVAH_Data.AppLovin_SDK_Key;
             if (adManager)
                 adManager.MaxSdkKey = max.SdkKey;
+#if UNITY_ANDROID
             if (gg != null)
             {
                 max.AdMobAndroidAppId = gg.GoogleMobileAdsAndroidAppId;
             }
+#endif
 
             PrefabUtility.RecordPrefabInstancePropertyModifications(max);
             EditorUtility.SetDirty(max);
@@ -514,11 +520,11 @@ class ProjectInfoEditor : EditorWindow
             }
         }
 
-        #endregion
+#endregion
 
-        #region FACEBOOK
+#region FACEBOOK
 
-
+#if UNITY_ANDROID
         if (facebook == null)
         {
             string[] facebookSetting = UnityEditor.AssetDatabase.FindAssets("t:FacebookSettings");
@@ -586,9 +592,9 @@ class ProjectInfoEditor : EditorWindow
             EditorUtility.SetDirty(facebook);
         }
 
+#endif
 
-
-        #endregion
+#endregion
 
         #region AD ID SETTING
 
@@ -602,6 +608,7 @@ class ProjectInfoEditor : EditorWindow
 
             if (numberAddOpenAdID > adManager.OpenAdUnitIDs.Count)
             {
+                Undo.RecordObject(adManager, "Changed adManager");
                 adManager.OpenAdUnitIDs.AddRange(new string[numberAddOpenAdID - adManager.OpenAdUnitIDs.Count]);
             }
 
@@ -661,18 +668,25 @@ class ProjectInfoEditor : EditorWindow
             MenuEditor.FixGoogleXml();
         }
 
+#if UNITY_ANDROID
         if (GUILayout.Button("Fix AndroidManifest FbID"))
         {
             EditorUtility.DisplayDialog("Attention Pleas?",
                   "This will change your AndroidManifest for match FBID!!", "Ok");
             MenuEditor.FixAndroidManifestFB();
         }
+#endif
 
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         DVAH_Data.CHEAT_BUILD = EditorGUILayout.Toggle("Build Cheat", DVAH_Data.CHEAT_BUILD);
         EditorUserBuildSettings.buildAppBundle = EditorGUILayout.Toggle("Build aab", EditorUserBuildSettings.buildAppBundle);
+
+        createNewBranch = EditorGUILayout.Toggle("New branch after build", createNewBranch);
+        EditorPrefs.SetBool("NEW_BRANCH",createNewBranch);
+        
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

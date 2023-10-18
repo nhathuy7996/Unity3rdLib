@@ -30,12 +30,12 @@ After build aab, a branch production will auto create and push your code to ther
 - Reimport All
 - Android Resolve -> Force Resolve
 - Then you have 2 way to add the code lib to your project:
-    - The lazy way:
+    - The lazy way: (you must add your project to a git reposity first)
         ![add Code](https://raw.githubusercontent.com/nhathuy7996/Unity3rdLib/develop/GitImage/0.png)
     - The profession way:
         - Add git subtree on project and pull production (_develop branch may not working well yet!_)
-        - (Git Add Command: git subtree add --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash    )
-        - (Git Pull Command: git subtree pull --prefix Assets/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash  )
+        - (Git Add Command: git subtree add --prefix Assets/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash    )
+        - (Git Pull Command: git subtree pull --prefix Assets/DVAH/Unity3rdLib https://github.com/nhathuy7996/Unity3rdLib.git production --squash  )
         If you already add it, then pull command only is enought!
 
 - put prefab 3rdLib into scene index 0 on build setting (check dontDestroyOnload if project have multiple scene)
@@ -62,7 +62,7 @@ After build aab, a branch production will auto create and push your code to ther
         void Start()
         {
             LoadingManager.Instant.DoneConditionSelf(0, ()=> AdManager.Instant.AdsOpenIsLoaded(0));
-            Scene currentScene = SceneManager.GetActiveScene();
+           
             AsyncOperation loadingScene = SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
             loadingScene.allowSceneActivation = true;
             LoadingManager.Instant.SetMaxTimeLoading(30).Init((conditionDone) =>
@@ -70,11 +70,11 @@ After build aab, a branch production will auto create and push your code to ther
                 AdManager.Instant.ShowAdOpen(0,true, (isSuccess) =>
                 {
 
-                    _= SceneManager.UnloadSceneAsync(currentScene,UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
-                    _ = AdManager.Instant.InitializeBannerAds();
-                    _= AdManager.Instant.ShowBanner();
+                   
+                    AdManager.Instant.InitializeBannerAdsAsync();
+                    AdManager.Instant.ShowBanner();
                 });
-                _= AdManager.Instant.LoadAdOpen(1);
+                
             });
         }
 
@@ -150,7 +150,7 @@ Or If you wanna get data of product like receipt for self-check on your server
 
 
 #### ***Log event Firebase***
-        FireBaseManager.Instant.LogEventWithParameter("Event_name_do_not_using_space", new Hashtable()
+        FireBaseManager.Instant.LogEventWithParameterAsync("Event_name_do_not_using_space", new Hashtable()
         {
             {
                 "parameter",1
@@ -162,7 +162,7 @@ Or If you wanna get data of product like receipt for self-check on your server
         FireBaseManager.Instant.LogEventWithOneParam("Event_name_do_not_using_space" );
 
 #### ***Get value from remote config***
-        _= FireBaseManager.Instant.GetValueRemoteAsync("key", (value) =>
+        FireBaseManager.Instant.GetValueRemoteAsync("key", (value) =>
         {
             int true_value = (int)value.LongValue;
         });

@@ -11,7 +11,6 @@ namespace DVAH
 {
     public class LanguageManager : Singleton<LanguageManager>
     {
-
         [SerializeField] LanguageName _currentLanguage = LanguageName.EN;
         [SerializeField] GameObject _languageBtnManager;
         [SerializeField] Sprite _selectedLan, _normalLan;
@@ -70,7 +69,7 @@ namespace DVAH
                 Observer.Instant.Notify(CONSTANT.LAN_1ST, false);
             }
 
-            
+           
         }
 
         public void ClosePopUp()

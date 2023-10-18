@@ -1,6 +1,4 @@
-using com.adjust.sdk;
-using GoogleMobileAds.Api;
-using GoogleMobileAds.Common;
+using com.adjust.sdk; 
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +8,9 @@ using static MaxSdkBase;
 using System.Threading.Tasks;
 using System.Linq;
 using UnityEngine.UI;
+#if NATIVE_AD
+using GoogleMobileAds.Api;
+#endif
 
 namespace DVAH
 {
@@ -46,7 +47,8 @@ namespace DVAH
         banner,
         inter,
         reward,
-        native
+        native,
+        MRecs
     }
 
 
@@ -236,7 +238,12 @@ namespace DVAH
 
         #endregion
 
-        #region FUNCTION SHOW/HIDE ADs 
+        #region FUNCTION SHOW/HIDE ADs
+
+        public abstract void ShowMRECs();
+
+        public abstract void HideMRECs();
+
 
         public abstract void ShowBanner();
 
@@ -246,6 +253,8 @@ namespace DVAH
 
 
         public abstract void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false);
+
+        public abstract void ShowRewardVideo(Action<RewardVideoState> callback = null, bool showNoAds = false, Button btnShowAd = null);
 
         public abstract void ShowAdOpen(int ID = 0, bool isAdOpen = false, Action<int, OpenAdState> callback = null);
 
@@ -276,6 +285,7 @@ namespace DVAH
 
 
         public abstract bool CheckInternetConnection();
+        public abstract Task ShowAdDebugger();
 
         #region CUSTOM FUNCTION
         #endregion
