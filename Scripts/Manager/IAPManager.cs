@@ -21,16 +21,14 @@ namespace DVAH
 
     }
 }
-#else
-using System;
+#else 
 using System.Collections.Generic;
 
 using UnityEngine.Purchasing;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.Purchasing.Security;
-using System.Collections;
-using System.Threading.Tasks;
+using System.Collections; 
 
 
 namespace DVAH
@@ -55,7 +53,8 @@ namespace DVAH
         {
             Debug.Log(CONSTANT.Prefix + $"==========><color=#00FF00>IAP start Init!</color><==========");
             _onInitDone = onInitDone;
-            InitializePurchasing();
+            if (!ProductCatalog.LoadDefaultCatalog().enableCodelessAutoInitialization)
+                InitializePurchasing();
         }
 
         public void InitializePurchasing()
