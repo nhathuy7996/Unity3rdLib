@@ -482,7 +482,7 @@ public class MenuEditor
 
     public static bool CheckFirebaseJson(bool isShowOk = true)
     {
-
+#if UNITY_ANDROID
         string[] files = Directory.GetFiles(Application.dataPath, "*.json*", SearchOption.AllDirectories)
                             .Where(f => f.EndsWith("google-services.json")).ToArray();
         if (files.Length == 0)
@@ -510,9 +510,41 @@ public class MenuEditor
 
         if (isShowOk)
             EditorUtility.DisplayDialog("Ok, Nothing wrong!",
-               "You file google-services.json exist and seem to be oke!", "Close");
+               "Your file google-services.json exist and seem to be oke!", "Close");
 
         return true;
+#elif UNITY_IOS
+     string[] files = Directory.GetFiles(Application.dataPath, "*.json*", SearchOption.AllDirectories)
+                            .Where(f => f.EndsWith("GoogleService-Info.plist")).ToArray();
+        if (files.Length == 0)
+        {
+            UnityEngine.Debug.LogError(CONSTANT.Prefix + $"==>Project doesnt contain GoogleService-Info.plist. Firebase may not work!!!!!<==");
+            if (!EditorUtility.DisplayDialog("Oop, something wrong?",
+                "Missing GoogleService-Info.plist. All firebase services may not work?", "Continue", "Stop"))
+            {
+                StopBuildWithMessage("Missing GoogleService-Info.plist");
+            }
+
+            return false;
+        }
+
+        if (files.Length > 1)
+        {
+            UnityEngine.Debug.LogError(CONSTANT.Prefix + $"==>Project contain more than one file GoogleService-Info.plist. Firebase may not work wrong!!!!!<==");
+            if (!EditorUtility.DisplayDialog("Oop, something wrong?",
+                "Too many GoogleService-Info.plist. All firebase services may not work?", "Continue", "Stop"))
+            {
+                StopBuildWithMessage("Too many GoogleService-Info.plist");
+            }
+            return false;
+        }
+
+        if (isShowOk)
+            EditorUtility.DisplayDialog("Ok, Nothing wrong!",
+               "Your file GoogleService-Info.plist exist and seem to be oke!", "Close");
+
+        return true;
+#endif
     }
 
     public static string CheckFirebaseXml()
