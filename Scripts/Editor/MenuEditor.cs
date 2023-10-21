@@ -74,14 +74,14 @@ public class MenuEditor
             "cd " + Application.dataPath + "\n" +
             "git add -A\n" +
             $"git commit -m \"build_{nameAPK} \"\n" +
-            $"git push origin HEAD:production_{PlayerSettings.bundleVersion} -f";
+            $"git push origin HEAD:{EditorUserBuildSettings.activeBuildTarget}_production_{PlayerSettings.bundleVersion} -f";
         }
         else
         {
 
             cmdLines = "/C git add -A&" +
             $"git commit -m \"build_{nameAPK} \"&" +
-            $"git push origin HEAD:production_{PlayerSettings.bundleVersion} -f";
+            $"git push origin HEAD:{EditorUserBuildSettings.activeBuildTarget}_production_{PlayerSettings.bundleVersion} -f";
         }
 
         string terminal = @"cmd.exe";
@@ -232,15 +232,15 @@ public class MenuEditor
             "cd ../../\n" +
             "cd " + Application.dataPath + "\n" +
             "git add -A\n" +
-            $"git commit -m \"release_{ PlayerSettings.bundleVersion}_{PlayerSettings.Android.bundleVersionCode} \"\n" +
-            "git push origin HEAD:production_doNotCreateBranchFromHere -f";
+            $"git commit -m \"{EditorUserBuildSettings.activeBuildTarget}_release_{ PlayerSettings.bundleVersion}_{PlayerSettings.Android.bundleVersionCode} \"\n" +
+            $"git push origin HEAD:{EditorUserBuildSettings.activeBuildTarget}_production_doNotCreateBranchFromHere -f";
         }
         else
         {
             
             cmdLines = "/C git add -A&" +
             $"git commit -m \"release_{ PlayerSettings.bundleVersion}_{PlayerSettings.Android.bundleVersionCode} \"&" +
-            "git push origin HEAD:production_doNotCreateBranchFromHere -f";
+            $"git push origin HEAD:{EditorUserBuildSettings.activeBuildTarget}_production_doNotCreateBranchFromHere -f";
         }
 
         string terminal = @"cmd.exe";
