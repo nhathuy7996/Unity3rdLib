@@ -30,7 +30,7 @@ public class BuildDone : IPostprocessBuildWithReport
             writer.Close();
         }
 
-        if (EditorPrefs.GetBool("NEW_BRANCH",false) && PlayerPrefs.GetString("Version") != PlayerSettings.bundleVersion) {
+        if (EditorPrefs.GetBool("NEW_BRANCH",false) && EditorPrefs.GetString("Version") != PlayerSettings.bundleVersion) {
             EditorPrefs.SetString("Version", PlayerSettings.bundleVersion);
             MenuEditor.PushBackUp(report.summary.outputPath);
         }

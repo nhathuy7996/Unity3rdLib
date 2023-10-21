@@ -74,14 +74,14 @@ public class MenuEditor
             "cd " + Application.dataPath + "\n" +
             "git add -A\n" +
             $"git commit -m \"build_{nameAPK} \"\n" +
-            $"git push origin HEAD:production_{PlayerSettings.bundleVersion} -f";
+            $"git push origin HEAD:{EditorUserBuildSettings.activeBuildTarget}_production_{PlayerSettings.bundleVersion} -f";
         }
         else
         {
 
             cmdLines = "/C git add -A&" +
             $"git commit -m \"build_{nameAPK} \"&" +
-            $"git push origin HEAD:production_{PlayerSettings.bundleVersion} -f";
+            $"git push origin HEAD:{EditorUserBuildSettings.activeBuildTarget}_production_{PlayerSettings.bundleVersion} -f";
         }
 
         string terminal = @"cmd.exe";
@@ -232,15 +232,15 @@ public class MenuEditor
             "cd ../../\n" +
             "cd " + Application.dataPath + "\n" +
             "git add -A\n" +
-            $"git commit -m \"release_{ PlayerSettings.bundleVersion}_{PlayerSettings.Android.bundleVersionCode} \"\n" +
-            "git push origin HEAD:production_doNotCreateBranchFromHere -f";
+            $"git commit -m \"{EditorUserBuildSettings.activeBuildTarget}_release_{ PlayerSettings.bundleVersion}_{PlayerSettings.Android.bundleVersionCode} \"\n" +
+            $"git push origin HEAD:{EditorUserBuildSettings.activeBuildTarget}_production_doNotCreateBranchFromHere -f";
         }
         else
         {
             
             cmdLines = "/C git add -A&" +
             $"git commit -m \"release_{ PlayerSettings.bundleVersion}_{PlayerSettings.Android.bundleVersionCode} \"&" +
-            "git push origin HEAD:production_doNotCreateBranchFromHere -f";
+            $"git push origin HEAD:{EditorUserBuildSettings.activeBuildTarget}_production_doNotCreateBranchFromHere -f";
         }
 
         string terminal = @"cmd.exe";
@@ -482,7 +482,7 @@ public class MenuEditor
 
     public static bool CheckFirebaseJson(bool isShowOk = true)
     {
-
+#if UNITY_ANDROID
         string[] files = Directory.GetFiles(Application.dataPath, "*.json*", SearchOption.AllDirectories)
                             .Where(f => f.EndsWith("google-services.json")).ToArray();
         if (files.Length == 0)
@@ -510,9 +510,41 @@ public class MenuEditor
 
         if (isShowOk)
             EditorUtility.DisplayDialog("Ok, Nothing wrong!",
-               "You file google-services.json exist and seem to be oke!", "Close");
+               "Your file google-services.json exist and seem to be oke!", "Close");
 
         return true;
+#elif UNITY_IOS
+     string[] files = Directory.GetFiles(Application.dataPath, "*.json*", SearchOption.AllDirectories)
+                            .Where(f => f.EndsWith("GoogleService-Info.plist")).ToArray();
+        if (files.Length == 0)
+        {
+            UnityEngine.Debug.LogError(CONSTANT.Prefix + $"==>Project doesnt contain GoogleService-Info.plist. Firebase may not work!!!!!<==");
+            if (!EditorUtility.DisplayDialog("Oop, something wrong?",
+                "Missing GoogleService-Info.plist. All firebase services may not work?", "Continue", "Stop"))
+            {
+                StopBuildWithMessage("Missing GoogleService-Info.plist");
+            }
+
+            return false;
+        }
+
+        if (files.Length > 1)
+        {
+            UnityEngine.Debug.LogError(CONSTANT.Prefix + $"==>Project contain more than one file GoogleService-Info.plist. Firebase may not work wrong!!!!!<==");
+            if (!EditorUtility.DisplayDialog("Oop, something wrong?",
+                "Too many GoogleService-Info.plist. All firebase services may not work?", "Continue", "Stop"))
+            {
+                StopBuildWithMessage("Too many GoogleService-Info.plist");
+            }
+            return false;
+        }
+
+        if (isShowOk)
+            EditorUtility.DisplayDialog("Ok, Nothing wrong!",
+               "Your file GoogleService-Info.plist exist and seem to be oke!", "Close");
+
+        return true;
+#endif
     }
 
     public static string CheckFirebaseXml()
