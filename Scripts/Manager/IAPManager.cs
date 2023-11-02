@@ -280,9 +280,14 @@ namespace DVAH
                     Debug.Log(string.Format(CONSTANT.Prefix + "==> ProcessPurchase: PASS. Product: '{0}' <==", args.purchasedProduct.definition.id));
                     //NoticeManager.Instance.LogNotice(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));
                     //#if  UNITY_EDITOR
-                     
-                    if(!_restoreItemCheck.Contains(product.id))
-                        _restoreItemCheck.Add(product.id);
+
+                    if (!_restoreItemCheck.Contains(product.id))
+                    {
+                        lock (_restoreItemCheck)
+                        {
+                            _restoreItemCheck.Add(product.id);
+                        }
+                    }
 
                     try
                     {

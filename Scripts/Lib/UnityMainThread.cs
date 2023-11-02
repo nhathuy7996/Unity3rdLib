@@ -30,7 +30,10 @@ namespace DVAH
 
         internal void AddJob(Action newJob)
         {
-            jobs.Enqueue(newJob);
+            lock (jobs)
+            {
+                jobs.Enqueue(newJob);
+            }
         }
     }
 }

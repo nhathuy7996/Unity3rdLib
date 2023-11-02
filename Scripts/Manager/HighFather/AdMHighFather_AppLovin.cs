@@ -30,11 +30,11 @@ namespace DVAH
             rewardedRetryAttempt,
             NativeAdRetryAttemp = 1;
 
-        List<int> AdOpenRetryAttemp = new List<int>(); 
+        List<int> AdOpenRetryAttemp = new List<int>();
 
-        private bool _isSDKMaxInitDone = false,
-            _isSDKAdMobInitDone = false,
-            _isBannerInitDone = false;
+        private int _isSDKMaxInitDone = 0,
+            _isSDKAdMobInitDone = 0,
+             _isBannerInitDone = 0;
 
         bool[] _isnativeKeepReload;
 
@@ -103,7 +103,7 @@ namespace DVAH
             {
                 // AppLovin SDK is initialized, configure and start loading ads.
                 Debug.Log(CONSTANT.Prefix + $"==> MAX SDK Initialized <==");
-                _isSDKMaxInitDone = true;
+                System.Threading.Interlocked.Exchange(ref _isSDKMaxInitDone, 1); 
 
                 InitAdOpen();
 
@@ -151,7 +151,7 @@ namespace DVAH
             }
             MobileAds.Initialize(initStatus =>
             {
-                _isSDKAdMobInitDone = true;
+                System.Threading.Interlocked.Exchange(ref _isSDKAdMobInitDone, 1); 
                 //_ = LoadNativeADs(0);
 
             });
@@ -161,14 +161,18 @@ namespace DVAH
         public override async Task ShowAdDebugger()
         {
             float timer = 0;
-            while (!_isSDKMaxInitDone && timer < 240000)
+
+            while (System.Threading.Interlocked.Add(ref _isSDKAdMobInitDone, 0) == 0 && timer < 240000)
             {
                 Debug.LogWarning(CONSTANT.Prefix + $"==>Waiting Max SDK init done!<==");
                 await Task.Delay(500);
                 timer += 500;
             }
 
-            MaxSdk.ShowMediationDebugger();
+            UnityMainThread.wkr.AddJob(() =>
+            {
+                MaxSdk.ShowMediationDebugger();
+            }); 
         }
 
         #region MREC Ad Methods
@@ -225,7 +229,7 @@ namespace DVAH
         public async Task InitializeBannerAds()
         {
             float timer = 0;
-            while (!_isSDKMaxInitDone && timer < 240000)
+            while (System.Threading.Interlocked.Add(ref _isSDKMaxInitDone, 0) == 0 && timer < 240000)
             {
                 Debug.LogWarning(CONSTANT.Prefix + $"==>Waiting Max SDK init done!<==");
                 await Task.Delay(500);
@@ -264,7 +268,7 @@ namespace DVAH
 
                 if (_isBannerAutoShow) ShowBanner();
 
-                _isBannerInitDone = true;
+                System.Threading.Interlocked.Exchange(ref _isBannerInitDone, 1);
             });
         }
 
@@ -782,24 +786,25 @@ namespace DVAH
         public async Task LoadNativeADs(Action<int, bool> callback, params int[] indexes)
         {
             float timer = 0;
-            while (!_isSDKAdMobInitDone && timer < 240000)
+            while (System.Threading.Interlocked.Add(ref _isSDKAdMobInitDone, 0) == 0 && timer < 240000)
             {
                 await Task.Delay(50);
                 timer += 50;
             }
 
-
-            _callbackLoadNativeAd += callback;
-
-            foreach (int index in indexes)
+            UnityMainThread.wkr.AddJob(() =>
             {
-                AdLoader adLoader = RequestNativeAd(_NativeAdID[index]);
-                _nativeADLoader[index] = (adLoader);
-#if UNITY_EDITOR
-                this.HandleNativeAdLoaded(adLoader, new NativeAdEventArgs());
-#endif
-            }
+                _callbackLoadNativeAd += callback;
 
+                foreach (int index in indexes)
+                {
+                    AdLoader adLoader = RequestNativeAd(_NativeAdID[index]);
+                    _nativeADLoader[index] = (adLoader);
+#if UNITY_EDITOR
+                    this.HandleNativeAdLoaded(adLoader, new NativeAdEventArgs());
+#endif
+                }
+            }); 
         }
 
         public async Task LoadNativeADs(params int[] indexes)
@@ -1140,7 +1145,7 @@ namespace DVAH
 
         public override bool NativeAdLoaded(int ID)
         {
-            if (!_isSDKAdMobInitDone)
+            if (System.Threading.Interlocked.Add(ref _isSDKAdMobInitDone, 0) == 0)
                 return false;
 #if UNITY_EDITOR
             return true;
@@ -1187,18 +1192,21 @@ namespace DVAH
                 return;
 
             float timer = 0;
-            while (!_isBannerInitDone && timer < 240000)
+            while (System.Threading.Interlocked.Add(ref _isBannerInitDone,0) == 0 && timer < 240000)
             {
                 await Task.Delay(500);
                 timer += 500;
             }
 
-            Debug.Log(CONSTANT.Prefix + $"==> show banner <==");
-            _isBannerCurrentlyAllow = true;
+            UnityMainThread.wkr.AddJob(() =>
+            {
+                Debug.Log(CONSTANT.Prefix + $"==> show banner <==");
+                _isBannerCurrentlyAllow = true;
 
-            if (!string.IsNullOrWhiteSpace(_BannerAdUnitID))
-                MaxSdk.ShowBanner(_BannerAdUnitID);
+                if (!string.IsNullOrWhiteSpace(_BannerAdUnitID))
+                    MaxSdk.ShowBanner(_BannerAdUnitID);
 
+            }); 
         }
 
         /// <summary>

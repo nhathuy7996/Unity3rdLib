@@ -68,9 +68,9 @@ namespace DVAH
         #region For CUSTOM EVENT
         #endregion
 
-        private bool _isFetchDone = false;
+        private int _isFetchDone = 0;
 
-        public bool isFetchDOne => _isFetchDone;
+        public bool isFetchDOne => _isFetchDone == 1;
 
         [SerializeField]
         private List<string> _keyConfigs = new List<string>();
@@ -89,7 +89,7 @@ namespace DVAH
                     Firebase.FirebaseApp app = Firebase.FirebaseApp.DefaultInstance;
                     InitializeFirebase();
 
-                    _onActionDone?.Invoke();
+                    
                     // Set a flag here to indicate whether Firebase is ready to use by your app.
                 }
                 else
@@ -98,8 +98,13 @@ namespace DVAH
                       CONSTANT.Prefix + $"==> Could not resolve all Firebase dependencies: {0} <==", dependencyStatus));
                     // Firebase Unity SDK is not safe to use here.
 
-                    _onActionDone?.Invoke();
+              
                 }
+
+                UnityMainThread.wkr.AddJob(() =>
+                {
+                    _onActionDone?.Invoke();
+                });
             });
         }
 
@@ -125,7 +130,7 @@ namespace DVAH
         {
      
             double countTime = 0;
-            while (!_isFetchDone && countTime < 360000f)
+            while (System.Threading.Interlocked.Add(ref _isFetchDone,0) == 0 && countTime < 360000f)
             {
                 countTime += 1000;
                 await Task.Delay(1000);
@@ -143,15 +148,18 @@ namespace DVAH
                 return;
             }
 
-            var obj = FirebaseRemoteConfig.DefaultInstance.GetValue(key);
-            waitOnDone?.Invoke(obj);
+            UnityMainThread.wkr.AddJob(() =>
+            {
+                var obj = FirebaseRemoteConfig.DefaultInstance.GetValue(key);
+                waitOnDone?.Invoke(obj);
+            });
         }
 
         public async Task<ConfigValue> GetConfigValueRemote(string key )
         {
 
             double countTime = 0;
-            while (!_isFetchDone && countTime < 360000f)
+            while (System.Threading.Interlocked.Add(ref _isFetchDone, 0) == 0 && countTime < 360000f)
             {
                 countTime += 1000;
                 await Task.Delay(1000);
@@ -224,7 +232,7 @@ namespace DVAH
                         if (!_result.IsCompleted)
                             return;
 
-                        _isFetchDone = true;
+                        System.Threading.Interlocked.Exchange(ref _isFetchDone, 1);
 
                         _keyConfigs = FirebaseRemoteConfig.DefaultInstance.AllValues.Keys.ToList();
                         Debug.Log(String.Format(CONSTANT.Prefix + "==> Remote data loaded and ready (last fetch time {0}).<==",
@@ -272,7 +280,7 @@ namespace DVAH
         public async Task LogEventWithParameter(string event_name, Hashtable hash)
         {
             double countTime = 0;
-            while (!_isFetchDone && countTime < 360000f)
+            while (System.Threading.Interlocked.Add(ref _isFetchDone, 0) == 0 && countTime < 360000f)
             {
                 countTime += 1000;
                 await Task.Delay(1000);
@@ -284,26 +292,29 @@ namespace DVAH
                 return;
             }
 
-            Firebase.Analytics.Parameter[] parameter = new Firebase.Analytics.Parameter[hash.Count];
-            //List<Firebase.Analytics.Parameter> parameters = new List<Firebase.Analytics.Parameter>();
-            if (hash != null && hash.Count > 0)
+            UnityMainThread.wkr.AddJob(() =>
             {
-                int i = 0;
-                foreach (DictionaryEntry item in hash)
+                Firebase.Analytics.Parameter[] parameter = new Firebase.Analytics.Parameter[hash.Count];
+                //List<Firebase.Analytics.Parameter> parameters = new List<Firebase.Analytics.Parameter>();
+                if (hash != null && hash.Count > 0)
                 {
-                    if (item.Equals((DictionaryEntry)default)) continue;
-                    string key = this.Checker(item.Key.ToString());
-                    string value = this.Checker(item.Value.ToString());
+                    int i = 0;
+                    foreach (DictionaryEntry item in hash)
+                    {
+                        if (item.Equals((DictionaryEntry)default)) continue;
+                        string key = this.Checker(item.Key.ToString());
+                        string value = this.Checker(item.Value.ToString());
 
-                    parameter[i] = (new Firebase.Analytics.Parameter(key, value));
-                    Debug.Log(CONSTANT.Prefix + $"==> LogEvent " + event_name.ToString() + "- Key = " + key + " -  Value =" + value + " <==");
-                    i++;
+                        parameter[i] = (new Firebase.Analytics.Parameter(key, value));
+                        Debug.Log(CONSTANT.Prefix + $"==> LogEvent " + event_name.ToString() + "- Key = " + key + " -  Value =" + value + " <==");
+                        i++;
+                    }
+
+                    Firebase.Analytics.FirebaseAnalytics.LogEvent(
+                               event_name,
+                               parameter);
                 }
-
-                Firebase.Analytics.FirebaseAnalytics.LogEvent(
-                           event_name,
-                           parameter);
-            }
+            });
         }
 
         public void LogEventWithParameterAsync(string event_name, Hashtable hash)
