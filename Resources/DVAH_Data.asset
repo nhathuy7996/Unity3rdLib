@@ -13,19 +13,20 @@ MonoBehaviour:
   m_Name: DVAH_Data
   m_EditorClassIdentifier: 
   LinkGoogleSheet: https://docs.google.com/spreadsheets/d/1yjAdcQ6CDqMJ-BugvW3kbSucrWcToKDNmScy3RQicfA/edit?usp=sharing
-  Adjust_token: kcsy5qwwd1q8
+  Adjust_token: kcsy5q
   AdjustMode: 0
   EventsToken_AdValue: 
   EventsToken_LevelAchives: 
-  Google_Android_AppID: ca-app-pub-4584260126367940~8721093275
+  Google_Android_AppID: ca-app-pub-
   Google_Event_Paid_AD: paid_ad_impression_value
-  Facebook_AppID: 1710191072775663
+  Facebook_AppID: 17101910
   Facebook_ClientToken: hhh
-  AppLovin_SDK_Key: 3N4Mt8SNhOzkQnGb9oHsRRG1ItybcZDpJWN1fVAHLdRagxP-_k_ZXVaMAdMe5Otsmp6qJSXskfsrtakfRmPAGW
-  AppLovin_BannerID: cd4330f79457a817
-  AppLovin_InterID: "846a549beb6ba975\t"
-  AppLovin_RewardID: d70d16d1720c03b9
+  AppLovin_SDK_Key: 
+  AppLovin_BannerID: cd433
+  AppLovin_InterID: "846a549\t"
+  AppLovin_RewardID: d70d16d172
   AppLovin_ADOpenIDs:
-  - f20eebe5ba78c9d8
+  - f20eebe
   AppLovin_NativeAdIDs: []
   CHEAT_BUILD: 0
+  Report: 

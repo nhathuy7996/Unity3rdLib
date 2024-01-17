@@ -87,9 +87,7 @@ namespace DVAH
                 else
                 {
                     builder.AddProduct(product.id, product.type);
-                }
-
-                
+                } 
             }
 
 
@@ -97,6 +95,7 @@ namespace DVAH
             // Kick off the remainder of the set-up with an asynchrounous call, passing the configuration 
             // and this class' instance. Expect a response either in OnInitialized or OnInitializeFailed.
             UnityPurchasing.Initialize(this, builder);
+
         }
 
 
@@ -256,6 +255,11 @@ namespace DVAH
             m_StoreExtensionProvider = extensions;
 
             _onInitDone?.Invoke();
+
+            foreach (var product in controller.products.all)
+            {
+                Debug.Log(product.metadata.localizedPrice);
+            }
 
         }
 
